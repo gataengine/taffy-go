@@ -80,9 +80,7 @@ type layoutGridContainer interface {
 	getGridChildStyle(childNodeId NodeId) *Style
 }
 
-// blockContext is a placeholder type for the block layout context.
-// It will be fully defined in compute_block.go.
-type blockContext struct{}
+// blockContext is defined in compute_block.go.
 
 // layoutBlockContainer extends layoutPartialTree with getters for the styles
 // required for CSS Block layout.
