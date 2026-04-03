@@ -1145,23 +1145,23 @@ const (
 
 // gridContainerStyle defines the style methods required for a CSS Grid container.
 type gridContainerStyle interface {
-	GridTemplateRows() []GridTemplateComponent
-	GridTemplateColumns() []GridTemplateComponent
-	GridAutoRows() []TrackSizingFunction
-	GridAutoColumns() []TrackSizingFunction
-	GridTemplateAreas() []GridTemplateArea
-	GridAutoFlow() GridAutoFlow
-	Gap() Size[LengthPercentage]
-	AlignContent() Option[AlignContent]
-	JustifyContent() Option[JustifyContent]
-	AlignItems() Option[AlignItems]
-	JustifyItems() Option[AlignItems]
+	gridTemplateRows() []GridTemplateComponent
+	gridTemplateColumns() []GridTemplateComponent
+	gridAutoRows() []TrackSizingFunction
+	gridAutoColumns() []TrackSizingFunction
+	gridTemplateAreas() []GridTemplateArea
+	gridAutoFlow() GridAutoFlow
+	gap() Size[LengthPercentage]
+	alignContent() Option[AlignContent]
+	justifyContent() Option[JustifyContent]
+	alignItems() Option[AlignItems]
+	justifyItems() Option[AlignItems]
 }
 
 // gridItemStyle defines the style methods required for a CSS Grid item.
 type gridItemStyle interface {
-	GridRow() Line[GridPlacement]
-	GridColumn() Line[GridPlacement]
-	AlignSelf() Option[AlignSelf]
-	JustifySelf() Option[AlignSelf]
+	gridRow() Line[GridPlacement]
+	gridColumn() Line[GridPlacement]
+	alignSelf() Option[AlignSelf]
+	justifySelf() Option[AlignSelf]
 }
