@@ -434,29 +434,20 @@ type MeasureFunction = func(
 
 // ComputeLayout updates the stored layout of the provided node and its children.
 // Uses a no-op measure function (all leaf nodes measure as zero).
-// Stub: will be fully wired up in Task 37.
 func (t *TaffyTree) ComputeLayout(node NodeId, availableSpace Size[AvailableSpace]) {
 	t.requireNode(node)
-	noopMeasure := func(
-		_ Size[Option[float32]],
-		_ Size[AvailableSpace],
-		_ NodeId,
-		_ *NodeContext,
-		_ *Style,
-	) Size[float32] {
-		return SizeZeroF32
-	}
-	t.ComputeLayoutWithMeasure(node, availableSpace, noopMeasure)
+	t.ComputeLayoutWithMeasure(node, availableSpace, nil)
 }
 
 // ComputeLayoutWithMeasure updates the stored layout of the provided node and its children
 // using the given measure function for leaf nodes.
-// Stub: will be fully wired up in Task 37.
 func (t *TaffyTree) ComputeLayoutWithMeasure(node NodeId, availableSpace Size[AvailableSpace], measureFn MeasureFunction) {
 	t.requireNode(node)
-	// Will be implemented in Task 37 when compute algorithms are wired up.
-	// For now this is a stub that creates a taffyView but does not compute.
-	_ = &taffyView{taffy: t, measureFunction: measureFn}
+	view := &taffyView{taffy: t, measureFunction: measureFn}
+	computeRootLayout(view, node, availableSpace)
+	if t.config.useRounding {
+		roundLayout(view, node)
+	}
 }
 
 // PrintTree prints a debug representation of the tree's layout starting from root.
@@ -560,10 +551,55 @@ func (v *taffyView) setUnroundedLayout(nodeId NodeId, layout *Layout) {
 	v.taffy.nodes[nodeId].unroundedLayout = *layout
 }
 
+// measureFunc returns a closure that calls the tree's measure function for the given node.
+func (v *taffyView) measureFunc(nodeId NodeId) func(Size[Option[float32]], Size[AvailableSpace]) Size[float32] {
+	return func(knownDimensions Size[Option[float32]], availableSpace Size[AvailableSpace]) Size[float32] {
+		ctx := v.taffy.nodeContexts[nodeId]
+		if v.measureFunction != nil {
+			return v.measureFunction(knownDimensions, availableSpace, nodeId, &ctx, &v.taffy.nodes[nodeId].style)
+		}
+		if ctx != nil {
+			return ctx(knownDimensions, SizeOptionNone, availableSpace, SizingModeInherentSize)
+		}
+		return SizeZeroF32
+	}
+}
+
 // computeChildLayout dispatches to the correct algorithm based on Display.
-// Will be implemented in Task 37 when compute algorithms are wired up.
-func (v *taffyView) computeChildLayout(_ NodeId, _ LayoutInput) LayoutOutput {
-	panic("computeChildLayout not yet implemented")
+func (v *taffyView) computeChildLayout(nodeId NodeId, inputs LayoutInput) LayoutOutput {
+	node := v.taffy.nodes[nodeId]
+	hasChildren := len(v.taffy.children[nodeId]) > 0
+
+	return computeCachedLayout(v, nodeId, inputs, func(nodeId NodeId, inputs LayoutInput) LayoutOutput {
+		style := &node.style
+		display := style.Display
+
+		if inputs.RunMode == RunModePerformHiddenLayout {
+			return computeHiddenLayout(v, nodeId)
+		}
+
+		switch display {
+		case DisplayNone:
+			return computeHiddenLayout(v, nodeId)
+		case DisplayFlex:
+			if hasChildren {
+				return computeFlexboxLayout(v, nodeId, inputs)
+			}
+			return computeLeafLayout(inputs, style, v.resolveCalcValue, v.measureFunc(nodeId))
+		case DisplayGrid:
+			if hasChildren {
+				return computeGridLayout(v, nodeId, inputs)
+			}
+			return computeLeafLayout(inputs, style, v.resolveCalcValue, v.measureFunc(nodeId))
+		case DisplayBlock:
+			if hasChildren {
+				return computeBlockLayout(v, nodeId, inputs, nil)
+			}
+			return computeLeafLayout(inputs, style, v.resolveCalcValue, v.measureFunc(nodeId))
+		default:
+			return computeLeafLayout(inputs, style, v.resolveCalcValue, v.measureFunc(nodeId))
+		}
+	})
 }
 
 // --- cacheTree interface on *taffyView ---
