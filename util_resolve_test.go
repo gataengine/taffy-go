@@ -1,75 +1,73 @@
 // Tests for util_resolve.go — ported from util/resolve.rs #[cfg(test)] module.
-package taffy_test
+package taffy
 
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	taffy "taffy-go"
 )
 
 // noopCalc is a CalcResolver that always returns 42.42, matching the Rust test harness.
-var noopCalc taffy.CalcResolver = func(_ uint64, _ float32) float32 { return 42.42 }
+var noopCalc CalcResolver = func(_ uint64, _ float32) float32 { return 42.42 }
 
 // Helper constructors matching the Rust test helpers.
 
-func sizeDimensionAuto() taffy.Size[taffy.Dimension] {
-	return taffy.Size[taffy.Dimension]{
-		Width:  taffy.DimensionAutoValue,
-		Height: taffy.DimensionAutoValue,
+func sizeDimensionAuto() Size[Dimension] {
+	return Size[Dimension]{
+		Width:  DimensionAutoValue,
+		Height: DimensionAutoValue,
 	}
 }
 
-func sizeFromLengths(w, h float32) taffy.Size[taffy.Dimension] {
-	return taffy.Size[taffy.Dimension]{
-		Width:  taffy.DimensionFromLength(w),
-		Height: taffy.DimensionFromLength(h),
+func sizeFromLengths(w, h float32) Size[Dimension] {
+	return Size[Dimension]{
+		Width:  DimensionFromLength(w),
+		Height: DimensionFromLength(h),
 	}
 }
 
-func sizeFromPercent(w, h float32) taffy.Size[taffy.Dimension] {
-	return taffy.Size[taffy.Dimension]{
-		Width:  taffy.DimensionFromPercent(w),
-		Height: taffy.DimensionFromPercent(h),
+func sizeFromPercent(w, h float32) Size[Dimension] {
+	return Size[Dimension]{
+		Width:  DimensionFromPercent(w),
+		Height: DimensionFromPercent(h),
 	}
 }
 
-func sizeOptionNew(w, h float32) taffy.Size[taffy.Option[float32]] {
-	return taffy.Size[taffy.Option[float32]]{
-		Width:  taffy.Some(w),
-		Height: taffy.Some(h),
+func sizeOptionNew(w, h float32) Size[Option[float32]] {
+	return Size[Option[float32]]{
+		Width:  Some(w),
+		Height: Some(h),
 	}
 }
 
-func rectDimensionAuto() taffy.Rect[taffy.Dimension] {
-	return taffy.Rect[taffy.Dimension]{
-		Left:   taffy.DimensionAutoValue,
-		Right:  taffy.DimensionAutoValue,
-		Top:    taffy.DimensionAutoValue,
-		Bottom: taffy.DimensionAutoValue,
+func rectDimensionAuto() Rect[Dimension] {
+	return Rect[Dimension]{
+		Left:   DimensionAutoValue,
+		Right:  DimensionAutoValue,
+		Top:    DimensionAutoValue,
+		Bottom: DimensionAutoValue,
 	}
 }
 
-func rectFromLength(l, r, t, b float32) taffy.Rect[taffy.Dimension] {
-	return taffy.Rect[taffy.Dimension]{
-		Left:   taffy.DimensionFromLength(l),
-		Right:  taffy.DimensionFromLength(r),
-		Top:    taffy.DimensionFromLength(t),
-		Bottom: taffy.DimensionFromLength(b),
+func rectFromLength(l, r, t, b float32) Rect[Dimension] {
+	return Rect[Dimension]{
+		Left:   DimensionFromLength(l),
+		Right:  DimensionFromLength(r),
+		Top:    DimensionFromLength(t),
+		Bottom: DimensionFromLength(b),
 	}
 }
 
-func rectFromPercent(l, r, t, b float32) taffy.Rect[taffy.Dimension] {
-	return taffy.Rect[taffy.Dimension]{
-		Left:   taffy.DimensionFromPercent(l),
-		Right:  taffy.DimensionFromPercent(r),
-		Top:    taffy.DimensionFromPercent(t),
-		Bottom: taffy.DimensionFromPercent(b),
+func rectFromPercent(l, r, t, b float32) Rect[Dimension] {
+	return Rect[Dimension]{
+		Left:   DimensionFromPercent(l),
+		Right:  DimensionFromPercent(r),
+		Top:    DimensionFromPercent(t),
+		Bottom: DimensionFromPercent(b),
 	}
 }
 
-func rectNewF32(l, r, t, b float32) taffy.Rect[float32] {
-	return taffy.NewRectF32(l, r, t, b)
+func rectNewF32(l, r, t, b float32) Rect[float32] {
+	return NewRectF32(l, r, t, b)
 }
 
 var _ = Describe("MaybeResolve", func() {
@@ -80,24 +78,24 @@ var _ = Describe("MaybeResolve", func() {
 
 	Describe("maybe_resolve_dimension", func() {
 		It("resolve_auto", func() {
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionAutoValue, taffy.None[float32](), noopCalc)).To(Equal(taffy.None[float32]()))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionAutoValue, taffy.Some[float32](5.0), noopCalc)).To(Equal(taffy.None[float32]()))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionAutoValue, taffy.Some[float32](-5.0), noopCalc)).To(Equal(taffy.None[float32]()))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionAutoValue, taffy.Some[float32](0.0), noopCalc)).To(Equal(taffy.None[float32]()))
+			Expect(MaybeResolveDimOption(DimensionAutoValue, None[float32](), noopCalc)).To(Equal(None[float32]()))
+			Expect(MaybeResolveDimOption(DimensionAutoValue, Some[float32](5.0), noopCalc)).To(Equal(None[float32]()))
+			Expect(MaybeResolveDimOption(DimensionAutoValue, Some[float32](-5.0), noopCalc)).To(Equal(None[float32]()))
+			Expect(MaybeResolveDimOption(DimensionAutoValue, Some[float32](0.0), noopCalc)).To(Equal(None[float32]()))
 		})
 
 		It("resolve_length", func() {
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromLength(1.0), taffy.None[float32](), noopCalc)).To(Equal(taffy.Some[float32](1.0)))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromLength(1.0), taffy.Some[float32](5.0), noopCalc)).To(Equal(taffy.Some[float32](1.0)))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromLength(1.0), taffy.Some[float32](-5.0), noopCalc)).To(Equal(taffy.Some[float32](1.0)))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromLength(1.0), taffy.Some[float32](0.0), noopCalc)).To(Equal(taffy.Some[float32](1.0)))
+			Expect(MaybeResolveDimOption(DimensionFromLength(1.0), None[float32](), noopCalc)).To(Equal(Some[float32](1.0)))
+			Expect(MaybeResolveDimOption(DimensionFromLength(1.0), Some[float32](5.0), noopCalc)).To(Equal(Some[float32](1.0)))
+			Expect(MaybeResolveDimOption(DimensionFromLength(1.0), Some[float32](-5.0), noopCalc)).To(Equal(Some[float32](1.0)))
+			Expect(MaybeResolveDimOption(DimensionFromLength(1.0), Some[float32](0.0), noopCalc)).To(Equal(Some[float32](1.0)))
 		})
 
 		It("resolve_percent", func() {
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromPercent(1.0), taffy.None[float32](), noopCalc)).To(Equal(taffy.None[float32]()))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromPercent(1.0), taffy.Some[float32](5.0), noopCalc)).To(Equal(taffy.Some[float32](5.0)))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromPercent(1.0), taffy.Some[float32](-5.0), noopCalc)).To(Equal(taffy.Some[float32](-5.0)))
-			Expect(taffy.MaybeResolveDimOption(taffy.DimensionFromPercent(1.0), taffy.Some[float32](50.0), noopCalc)).To(Equal(taffy.Some[float32](50.0)))
+			Expect(MaybeResolveDimOption(DimensionFromPercent(1.0), None[float32](), noopCalc)).To(Equal(None[float32]()))
+			Expect(MaybeResolveDimOption(DimensionFromPercent(1.0), Some[float32](5.0), noopCalc)).To(Equal(Some[float32](5.0)))
+			Expect(MaybeResolveDimOption(DimensionFromPercent(1.0), Some[float32](-5.0), noopCalc)).To(Equal(Some[float32](-5.0)))
+			Expect(MaybeResolveDimOption(DimensionFromPercent(1.0), Some[float32](50.0), noopCalc)).To(Equal(Some[float32](50.0)))
 		})
 	})
 
@@ -107,24 +105,24 @@ var _ = Describe("MaybeResolve", func() {
 
 	Describe("maybe_resolve_size_dimension", func() {
 		It("maybe_resolve_auto", func() {
-			Expect(taffy.MaybeResolveSizeDimOption(sizeDimensionAuto(), taffy.SizeOptionNone, noopCalc)).To(Equal(taffy.SizeOptionNone))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeDimensionAuto(), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(taffy.SizeOptionNone))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeDimensionAuto(), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(taffy.SizeOptionNone))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeDimensionAuto(), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(taffy.SizeOptionNone))
+			Expect(MaybeResolveSizeDimOption(sizeDimensionAuto(), SizeOptionNone, noopCalc)).To(Equal(SizeOptionNone))
+			Expect(MaybeResolveSizeDimOption(sizeDimensionAuto(), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(SizeOptionNone))
+			Expect(MaybeResolveSizeDimOption(sizeDimensionAuto(), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(SizeOptionNone))
+			Expect(MaybeResolveSizeDimOption(sizeDimensionAuto(), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(SizeOptionNone))
 		})
 
 		It("maybe_resolve_length", func() {
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), taffy.SizeOptionNone, noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
+			Expect(MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), SizeOptionNone, noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
+			Expect(MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
+			Expect(MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
+			Expect(MaybeResolveSizeDimOption(sizeFromLengths(5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(sizeOptionNew(5.0, 5.0)))
 		})
 
 		It("maybe_resolve_percent", func() {
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), taffy.SizeOptionNone, noopCalc)).To(Equal(taffy.SizeOptionNone))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(sizeOptionNew(25.0, 25.0)))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(sizeOptionNew(-25.0, -25.0)))
-			Expect(taffy.MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(sizeOptionNew(0.0, 0.0)))
+			Expect(MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), SizeOptionNone, noopCalc)).To(Equal(SizeOptionNone))
+			Expect(MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(sizeOptionNew(25.0, 25.0)))
+			Expect(MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(sizeOptionNew(-25.0, -25.0)))
+			Expect(MaybeResolveSizeDimOption(sizeFromPercent(5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(sizeOptionNew(0.0, 0.0)))
 		})
 	})
 })
@@ -137,24 +135,24 @@ var _ = Describe("ResolveOrZero", func() {
 
 	Describe("resolve_or_zero_dimension", func() {
 		It("resolve_or_zero_auto", func() {
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionAutoValue, taffy.None[float32](), noopCalc)).To(Equal(float32(0.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionAutoValue, taffy.Some[float32](5.0), noopCalc)).To(Equal(float32(0.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionAutoValue, taffy.Some[float32](-5.0), noopCalc)).To(Equal(float32(0.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionAutoValue, taffy.Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(ResolveOrZeroDim(DimensionAutoValue, None[float32](), noopCalc)).To(Equal(float32(0.0)))
+			Expect(ResolveOrZeroDim(DimensionAutoValue, Some[float32](5.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(ResolveOrZeroDim(DimensionAutoValue, Some[float32](-5.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(ResolveOrZeroDim(DimensionAutoValue, Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
 		})
 
 		It("resolve_or_zero_length", func() {
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromLength(5.0), taffy.None[float32](), noopCalc)).To(Equal(float32(5.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromLength(5.0), taffy.Some[float32](5.0), noopCalc)).To(Equal(float32(5.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromLength(5.0), taffy.Some[float32](-5.0), noopCalc)).To(Equal(float32(5.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromLength(5.0), taffy.Some[float32](0.0), noopCalc)).To(Equal(float32(5.0)))
+			Expect(ResolveOrZeroDim(DimensionFromLength(5.0), None[float32](), noopCalc)).To(Equal(float32(5.0)))
+			Expect(ResolveOrZeroDim(DimensionFromLength(5.0), Some[float32](5.0), noopCalc)).To(Equal(float32(5.0)))
+			Expect(ResolveOrZeroDim(DimensionFromLength(5.0), Some[float32](-5.0), noopCalc)).To(Equal(float32(5.0)))
+			Expect(ResolveOrZeroDim(DimensionFromLength(5.0), Some[float32](0.0), noopCalc)).To(Equal(float32(5.0)))
 		})
 
 		It("resolve_or_zero_percent", func() {
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromPercent(5.0), taffy.None[float32](), noopCalc)).To(Equal(float32(0.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromPercent(5.0), taffy.Some[float32](5.0), noopCalc)).To(Equal(float32(25.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromPercent(5.0), taffy.Some[float32](-5.0), noopCalc)).To(Equal(float32(-25.0)))
-			Expect(taffy.ResolveOrZeroDim(taffy.DimensionFromPercent(5.0), taffy.Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(ResolveOrZeroDim(DimensionFromPercent(5.0), None[float32](), noopCalc)).To(Equal(float32(0.0)))
+			Expect(ResolveOrZeroDim(DimensionFromPercent(5.0), Some[float32](5.0), noopCalc)).To(Equal(float32(25.0)))
+			Expect(ResolveOrZeroDim(DimensionFromPercent(5.0), Some[float32](-5.0), noopCalc)).To(Equal(float32(-25.0)))
+			Expect(ResolveOrZeroDim(DimensionFromPercent(5.0), Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
 		})
 	})
 
@@ -164,24 +162,24 @@ var _ = Describe("ResolveOrZero", func() {
 
 	Describe("resolve_or_zero_rect_dimension_size_context", func() {
 		It("resolve_or_zero_auto", func() {
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), taffy.SizeOptionNone, noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(taffy.RectZeroF32))
+			Expect(ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), SizeOptionNone, noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimSizeContext(rectDimensionAuto(), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(RectZeroF32))
 		})
 
 		It("resolve_or_zero_length", func() {
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), taffy.SizeOptionNone, noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), SizeOptionNone, noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromLength(5.0, 5.0, 5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
 		})
 
 		It("resolve_or_zero_percent", func() {
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), taffy.SizeOptionNone, noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(rectNewF32(25.0, 25.0, 25.0, 25.0)))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(rectNewF32(-25.0, -25.0, -25.0, -25.0)))
-			Expect(taffy.ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(taffy.RectZeroF32))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), SizeOptionNone, noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), sizeOptionNew(5.0, 5.0), noopCalc)).To(Equal(rectNewF32(25.0, 25.0, 25.0, 25.0)))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), sizeOptionNew(-5.0, -5.0), noopCalc)).To(Equal(rectNewF32(-25.0, -25.0, -25.0, -25.0)))
+			Expect(ResolveOrZeroRectDimSizeContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), sizeOptionNew(0.0, 0.0), noopCalc)).To(Equal(RectZeroF32))
 		})
 	})
 
@@ -191,24 +189,24 @@ var _ = Describe("ResolveOrZero", func() {
 
 	Describe("resolve_or_zero_rect_dimension_option_context", func() {
 		It("resolve_or_zero_auto", func() {
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), taffy.None[float32](), noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), taffy.Some[float32](5.0), noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), taffy.Some[float32](-5.0), noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), taffy.Some[float32](0.0), noopCalc)).To(Equal(taffy.RectZeroF32))
+			Expect(ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), None[float32](), noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), Some[float32](5.0), noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), Some[float32](-5.0), noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), Some[float32](0.0), noopCalc)).To(Equal(RectZeroF32))
 		})
 
 		It("resolve_or_zero_length", func() {
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), taffy.None[float32](), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), taffy.Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), taffy.Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), taffy.Some[float32](0.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), None[float32](), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), Some[float32](0.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
 		})
 
 		It("resolve_or_zero_percent", func() {
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), taffy.None[float32](), noopCalc)).To(Equal(taffy.RectZeroF32))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), taffy.Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(25.0, 25.0, 25.0, 25.0)))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), taffy.Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(-25.0, -25.0, -25.0, -25.0)))
-			Expect(taffy.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), taffy.Some[float32](0.0), noopCalc)).To(Equal(taffy.RectZeroF32))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), None[float32](), noopCalc)).To(Equal(RectZeroF32))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(25.0, 25.0, 25.0, 25.0)))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(-25.0, -25.0, -25.0, -25.0)))
+			Expect(ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), Some[float32](0.0), noopCalc)).To(Equal(RectZeroF32))
 		})
 	})
 })

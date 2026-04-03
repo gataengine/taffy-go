@@ -1,4 +1,4 @@
-package taffy_test
+package taffy
 
 import (
 	"testing"
