@@ -566,11 +566,11 @@ func parseClear(s string) Clear {
 
 func parseTextAlign(s string) TextAlign {
 	switch s {
-	case "left":
+	case "left", "-webkit-left":
 		return TextAlignLegacyLeft
-	case "right":
+	case "right", "-webkit-right":
 		return TextAlignLegacyRight
-	case "center":
+	case "center", "-webkit-center":
 		return TextAlignLegacyCenter
 	default:
 		return TextAlignAuto
