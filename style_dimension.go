@@ -106,12 +106,14 @@ var LengthPercentageAutoAuto = LengthPercentageAuto{Tag: LPAAuto, Value: 0}
 type DimensionTag int
 
 const (
+	// DimensionAuto represents an automatic size.
+	// NOTE: Auto is placed first so that the zero-value of Dimension is Auto,
+	// matching CSS defaults for width/height/min-size/max-size.
+	DimensionAuto DimensionTag = iota
 	// DimensionLength represents an absolute length.
-	DimensionLength DimensionTag = iota
+	DimensionLength
 	// DimensionPercent represents a percentage.
 	DimensionPercent
-	// DimensionAuto represents an automatic size.
-	DimensionAuto
 	// DimensionCalc represents a calc() expression (stored as uint64 bits in Value).
 	DimensionCalc
 )

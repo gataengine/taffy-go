@@ -225,11 +225,8 @@ func computeBlockLayout(
 
 	styledBasedKnownDimensions := SizeMaybeMax(
 		SizeOptionOr(
-			SizeOptionOr(
-				SizeOptionOr(knownDimensions, minMaxDefiniteSize),
-				clampedStyleSize,
-			),
-			Size[Option[float32]]{Width: Some(paddingBorderSize.Width), Height: Some(paddingBorderSize.Height)},
+			SizeOptionOr(knownDimensions, minMaxDefiniteSize),
+			clampedStyleSize,
 		),
 		Size[Option[float32]]{Width: Some(paddingBorderSize.Width), Height: Some(paddingBorderSize.Height)},
 	)
@@ -386,15 +383,18 @@ func computeBlockInner(
 	items := generateBlockItemList(tree, nodeID, containerContentBoxSize)
 
 	// 2. Compute container width
-	containerOuterWidth := knownDimensions.Width.UnwrapOr(func() float32 {
+	var containerOuterWidth float32
+	if knownDimensions.Width.IsSome {
+		containerOuterWidth = knownDimensions.Width.Value
+	} else {
 		availWidth := AsMaybeSubF32(availableSpace.Width, RectHorizontalAxisSum(contentBoxInset))
 		intrinsicWidth := determineContentBasedContainerWidth(tree, items, availWidth) +
 			RectHorizontalAxisSum(contentBoxInset)
-		return maybeMaxF32(
+		containerOuterWidth = maybeMaxF32(
 			maybeClampF32(intrinsicWidth, minSize.Width, maxSize.Width),
 			Some(paddingBorderSize.Width),
 		)
-	}())
+	}
 
 	// Short-circuit if computing size and both dimensions known
 	if runMode == RunModeComputeSize && knownDimensions.Height.IsSome {

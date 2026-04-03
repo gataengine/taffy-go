@@ -9,12 +9,12 @@ package taffy
 type Float int
 
 const (
+	// FloatNone means the box is not floated.
+	FloatNone Float = iota
 	// FloatLeft floats the box to the left.
-	FloatLeft Float = iota
+	FloatLeft
 	// FloatRight floats the box to the right.
 	FloatRight
-	// FloatNone means the box is not floated.
-	FloatNone
 )
 
 // FloatDirection represents the direction of a definitely-floated box.
@@ -53,12 +53,12 @@ func (f Float) FloatDirection() (FloatDirection, bool) {
 type Clear int
 
 const (
+	// ClearNone means the box does not clear floated boxes.
+	ClearNone Clear = iota
 	// ClearLeft clears left-floated boxes.
-	ClearLeft Clear = iota
+	ClearLeft
 	// ClearRight clears right-floated boxes.
 	ClearRight
 	// ClearBoth clears boxes floated in either direction.
 	ClearBoth
-	// ClearNone means the box does not clear floated boxes.
-	ClearNone
 )

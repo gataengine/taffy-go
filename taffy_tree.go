@@ -666,6 +666,24 @@ func (v *taffyView) getBlockChildStyle(childNodeId NodeId) *Style {
 	return &v.taffy.nodes[childNodeId].style
 }
 
-func (v *taffyView) computeBlockChildLayout(nodeId NodeId, inputs LayoutInput, _ *blockContext) LayoutOutput {
-	return v.computeChildLayout(nodeId, inputs)
+func (v *taffyView) computeBlockChildLayout(nodeId NodeId, inputs LayoutInput, blockCtx *blockContext) LayoutOutput {
+	node := v.taffy.nodes[nodeId]
+	hasChildren := len(v.taffy.children[nodeId]) > 0
+
+	return computeCachedLayout(v, nodeId, inputs, func(nodeId NodeId, inputs LayoutInput) LayoutOutput {
+		style := &node.style
+		display := style.Display
+
+		if inputs.RunMode == RunModePerformHiddenLayout {
+			return computeHiddenLayout(v, nodeId)
+		}
+
+		// For block children in the same BFC, pass the block context through
+		if display == DisplayBlock && hasChildren {
+			return computeBlockLayout(v, nodeId, inputs, blockCtx)
+		}
+
+		// For non-block children, fall through to normal dispatch
+		return v.computeChildLayout(nodeId, inputs)
+	})
 }
