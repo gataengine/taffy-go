@@ -229,7 +229,7 @@ func LineMapTo[A, B any](l Line[A], f func(A) B) Line[B] {
 	return Line[B]{Start: f(l.Start), End: f(l.End)}
 }
 
-// LineTrueF32 is a Line[bool] with both fields set to true.
+// LineTrueBool is a Line with both Start and End set to true.
 var LineTrueBool = Line[bool]{Start: true, End: true}
 
 // LineFalseBool is a Line[bool] with both fields set to false.

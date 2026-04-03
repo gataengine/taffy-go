@@ -183,5 +183,5 @@ func (d Dimension) IntoOption() Option[float32] {
 // DimensionZero is a Dimension with value 0.
 var DimensionZero = Dimension{Tag: DimensionLength, Value: 0}
 
-// DimensionAuto is the auto variant of Dimension.
+// DimensionAutoValue represents the auto value for Dimension.
 var DimensionAutoValue = Dimension{Tag: DimensionAuto, Value: 0}
