@@ -5,17 +5,23 @@ package geometry
 
 import "math"
 
-// roundF32 rounds a float32 to the nearest whole number.
+// RoundF32 rounds a float32 to the nearest whole number.
 // Uses (value + 0.5).floor() to match Rust's std behaviour.
-func roundF32(value float32) float32 {
+func RoundF32(value float32) float32 {
 	return float32(math.Floor(float64(value) + 0.5))
 }
 
-// ceilF32 rounds a float32 up to the nearest whole number.
-func ceilF32(value float32) float32 { return float32(math.Ceil(float64(value))) }
+// CeilF32 rounds a float32 up to the nearest whole number.
+func CeilF32(value float32) float32 { return float32(math.Ceil(float64(value))) }
 
-// floorF32 rounds a float32 down to the nearest whole number.
-func floorF32(value float32) float32 { return float32(math.Floor(float64(value))) }
+// FloorF32 rounds a float32 down to the nearest whole number.
+func FloorF32(value float32) float32 { return float32(math.Floor(float64(value))) }
 
-// absF32 returns the absolute value of a float32.
-func absF32(value float32) float32 { return float32(math.Abs(float64(value))) }
+// AbsF32 returns the absolute value of a float32.
+func AbsF32(value float32) float32 { return float32(math.Abs(float64(value))) }
+
+// Unexported aliases for internal use within the geometry package.
+func roundF32(value float32) float32 { return RoundF32(value) }
+func ceilF32(value float32) float32  { return CeilF32(value) }
+func floorF32(value float32) float32 { return FloorF32(value) }
+func absF32(value float32) float32   { return AbsF32(value) }

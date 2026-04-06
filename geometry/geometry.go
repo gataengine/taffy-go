@@ -334,21 +334,25 @@ func SizeSubF32(a, b Size[float32]) Size[float32] {
 // SizeZeroF32 is a Size[float32] with zero width and height.
 var SizeZeroF32 = Size[float32]{Width: 0, Height: 0}
 
-// f32Max returns the larger of two float32 values (NaN-safe: returns rhs if lhs is NaN).
-func f32Max(a, b float32) float32 {
+// F32Max returns the larger of two float32 values (NaN-safe: returns rhs if lhs is NaN).
+func F32Max(a, b float32) float32 {
 	if a > b {
 		return a
 	}
 	return b
 }
 
-// f32Min returns the smaller of two float32 values (NaN-safe: returns rhs if lhs is NaN).
-func f32Min(a, b float32) float32 {
+// F32Min returns the smaller of two float32 values (NaN-safe: returns rhs if lhs is NaN).
+func F32Min(a, b float32) float32 {
 	if a < b {
 		return a
 	}
 	return b
 }
+
+// Unexported aliases for internal use within the geometry package.
+func f32Max(a, b float32) float32 { return F32Max(a, b) }
+func f32Min(a, b float32) float32 { return F32Min(a, b) }
 
 // SizeF32Max applies f32Max to each component separately.
 func SizeF32Max(s, rhs Size[float32]) Size[float32] {
