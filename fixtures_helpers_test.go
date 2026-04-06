@@ -10,6 +10,9 @@ import (
 	"strings"
 
 	. "github.com/onsi/gomega"
+	"taffy-go/geometry"
+	"taffy-go/style"
+	treepkg "taffy-go/tree"
 )
 
 // ---------------------------------------------------------------------------
@@ -20,7 +23,7 @@ import (
 type testFixture struct {
 	Name        string
 	UseRounding bool
-	Viewport    Size[AvailableSpace]
+	Viewport    geometry.Size[style.AvailableSpace]
 	InputRoot   *testNode
 	Expected    *expectedNode
 }
@@ -52,9 +55,9 @@ func loadFixture(path string) *testFixture {
 	decoder := xml.NewDecoder(bytes.NewReader(data))
 	fixture := &testFixture{
 		UseRounding: true,
-		Viewport: Size[AvailableSpace]{
-			Width:  AvailableSpaceMaxContentValue,
-			Height: AvailableSpaceMaxContentValue,
+		Viewport: geometry.Size[style.AvailableSpace]{
+			Width:  style.AvailableSpaceMaxContentValue,
+			Height: style.AvailableSpaceMaxContentValue,
 		},
 	}
 
@@ -209,24 +212,24 @@ func parseFloat32(s string) float32 {
 // Viewport Parsing
 // ---------------------------------------------------------------------------
 
-// parseViewport builds Size[AvailableSpace] from viewport attributes.
-func parseViewport(attrs map[string]string) Size[AvailableSpace] {
-	return Size[AvailableSpace]{
+// parseViewport builds geometry.Size[style.AvailableSpace] from viewport attributes.
+func parseViewport(attrs map[string]string) geometry.Size[style.AvailableSpace] {
+	return geometry.Size[style.AvailableSpace]{
 		Width:  parseAvailableSpace(attrs["width"]),
 		Height: parseAvailableSpace(attrs["height"]),
 	}
 }
 
 // parseAvailableSpace parses a viewport dimension string.
-func parseAvailableSpace(s string) AvailableSpace {
+func parseAvailableSpace(s string) style.AvailableSpace {
 	switch s {
 	case "", "max-content":
-		return AvailableSpaceMaxContentValue
+		return style.AvailableSpaceMaxContentValue
 	case "min-content":
-		return AvailableSpaceMinContentValue
+		return style.AvailableSpaceMinContentValue
 	default:
 		val := parsePxValue(s)
-		return AvailableSpaceFromDefinite(val)
+		return style.AvailableSpaceFromDefinite(val)
 	}
 }
 
@@ -241,34 +244,34 @@ func parsePxValue(s string) float32 {
 }
 
 // ---------------------------------------------------------------------------
-// Attribute-to-Style Mapping
+// Attribute-to-style.Style Mapping
 // ---------------------------------------------------------------------------
 
-// buildStyle creates a Style from a map of XML attributes.
-func buildStyle(attrs map[string]string) Style {
-	s := DefaultStyle()
+// buildStyle creates a style.Style from a map of XML attributes.
+func buildStyle(attrs map[string]string) style.Style {
+	s := style.DefaultStyle()
 
-	// Display
+	// style.Display
 	if v, ok := attrs["display"]; ok {
 		s.Display = parseDisplay(v)
 	}
 
-	// Direction
+	// style.Direction
 	if v, ok := attrs["direction"]; ok {
 		s.Direction = parseDirection(v)
 	}
 
-	// BoxSizing
+	// style.BoxSizing
 	if v, ok := attrs["box-sizing"]; ok {
 		s.BoxSizing = parseBoxSizing(v)
 	}
 
-	// Position
+	// style.Position
 	if v, ok := attrs["position"]; ok {
 		s.Position = parsePosition(v)
 	}
 
-	// Overflow
+	// style.Overflow
 	if v, ok := attrs["overflow-x"]; ok {
 		s.Overflow.X = parseOverflow(v)
 	}
@@ -281,12 +284,12 @@ func buildStyle(attrs map[string]string) Style {
 		s.ScrollbarWidth = parsePxValue(v)
 	}
 
-	// Float
+	// style.Float
 	if v, ok := attrs["float"]; ok {
 		s.Float = parseFloat(v)
 	}
 
-	// Clear
+	// style.Clear
 	if v, ok := attrs["clear"]; ok {
 		s.Clear = parseClear(v)
 	}
@@ -383,39 +386,39 @@ func buildStyle(attrs map[string]string) Style {
 	if v, ok := attrs["aspect-ratio"]; ok {
 		val, err := strconv.ParseFloat(v, 32)
 		if err == nil {
-			s.AspectRatio = Some(float32(val))
+			s.AspectRatio = geometry.Some(float32(val))
 		}
 	}
 
 	// Alignment (optional)
 	if v, ok := attrs["align-items"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.AlignItems = Some(ai)
+			s.AlignItems = geometry.Some(ai)
 		}
 	}
 	if v, ok := attrs["align-self"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.AlignSelf = Some(ai)
+			s.AlignSelf = geometry.Some(ai)
 		}
 	}
 	if v, ok := attrs["justify-items"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.JustifyItems = Some(ai)
+			s.JustifyItems = geometry.Some(ai)
 		}
 	}
 	if v, ok := attrs["justify-self"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.JustifySelf = Some(ai)
+			s.JustifySelf = geometry.Some(ai)
 		}
 	}
 	if v, ok := attrs["align-content"]; ok {
 		if ac, parsed := parseAlignContent(v); parsed {
-			s.AlignContent = Some(ac)
+			s.AlignContent = geometry.Some(ac)
 		}
 	}
 	if v, ok := attrs["justify-content"]; ok {
 		if ac, parsed := parseAlignContent(v); parsed {
-			s.JustifyContent = Some(ac)
+			s.JustifyContent = geometry.Some(ac)
 		}
 	}
 
@@ -485,178 +488,178 @@ func buildStyle(attrs map[string]string) Style {
 // Individual value parsers
 // ---------------------------------------------------------------------------
 
-func parseDisplay(s string) Display {
+func parseDisplay(s string) style.Display {
 	switch s {
 	case "flex":
-		return DisplayFlex
+		return style.DisplayFlex
 	case "grid":
-		return DisplayGrid
+		return style.DisplayGrid
 	case "block":
-		return DisplayBlock
+		return style.DisplayBlock
 	case "none":
-		return DisplayNone
+		return style.DisplayNone
 	default:
-		return DisplayFlex
+		return style.DisplayFlex
 	}
 }
 
-func parseDirection(s string) Direction {
+func parseDirection(s string) style.Direction {
 	switch s {
 	case "rtl":
-		return DirectionRTL
+		return style.DirectionRTL
 	default:
-		return DirectionLTR
+		return style.DirectionLTR
 	}
 }
 
-func parseBoxSizing(s string) BoxSizing {
+func parseBoxSizing(s string) style.BoxSizing {
 	switch s {
 	case "content-box":
-		return BoxSizingContentBox
+		return style.BoxSizingContentBox
 	default:
-		return BoxSizingBorderBox
+		return style.BoxSizingBorderBox
 	}
 }
 
-func parsePosition(s string) Position {
+func parsePosition(s string) style.Position {
 	switch s {
 	case "absolute":
-		return PositionAbsolute
+		return style.PositionAbsolute
 	default:
-		return PositionRelative
+		return style.PositionRelative
 	}
 }
 
-func parseOverflow(s string) Overflow {
+func parseOverflow(s string) style.Overflow {
 	switch s {
 	case "hidden":
-		return OverflowHidden
+		return style.OverflowHidden
 	case "scroll":
-		return OverflowScroll
+		return style.OverflowScroll
 	case "clip":
-		return OverflowClip
+		return style.OverflowClip
 	default:
-		return OverflowVisible
+		return style.OverflowVisible
 	}
 }
 
-func parseFloat(s string) Float {
+func parseFloat(s string) style.Float {
 	switch s {
 	case "left":
-		return FloatLeft
+		return style.FloatLeft
 	case "right":
-		return FloatRight
+		return style.FloatRight
 	default:
-		return FloatNone
+		return style.FloatNone
 	}
 }
 
-func parseClear(s string) Clear {
+func parseClear(s string) style.Clear {
 	switch s {
 	case "left":
-		return ClearLeft
+		return style.ClearLeft
 	case "right":
-		return ClearRight
+		return style.ClearRight
 	case "both":
-		return ClearBoth
+		return style.ClearBoth
 	default:
-		return ClearNone
+		return style.ClearNone
 	}
 }
 
-func parseTextAlign(s string) TextAlign {
+func parseTextAlign(s string) style.TextAlign {
 	switch s {
 	case "left", "-webkit-left":
-		return TextAlignLegacyLeft
+		return style.TextAlignLegacyLeft
 	case "right", "-webkit-right":
-		return TextAlignLegacyRight
+		return style.TextAlignLegacyRight
 	case "center", "-webkit-center":
-		return TextAlignLegacyCenter
+		return style.TextAlignLegacyCenter
 	default:
-		return TextAlignAuto
+		return style.TextAlignAuto
 	}
 }
 
-func parseFlexDirection(s string) FlexDirection {
+func parseFlexDirection(s string) style.FlexDirection {
 	switch s {
 	case "column":
-		return FlexDirectionColumn
+		return style.FlexDirectionColumn
 	case "row-reverse":
-		return FlexDirectionRowReverse
+		return style.FlexDirectionRowReverse
 	case "column-reverse":
-		return FlexDirectionColumnReverse
+		return style.FlexDirectionColumnReverse
 	default:
-		return FlexDirectionRow
+		return style.FlexDirectionRow
 	}
 }
 
-func parseFlexWrap(s string) FlexWrap {
+func parseFlexWrap(s string) style.FlexWrap {
 	switch s {
 	case "wrap":
-		return FlexWrapWrap
+		return style.FlexWrapWrap
 	case "wrap-reverse":
-		return FlexWrapWrapReverse
+		return style.FlexWrapWrapReverse
 	default:
-		return FlexWrapNoWrap
+		return style.FlexWrapNoWrap
 	}
 }
 
-func parseAlignItems(s string) (AlignItems, bool) {
+func parseAlignItems(s string) (style.AlignItems, bool) {
 	switch s {
 	case "start":
-		return AlignItemsStart, true
+		return style.AlignItemsStart, true
 	case "end":
-		return AlignItemsEnd, true
+		return style.AlignItemsEnd, true
 	case "flex-start":
-		return AlignItemsFlexStart, true
+		return style.AlignItemsFlexStart, true
 	case "flex-end":
-		return AlignItemsFlexEnd, true
+		return style.AlignItemsFlexEnd, true
 	case "center":
-		return AlignItemsCenter, true
+		return style.AlignItemsCenter, true
 	case "baseline":
-		return AlignItemsBaseline, true
+		return style.AlignItemsBaseline, true
 	case "stretch":
-		return AlignItemsStretch, true
+		return style.AlignItemsStretch, true
 	default:
 		return 0, false
 	}
 }
 
-func parseAlignContent(s string) (AlignContent, bool) {
+func parseAlignContent(s string) (style.AlignContent, bool) {
 	switch s {
 	case "start":
-		return AlignContentStart, true
+		return style.AlignContentStart, true
 	case "end":
-		return AlignContentEnd, true
+		return style.AlignContentEnd, true
 	case "flex-start":
-		return AlignContentFlexStart, true
+		return style.AlignContentFlexStart, true
 	case "flex-end":
-		return AlignContentFlexEnd, true
+		return style.AlignContentFlexEnd, true
 	case "center":
-		return AlignContentCenter, true
+		return style.AlignContentCenter, true
 	case "stretch":
-		return AlignContentStretch, true
+		return style.AlignContentStretch, true
 	case "space-between":
-		return AlignContentSpaceBetween, true
+		return style.AlignContentSpaceBetween, true
 	case "space-evenly":
-		return AlignContentSpaceEvenly, true
+		return style.AlignContentSpaceEvenly, true
 	case "space-around":
-		return AlignContentSpaceAround, true
+		return style.AlignContentSpaceAround, true
 	default:
 		return 0, false
 	}
 }
 
-func parseGridAutoFlow(s string) GridAutoFlow {
+func parseGridAutoFlow(s string) style.GridAutoFlow {
 	switch s {
 	case "column":
-		return GridAutoFlowColumn
+		return style.GridAutoFlowColumn
 	case "row dense":
-		return GridAutoFlowRowDense
+		return style.GridAutoFlowRowDense
 	case "column dense":
-		return GridAutoFlowColumnDense
+		return style.GridAutoFlowColumnDense
 	default:
-		return GridAutoFlowRow
+		return style.GridAutoFlowRow
 	}
 }
 
@@ -665,43 +668,43 @@ func parseGridAutoFlow(s string) GridAutoFlow {
 // ---------------------------------------------------------------------------
 
 // parseDimension parses a CSS dimension value like "100px", "50%", "auto".
-func parseDimension(s string) Dimension {
+func parseDimension(s string) style.Dimension {
 	switch s {
 	case "auto":
-		return Dimension{Tag: DimensionAuto}
+		return style.Dimension{Tag: style.DimensionAuto}
 	case "min-content", "max-content":
-		return Dimension{Tag: DimensionAuto}
+		return style.Dimension{Tag: style.DimensionAuto}
 	}
 	if strings.HasSuffix(s, "%") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "%"), 32)
-		return DimensionFromPercent(float32(val) / 100.0)
+		return style.DimensionFromPercent(float32(val) / 100.0)
 	}
 	val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "px"), 32)
-	return DimensionFromLength(float32(val))
+	return style.DimensionFromLength(float32(val))
 }
 
 // parseLPA parses a LengthPercentageAuto value.
-func parseLPA(s string) LengthPercentageAuto {
+func parseLPA(s string) style.LengthPercentageAuto {
 	switch s {
 	case "auto":
-		return LengthPercentageAuto{Tag: LPAAuto}
+		return style.LengthPercentageAuto{Tag: style.LPAAuto}
 	}
 	if strings.HasSuffix(s, "%") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "%"), 32)
-		return LPAFromPercent(float32(val) / 100.0)
+		return style.LPAFromPercent(float32(val) / 100.0)
 	}
 	val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "px"), 32)
-	return LPAFromLength(float32(val))
+	return style.LPAFromLength(float32(val))
 }
 
 // parseLP parses a LengthPercentage value.
-func parseLP(s string) LengthPercentage {
+func parseLP(s string) style.LengthPercentage {
 	if strings.HasSuffix(s, "%") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "%"), 32)
-		return LPFromPercent(float32(val) / 100.0)
+		return style.LPFromPercent(float32(val) / 100.0)
 	}
 	val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "px"), 32)
-	return LPFromLength(float32(val))
+	return style.LPFromLength(float32(val))
 }
 
 // ---------------------------------------------------------------------------
@@ -710,13 +713,13 @@ func parseLP(s string) LengthPercentage {
 
 // parseGridTemplate parses a grid-template-rows or grid-template-columns value.
 // Examples: "40px 40px 40px", "1fr 2fr", "repeat(3, 1fr)", "minmax(100px, 1fr)"
-func parseGridTemplate(s string) []GridTemplateComponent {
+func parseGridTemplate(s string) []style.GridTemplateComponent {
 	s = strings.TrimSpace(s)
 	if s == "" || s == "none" {
 		return nil
 	}
 
-	var components []GridTemplateComponent
+	var components []style.GridTemplateComponent
 	tokens := tokenizeGridTemplate(s)
 
 	for _, tok := range tokens {
@@ -728,13 +731,13 @@ func parseGridTemplate(s string) []GridTemplateComponent {
 			components = append(components, parseRepeat(tok))
 		} else if strings.HasPrefix(tok, "minmax(") {
 			tsf := parseMinmax(tok)
-			components = append(components, GridTemplateSingleVal(tsf))
+			components = append(components, style.GridTemplateSingleVal(tsf))
 		} else if strings.HasPrefix(tok, "fit-content(") {
 			tsf := parseFitContent(tok)
-			components = append(components, GridTemplateSingleVal(tsf))
+			components = append(components, style.GridTemplateSingleVal(tsf))
 		} else {
 			tsf := parseSingleTrack(tok)
-			components = append(components, GridTemplateSingleVal(tsf))
+			components = append(components, style.GridTemplateSingleVal(tsf))
 		}
 	}
 
@@ -743,13 +746,13 @@ func parseGridTemplate(s string) []GridTemplateComponent {
 
 // parseGridAutoTracks parses a grid-auto-rows or grid-auto-columns value.
 // These are space-separated TrackSizingFunction values (no repeat allowed).
-func parseGridAutoTracks(s string) []TrackSizingFunction {
+func parseGridAutoTracks(s string) []style.TrackSizingFunction {
 	s = strings.TrimSpace(s)
 	if s == "" || s == "none" {
 		return nil
 	}
 
-	var tracks []TrackSizingFunction
+	var tracks []style.TrackSizingFunction
 	tokens := tokenizeGridTemplate(s)
 	for _, tok := range tokens {
 		tok = strings.TrimSpace(tok)
@@ -799,29 +802,29 @@ func tokenizeGridTemplate(s string) []string {
 }
 
 // parseSingleTrack parses a single track sizing function token.
-func parseSingleTrack(s string) TrackSizingFunction {
+func parseSingleTrack(s string) style.TrackSizingFunction {
 	switch s {
 	case "auto":
-		return TrackSizingAuto
+		return style.TrackSizingAuto
 	case "min-content":
-		return TrackSizingMinContent
+		return style.TrackSizingMinContent
 	case "max-content":
-		return TrackSizingMaxContent
+		return style.TrackSizingMaxContent
 	}
 	if strings.HasSuffix(s, "fr") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "fr"), 32)
-		return TrackFromFr(float32(val))
+		return style.TrackFromFr(float32(val))
 	}
 	if strings.HasSuffix(s, "%") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "%"), 32)
-		return TrackFromPercent(float32(val) / 100.0)
+		return style.TrackFromPercent(float32(val) / 100.0)
 	}
 	val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "px"), 32)
-	return TrackFromLength(float32(val))
+	return style.TrackFromLength(float32(val))
 }
 
 // parseMinmax parses "minmax(min, max)" into a TrackSizingFunction.
-func parseMinmax(s string) TrackSizingFunction {
+func parseMinmax(s string) style.TrackSizingFunction {
 	// Strip "minmax(" and trailing ")"
 	inner := s[7 : len(s)-1]
 	parts := splitComma(inner)
@@ -830,21 +833,21 @@ func parseMinmax(s string) TrackSizingFunction {
 	}
 	minPart := strings.TrimSpace(parts[0])
 	maxPart := strings.TrimSpace(parts[1])
-	return TrackSizingFunction{
+	return style.TrackSizingFunction{
 		Min: parseMinTrackSizing(minPart),
 		Max: parseMaxTrackSizing(maxPart),
 	}
 }
 
 // parseFitContent parses "fit-content(200px)" or "fit-content(50%)" into a TrackSizingFunction.
-func parseFitContent(s string) TrackSizingFunction {
+func parseFitContent(s string) style.TrackSizingFunction {
 	inner := s[12 : len(s)-1]
 	inner = strings.TrimSpace(inner)
-	return TrackFitContent(parseLP(inner))
+	return style.TrackFitContent(parseLP(inner))
 }
 
 // parseRepeat parses "repeat(3, 40px)" or "repeat(auto-fill, minmax(...))" etc.
-func parseRepeat(s string) GridTemplateComponent {
+func parseRepeat(s string) style.GridTemplateComponent {
 	// Strip "repeat(" and trailing ")"
 	inner := s[7 : len(s)-1]
 
@@ -859,7 +862,7 @@ func parseRepeat(s string) GridTemplateComponent {
 	count := parseRepetitionCount(countStr)
 
 	// Parse tracks inside the repeat
-	var tracks []TrackSizingFunction
+	var tracks []style.TrackSizingFunction
 	trackTokens := tokenizeGridTemplate(tracksStr)
 	for _, tok := range trackTokens {
 		tok = strings.TrimSpace(tok)
@@ -875,22 +878,22 @@ func parseRepeat(s string) GridTemplateComponent {
 		}
 	}
 
-	return GridTemplateRepeatVal(GridTemplateRepetition{
+	return style.GridTemplateRepeatVal(style.GridTemplateRepetition{
 		Count:  count,
 		Tracks: tracks,
 	})
 }
 
 // parseRepetitionCount parses the count argument in repeat().
-func parseRepetitionCount(s string) RepetitionCount {
+func parseRepetitionCount(s string) style.RepetitionCount {
 	switch s {
 	case "auto-fill":
-		return RepetitionAutoFillVal
+		return style.RepetitionAutoFillVal
 	case "auto-fit":
-		return RepetitionAutoFitVal
+		return style.RepetitionAutoFitVal
 	default:
 		n, _ := strconv.Atoi(s)
-		return RepetitionCountFromU16(uint16(n))
+		return style.RepetitionCountFromU16(uint16(n))
 	}
 }
 
@@ -917,48 +920,48 @@ func splitComma(s string) []string {
 }
 
 // parseMinTrackSizing parses a min track sizing function string.
-func parseMinTrackSizing(s string) MinTrackSizingFunction {
+func parseMinTrackSizing(s string) style.MinTrackSizingFunction {
 	switch s {
 	case "auto":
-		return MinTrackAutoVal
+		return style.MinTrackAutoVal
 	case "min-content":
-		return MinTrackMinContentVal
+		return style.MinTrackMinContentVal
 	case "max-content":
-		return MinTrackMaxContentVal
+		return style.MinTrackMaxContentVal
 	}
 	if strings.HasSuffix(s, "%") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "%"), 32)
-		return MinTrackFromPercent(float32(val) / 100.0)
+		return style.MinTrackFromPercent(float32(val) / 100.0)
 	}
 	val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "px"), 32)
-	return MinTrackFromLength(float32(val))
+	return style.MinTrackFromLength(float32(val))
 }
 
 // parseMaxTrackSizing parses a max track sizing function string.
-func parseMaxTrackSizing(s string) MaxTrackSizingFunction {
+func parseMaxTrackSizing(s string) style.MaxTrackSizingFunction {
 	switch s {
 	case "auto":
-		return MaxTrackAutoVal
+		return style.MaxTrackAutoVal
 	case "min-content":
-		return MaxTrackMinContentVal
+		return style.MaxTrackMinContentVal
 	case "max-content":
-		return MaxTrackMaxContentVal
+		return style.MaxTrackMaxContentVal
 	}
 	if strings.HasSuffix(s, "fr") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "fr"), 32)
-		return MaxTrackFromFr(float32(val))
+		return style.MaxTrackFromFr(float32(val))
 	}
 	if strings.HasSuffix(s, "%") {
 		val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "%"), 32)
-		return MaxTrackFromPercent(float32(val) / 100.0)
+		return style.MaxTrackFromPercent(float32(val) / 100.0)
 	}
 	if strings.HasPrefix(s, "fit-content(") {
 		inner := s[12 : len(s)-1]
 		lp := parseLP(strings.TrimSpace(inner))
-		return MaxTrackFitContentFromLP(lp)
+		return style.MaxTrackFitContentFromLP(lp)
 	}
 	val, _ := strconv.ParseFloat(strings.TrimSuffix(s, "px"), 32)
-	return MaxTrackFromLength(float32(val))
+	return style.MaxTrackFromLength(float32(val))
 }
 
 // ---------------------------------------------------------------------------
@@ -966,22 +969,22 @@ func parseMaxTrackSizing(s string) MaxTrackSizingFunction {
 // ---------------------------------------------------------------------------
 
 // parseGridPlacement parses a grid placement value like "1", "span 2", "-1", "auto".
-func parseGridPlacement(s string) GridPlacement {
+func parseGridPlacement(s string) style.GridPlacement {
 	s = strings.TrimSpace(s)
 	switch s {
 	case "", "auto":
-		return GridPlacementAutoVal
+		return style.GridPlacementAutoVal
 	}
 	if strings.HasPrefix(s, "span ") {
 		rest := strings.TrimSpace(s[5:])
 		n, _ := strconv.Atoi(rest)
-		return GridPlacementFromSpan(uint16(n))
+		return style.GridPlacementFromSpan(uint16(n))
 	}
 	n, err := strconv.Atoi(s)
 	if err != nil {
-		return GridPlacementAutoVal
+		return style.GridPlacementAutoVal
 	}
-	return GridPlacementFromLine(int16(n))
+	return style.GridPlacementFromLine(int16(n))
 }
 
 // ---------------------------------------------------------------------------
@@ -1007,12 +1010,12 @@ func parseWritingMode(s string) writingMode {
 // ---------------------------------------------------------------------------
 
 // buildTree constructs the TaffyTree node hierarchy from a parsed testNode.
-func buildTree(tree *TaffyTree, node *testNode) NodeId {
+func buildTree(tree *TaffyTree, node *testNode) treepkg.NodeId {
 	style := buildStyle(node.Attrs)
 
 	if len(node.Children) > 0 {
 		// Internal node: build children first
-		childIds := make([]NodeId, len(node.Children))
+		childIds := make([]treepkg.NodeId, len(node.Children))
 		for i, child := range node.Children {
 			childIds[i] = buildTree(tree, child)
 		}
@@ -1047,14 +1050,14 @@ const (
 // In Ahem, each character is 10px wide and 10px tall. Lines are separated by zero-width space (U+200B).
 func ahemMeasure(text string, wm writingMode) NodeContext {
 	return func(
-		knownDimensions Size[Option[float32]],
-		parentSize Size[Option[float32]],
-		availableSpace Size[AvailableSpace],
-		sizingMode SizingMode,
-	) Size[float32] {
+		knownDimensions geometry.Size[geometry.Option[float32]],
+		parentSize geometry.Size[geometry.Option[float32]],
+		availableSpace geometry.Size[style.AvailableSpace],
+		sizingMode treepkg.SizingMode,
+	) geometry.Size[float32] {
 		// If both dimensions are known, return them directly
 		if knownDimensions.Width.IsSome && knownDimensions.Height.IsSome {
-			return Size[float32]{
+			return geometry.Size[float32]{
 				Width:  knownDimensions.Width.Value,
 				Height: knownDimensions.Height.Value,
 			}
@@ -1063,17 +1066,17 @@ func ahemMeasure(text string, wm writingMode) NodeContext {
 		lines := strings.Split(text, string(zwsp))
 
 		if len(lines) == 0 {
-			return SizeZeroF32
+			return geometry.SizeZeroF32
 		}
 
 		// Determine inline and block axes based on writing mode
-		var inlineAxis, blockAxis AbsoluteAxis
+		var inlineAxis, blockAxis geometry.AbsoluteAxis
 		if wm == writingModeHorizontal {
-			inlineAxis = AbsoluteAxisHorizontal
-			blockAxis = AbsoluteAxisVertical
+			inlineAxis = geometry.AbsoluteAxisHorizontal
+			blockAxis = geometry.AbsoluteAxisVertical
 		} else {
-			inlineAxis = AbsoluteAxisVertical
-			blockAxis = AbsoluteAxisHorizontal
+			inlineAxis = geometry.AbsoluteAxisVertical
+			blockAxis = geometry.AbsoluteAxisHorizontal
 		}
 
 		// Compute min and max line lengths (in characters)
@@ -1096,11 +1099,11 @@ func ahemMeasure(text string, wm writingMode) NodeContext {
 			inlineSize = knownInline.Value
 		} else {
 			switch availInline.Tag {
-			case AvailableSpaceMinContent:
+			case style.AvailableSpaceMinContent:
 				inlineSize = float32(minLineLen) * ahemCharWidth
-			case AvailableSpaceMaxContent:
+			case style.AvailableSpaceMaxContent:
 				inlineSize = float32(maxLineLen) * ahemCharWidth
-			case AvailableSpaceDefinite:
+			case style.AvailableSpaceDefinite:
 				inlineSize = fmin(availInline.Value, float32(maxLineLen)*ahemCharWidth)
 			}
 		}
@@ -1133,23 +1136,23 @@ func ahemMeasure(text string, wm writingMode) NodeContext {
 		}
 
 		if wm == writingModeHorizontal {
-			return Size[float32]{Width: inlineSize, Height: blockSize}
+			return geometry.Size[float32]{Width: inlineSize, Height: blockSize}
 		}
-		return Size[float32]{Width: blockSize, Height: inlineSize}
+		return geometry.Size[float32]{Width: blockSize, Height: inlineSize}
 	}
 }
 
 // Helper to get AvailableSpace by absolute axis.
-func sizeAvailableGetAbs(s Size[AvailableSpace], axis AbsoluteAxis) AvailableSpace {
-	if axis == AbsoluteAxisHorizontal {
+func sizeAvailableGetAbs(s geometry.Size[style.AvailableSpace], axis geometry.AbsoluteAxis) style.AvailableSpace {
+	if axis == geometry.AbsoluteAxisHorizontal {
 		return s.Width
 	}
 	return s.Height
 }
 
-// Helper to get Option[float32] by absolute axis.
-func sizeGetAbs(s Size[Option[float32]], axis AbsoluteAxis) Option[float32] {
-	if axis == AbsoluteAxisHorizontal {
+// Helper to get geometry.Option[float32] by absolute axis.
+func sizeGetAbs(s geometry.Size[geometry.Option[float32]], axis geometry.AbsoluteAxis) geometry.Option[float32] {
+	if axis == geometry.AbsoluteAxisHorizontal {
 		return s.Width
 	}
 	return s.Height
@@ -1177,29 +1180,29 @@ func fmax(a, b float32) float32 {
 
 // testMeasureFunction is a MeasureFunction that delegates to the node's NodeContext.
 func testMeasureFunction(
-	knownDimensions Size[Option[float32]],
-	availableSpace Size[AvailableSpace],
-	nodeId NodeId,
+	knownDimensions geometry.Size[geometry.Option[float32]],
+	availableSpace geometry.Size[style.AvailableSpace],
+	nodeId treepkg.NodeId,
 	context *NodeContext,
-	style *Style,
-) Size[float32] {
+	style *style.Style,
+) geometry.Size[float32] {
 	if knownDimensions.Width.IsSome && knownDimensions.Height.IsSome {
-		return Size[float32]{
+		return geometry.Size[float32]{
 			Width:  knownDimensions.Width.Value,
 			Height: knownDimensions.Height.Value,
 		}
 	}
 
 	if context == nil || *context == nil {
-		return Size[float32]{
+		return geometry.Size[float32]{
 			Width:  knownDimensions.Width.UnwrapOr(0),
 			Height: knownDimensions.Height.UnwrapOr(0),
 		}
 	}
 
-	computeSize := (*context)(knownDimensions, SizeOptionNone, availableSpace, SizingModeInherentSize)
+	computeSize := (*context)(knownDimensions, geometry.SizeOptionNone, availableSpace, treepkg.SizingModeInherentSize)
 
-	return Size[float32]{
+	return geometry.Size[float32]{
 		Width:  knownDimensions.Width.UnwrapOr(computeSize.Width),
 		Height: knownDimensions.Height.UnwrapOr(computeSize.Height),
 	}
@@ -1210,7 +1213,7 @@ func testMeasureFunction(
 // ---------------------------------------------------------------------------
 
 // assertLayoutMatches recursively checks that the computed layout matches expectations.
-func assertLayoutMatches(tree *TaffyTree, nodeId NodeId, expected *expectedNode) {
+func assertLayoutMatches(tree *TaffyTree, nodeId treepkg.NodeId, expected *expectedNode) {
 	layout := tree.GetLayout(nodeId)
 	const tolerance = 0.1
 
