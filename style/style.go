@@ -493,6 +493,14 @@ func (s *Style) GetJustifyItems() geometry.Option[AlignItems] {
 	return s.JustifyItems
 }
 
+func (s *Style) GetGridTemplateColumnNames() [][]string {
+	return s.GridTemplateColumnNames
+}
+
+func (s *Style) GetGridTemplateRowNames() [][]string {
+	return s.GridTemplateRowNames
+}
+
 // ---------------------------------------------------------------------------
 // GridItemStyle implementation on *Style
 // ---------------------------------------------------------------------------

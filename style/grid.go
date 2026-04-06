@@ -1160,6 +1160,8 @@ type GridContainerStyle interface {
 	GetJustifyContent() geometry.Option[JustifyContent]
 	GetAlignItems() geometry.Option[AlignItems]
 	GetJustifyItems() geometry.Option[AlignItems]
+	GetGridTemplateColumnNames() [][]string
+	GetGridTemplateRowNames() [][]string
 }
 
 // GridItemStyle defines the style methods required for a CSS Grid item.
