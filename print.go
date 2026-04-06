@@ -6,26 +6,28 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"taffy-go/tree"
 )
 
 // PrintTreeFn prints a debug representation of the computed layout for a tree of nodes,
 // starting with the passed root node.
-func PrintTreeFn(tree printTree, root NodeId) {
-	WriteTreeFn(os.Stdout, tree, root)
+func PrintTreeFn(t tree.PrintTree, root tree.NodeId) {
+	WriteTreeFn(os.Stdout, t, root)
 }
 
 // WriteTreeFn writes a debug representation of the computed layout to w,
 // starting with the passed root node.
-func WriteTreeFn(w io.Writer, tree printTree, root NodeId) {
+func WriteTreeFn(w io.Writer, t tree.PrintTree, root tree.NodeId) {
 	fmt.Fprintln(w, "TREE")
-	writeNode(w, tree, root, false, "")
+	writeNode(w, t, root, false, "")
 }
 
 // writeNode recursively writes each node in the tree using box-drawing characters.
-func writeNode(w io.Writer, tree printTree, nodeId NodeId, hasSibling bool, linesString string) {
-	layout := tree.getFinalLayout(nodeId)
-	display := tree.getDebugLabel(nodeId)
-	numChildren := tree.childCount(nodeId)
+func writeNode(w io.Writer, t tree.PrintTree, nodeId tree.NodeId, hasSibling bool, linesString string) {
+	layout := t.GetFinalLayout(nodeId)
+	display := t.GetDebugLabel(nodeId)
+	numChildren := t.ChildCount(nodeId)
 
 	forkString := "└── "
 	if hasSibling {
@@ -50,9 +52,9 @@ func writeNode(w io.Writer, tree printTree, nodeId NodeId, hasSibling bool, line
 	}
 	newString := linesString + bar
 
-	childIds := tree.childIds(nodeId)
+	childIds := t.ChildIds(nodeId)
 	for index, child := range childIds {
 		childHasSibling := index < numChildren-1
-		writeNode(w, tree, child, childHasSibling, newString)
+		writeNode(w, t, child, childHasSibling, newString)
 	}
 }

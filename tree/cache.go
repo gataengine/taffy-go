@@ -34,8 +34,8 @@ type measureCacheEntry struct {
 	content         geometry.Size[float32]
 }
 
-// cache stores cached layout results for a single node in the tree.
-type cache struct {
+// Cache stores cached layout results for a single node in the tree.
+type Cache struct {
 	// finalLayoutEntry is the cache entry for the node's final layout.
 	finalLayoutEntry *layoutCacheEntry
 	// measureEntries are the cache entries for the node's preliminary size measurements.
@@ -44,9 +44,9 @@ type cache struct {
 	isEmpty bool
 }
 
-// newCache creates a new empty cache.
-func newCache() cache {
-	return cache{isEmpty: true}
+// NewCache creates a new empty cache.
+func NewCache() Cache {
+	return Cache{isEmpty: true}
 }
 
 // computeCacheSlot returns the cache slot index for the given inputs.
@@ -100,7 +100,7 @@ func computeCacheSlot(knownDimensions geometry.Size[geometry.Option[float32]], a
 
 // get tries to retrieve a cached result from the cache.
 // Returns nil if there is no matching cache entry.
-func (c *cache) get(input *LayoutInput) *LayoutOutput {
+func (c *Cache) Get(input *LayoutInput) *LayoutOutput {
 	knownDimensions := input.KnownDimensions
 	availableSpace := input.AvailableSpace
 
@@ -158,7 +158,7 @@ func (c *cache) get(input *LayoutInput) *LayoutOutput {
 }
 
 // store saves a computed layout output in the cache.
-func (c *cache) store(input *LayoutInput, output LayoutOutput) {
+func (c *Cache) Store(input *LayoutInput, output LayoutOutput) {
 	knownDimensions := input.KnownDimensions
 	availableSpace := input.AvailableSpace
 
@@ -184,7 +184,7 @@ func (c *cache) store(input *LayoutInput, output LayoutOutput) {
 }
 
 // clear removes all cache entries and reports whether any were cleared.
-func (c *cache) clear() ClearState {
+func (c *Cache) Clear() ClearState {
 	if c.isEmpty {
 		return ClearStateAlreadyEmpty
 	}
@@ -197,7 +197,7 @@ func (c *cache) clear() ClearState {
 }
 
 // isEmptyCheck returns true if all cache entries are nil.
-func (c *cache) isEmptyCheck() bool {
+func (c *Cache) IsEmptyCheck() bool {
 	if c.finalLayoutEntry != nil {
 		return false
 	}
