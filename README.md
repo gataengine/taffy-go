@@ -9,7 +9,7 @@ A Go port of the [Taffy](https://github.com/DioxusLabs/taffy) layout engine. Taf
 - **Block layout** - CSS block layout with margin collapsing and float integration
 - **Float layout** - CSS float positioning and clearing
 - **High fidelity** - passes 4,441 layout conformance tests ported from Taffy's test suite
-- **Simple API** - single `TaffyTree` type manages nodes, styles, and layout computation
+- **Custom tree backends** - public trait interfaces allow custom tree implementations
 - **No dependencies** - pure Go, no CGo
 
 ## Installation
@@ -19,6 +19,20 @@ go get taffy-go
 ```
 
 Requires Go 1.25 or later.
+
+## Package Structure
+
+```
+taffy-go/
+├── geometry/    # Primitives: Option, Size, Rect, Point, Line, MinMax
+├── style/       # Style struct, enums, dimension types, style interfaces
+├── tree/        # Trait interfaces, Layout types, NodeId, Cache
+├── compute/     # Shared compute helpers (cached layout, leaf, alignment)
+│   ├── flexbox/ # Flexbox layout algorithm
+│   ├── grid/    # CSS Grid layout algorithm
+│   └── block/   # Block layout algorithm
+└── (root)       # TaffyTree high-level API
+```
 
 ## Usage
 
@@ -30,48 +44,51 @@ package main
 import (
     "fmt"
     taffy "taffy-go"
+    "taffy-go/geometry"
+    "taffy-go/style"
+    "taffy-go/tree"
 )
 
 func main() {
-    tree := taffy.New()
+    t := taffy.New()
 
     // Create leaf nodes with styles
-    header := tree.NewLeaf(taffy.Style{
-        Display: taffy.DisplayFlex,
-        Size: taffy.Size[taffy.Dimension]{
-            Width:  taffy.LengthDimension(800),
-            Height: taffy.LengthDimension(100),
+    header := t.NewLeaf(style.Style{
+        Display: style.DisplayFlex,
+        Size: geometry.Size[style.Dimension]{
+            Width:  style.LengthDimension(800),
+            Height: style.LengthDimension(100),
         },
     })
 
-    body := tree.NewLeaf(taffy.Style{
-        Display: taffy.DisplayFlex,
-        Size: taffy.Size[taffy.Dimension]{
-            Width:  taffy.LengthDimension(800),
-            Height: taffy.AutoDimension(),
+    body := t.NewLeaf(style.Style{
+        Display: style.DisplayFlex,
+        Size: geometry.Size[style.Dimension]{
+            Width:  style.LengthDimension(800),
+            Height: style.AutoDimension(),
         },
         FlexGrow: 1.0,
     })
 
     // Create root node with children
-    root := tree.NewWithChildren(taffy.Style{
-        Display:       taffy.DisplayFlex,
-        FlexDirection: taffy.FlexDirectionColumn,
-        Size: taffy.Size[taffy.Dimension]{
-            Width:  taffy.LengthDimension(800),
-            Height: taffy.LengthDimension(600),
+    root := t.NewWithChildren(style.Style{
+        Display:       style.DisplayFlex,
+        FlexDirection: style.FlexDirectionColumn,
+        Size: geometry.Size[style.Dimension]{
+            Width:  style.LengthDimension(800),
+            Height: style.LengthDimension(600),
         },
-    }, []taffy.NodeId{header, body})
+    }, []tree.NodeId{header, body})
 
     // Compute layout
-    tree.ComputeLayout(root, taffy.Size[taffy.AvailableSpace]{
-        Width:  taffy.AvailableSpaceFromMaxContent(),
-        Height: taffy.AvailableSpaceFromMaxContent(),
+    t.ComputeLayout(root, geometry.Size[style.AvailableSpace]{
+        Width:  style.AvailableSpaceFromMaxContent(),
+        Height: style.AvailableSpaceFromMaxContent(),
     })
 
     // Read computed layout
-    rootLayout := tree.GetLayout(root)
-    bodyLayout := tree.GetLayout(body)
+    rootLayout := t.GetLayout(root)
+    bodyLayout := t.GetLayout(body)
     fmt.Printf("Root: %vx%v\n", rootLayout.Size.Width, rootLayout.Size.Height)
     fmt.Printf("Body: %vx%v (flex-grew to fill remaining space)\n",
         bodyLayout.Size.Width, bodyLayout.Size.Height)
@@ -84,66 +101,80 @@ func main() {
 ### CSS Grid Layout
 
 ```go
-tree := taffy.New()
+import (
+    taffy "taffy-go"
+    "taffy-go/geometry"
+    "taffy-go/style"
+    "taffy-go/tree"
+)
+
+t := taffy.New()
 
 // Create 6 child nodes
-children := make([]taffy.NodeId, 6)
+children := make([]tree.NodeId, 6)
 for i := range children {
-    children[i] = tree.NewLeaf(taffy.Style{})
+    children[i] = t.NewLeaf(style.Style{})
 }
 
 // Create a 3x2 grid
-root := tree.NewWithChildren(taffy.Style{
-    Display: taffy.DisplayGrid,
-    Size: taffy.Size[taffy.Dimension]{
-        Width:  taffy.LengthDimension(300),
-        Height: taffy.LengthDimension(200),
+root := t.NewWithChildren(style.Style{
+    Display: style.DisplayGrid,
+    Size: geometry.Size[style.Dimension]{
+        Width:  style.LengthDimension(300),
+        Height: style.LengthDimension(200),
     },
-    GridTemplateColumns: []taffy.GridTemplateComponent{
-        {Tag: taffy.GridTemplateSingle, Single: taffy.TrackSizingFunction{Min: taffy.MinTrackFromLength(100), Max: taffy.MaxTrackFromLength(100)}},
-        {Tag: taffy.GridTemplateSingle, Single: taffy.TrackSizingFunction{Min: taffy.MinTrackFromLength(100), Max: taffy.MaxTrackFromLength(100)}},
-        {Tag: taffy.GridTemplateSingle, Single: taffy.TrackSizingFunction{Min: taffy.MinTrackFromLength(100), Max: taffy.MaxTrackFromLength(100)}},
+    GridTemplateColumns: []style.GridTemplateComponent{
+        {Tag: style.GridTemplateSingle, Single: style.TrackSizingFunction{Min: style.MinTrackFromLength(100), Max: style.MaxTrackFromLength(100)}},
+        {Tag: style.GridTemplateSingle, Single: style.TrackSizingFunction{Min: style.MinTrackFromLength(100), Max: style.MaxTrackFromLength(100)}},
+        {Tag: style.GridTemplateSingle, Single: style.TrackSizingFunction{Min: style.MinTrackFromLength(100), Max: style.MaxTrackFromLength(100)}},
     },
-    GridTemplateRows: []taffy.GridTemplateComponent{
-        {Tag: taffy.GridTemplateSingle, Single: taffy.TrackSizingFunction{Min: taffy.MinTrackFromLength(100), Max: taffy.MaxTrackFromLength(100)}},
-        {Tag: taffy.GridTemplateSingle, Single: taffy.TrackSizingFunction{Min: taffy.MinTrackFromLength(100), Max: taffy.MaxTrackFromLength(100)}},
+    GridTemplateRows: []style.GridTemplateComponent{
+        {Tag: style.GridTemplateSingle, Single: style.TrackSizingFunction{Min: style.MinTrackFromLength(100), Max: style.MaxTrackFromLength(100)}},
+        {Tag: style.GridTemplateSingle, Single: style.TrackSizingFunction{Min: style.MinTrackFromLength(100), Max: style.MaxTrackFromLength(100)}},
     },
 }, children)
 
-tree.ComputeLayout(root, taffy.Size[taffy.AvailableSpace]{
-    Width:  taffy.AvailableSpaceFromMaxContent(),
-    Height: taffy.AvailableSpaceFromMaxContent(),
+t.ComputeLayout(root, geometry.Size[style.AvailableSpace]{
+    Width:  style.AvailableSpaceFromMaxContent(),
+    Height: style.AvailableSpaceFromMaxContent(),
 })
 ```
 
 ### Block Layout
 
 ```go
-tree := taffy.New()
+import (
+    taffy "taffy-go"
+    "taffy-go/geometry"
+    "taffy-go/style"
+    "taffy-go/tree"
+)
 
-child0 := tree.NewLeaf(taffy.Style{
-    Display: taffy.DisplayBlock,
-    Size: taffy.Size[taffy.Dimension]{
-        Height: taffy.LengthDimension(50),
+t := taffy.New()
+
+child0 := t.NewLeaf(style.Style{
+    Display: style.DisplayBlock,
+    Size: geometry.Size[style.Dimension]{
+        Height: style.LengthDimension(50),
     },
 })
-child1 := tree.NewLeaf(taffy.Style{
-    Display: taffy.DisplayBlock,
-    Size: taffy.Size[taffy.Dimension]{
-        Height: taffy.LengthDimension(50),
+child1 := t.NewLeaf(style.Style{
+    Display: style.DisplayBlock,
+    Size: geometry.Size[style.Dimension]{
+        Height: style.LengthDimension(50),
     },
 })
 
-root := tree.NewWithChildren(taffy.Style{
-    Display: taffy.DisplayBlock,
-    Size: taffy.Size[taffy.Dimension]{
-        Width: taffy.LengthDimension(200),
+root := t.NewWithChildren(style.Style{
+    Display: style.DisplayBlock,
+    Size: geometry.Size[style.Dimension]{
+        Width: style.LengthDimension(200),
     },
-}, []taffy.NodeId{child0, child1})
+}, []tree.NodeId{child0, child1})
 
-tree.ComputeLayout(root, taffy.Size[taffy.AvailableSpace]{
-    Width:  taffy.AvailableSpaceFromMaxContent(),
-    Height: taffy.AvailableSpaceFromMaxContent(),
+t.ComputeLayout(root, geometry.Size[style.AvailableSpace]{
+    Width:  style.AvailableSpaceFromMaxContent(),
+    Height: style.AvailableSpaceFromMaxContent(),
 })
 
 // Root height is automatically computed as 100 (50 + 50)
@@ -154,40 +185,70 @@ tree.ComputeLayout(root, taffy.Size[taffy.AvailableSpace]{
 For leaf nodes with content (e.g., text), provide a measure function:
 
 ```go
-tree := taffy.New()
+import (
+    taffy "taffy-go"
+    "taffy-go/geometry"
+    "taffy-go/style"
+    "taffy-go/tree"
+)
+
+t := taffy.New()
 
 measureFn := taffy.NodeContext(func(
-    knownDimensions taffy.Size[taffy.Option[float32]],
-    parentSize taffy.Size[taffy.Option[float32]],
-    availableSpace taffy.Size[taffy.AvailableSpace],
-    sizingMode taffy.SizingMode,
-) taffy.Size[float32] {
+    knownDimensions geometry.Size[geometry.Option[float32]],
+    parentSize geometry.Size[geometry.Option[float32]],
+    availableSpace geometry.Size[style.AvailableSpace],
+    sizingMode tree.SizingMode,
+) geometry.Size[float32] {
     // Return the intrinsic size of your content
-    return taffy.Size[float32]{Width: 100, Height: 50}
+    return geometry.Size[float32]{Width: 100, Height: 50}
 })
 
-leaf := tree.NewLeafWithContext(taffy.Style{}, measureFn)
-root := tree.NewWithChildren(taffy.DefaultStyle(), []taffy.NodeId{leaf})
+leaf := t.NewLeafWithContext(style.Style{}, measureFn)
+root := t.NewWithChildren(style.DefaultStyle(), []tree.NodeId{leaf})
 
-tree.ComputeLayout(root, taffy.Size[taffy.AvailableSpace]{
-    Width:  taffy.AvailableSpaceFromLength(400),
-    Height: taffy.AvailableSpaceFromLength(300),
+t.ComputeLayout(root, geometry.Size[style.AvailableSpace]{
+    Width:  style.AvailableSpaceFromLength(400),
+    Height: style.AvailableSpaceFromLength(300),
 })
+```
+
+### Custom Tree Backends
+
+For advanced use cases, implement the trait interfaces from the `tree` package to create custom tree backends with your own storage strategy:
+
+```go
+import (
+    "taffy-go/tree"
+    "taffy-go/style"
+    "taffy-go/compute/flexbox"
+    "taffy-go/compute/grid"
+    "taffy-go/compute/block"
+)
+
+// Implement the interfaces your layout modes require:
+// - tree.LayoutPartialTree (base)
+// - tree.LayoutFlexboxContainer (for flexbox)
+// - tree.LayoutGridContainer (for grid)
+// - tree.LayoutBlockContainer (for block)
+
+// Then call compute functions directly:
+// flexbox.ComputeFlexboxLayout(myTree, node, inputs)
+// grid.ComputeGridLayout(myTree, node, inputs)
+// block.ComputeBlockLayout(myTree, node, inputs)
 ```
 
 ## API Overview
 
-### Core Types
+### High-Level API (root package)
 
 | Type | Description |
 |------|-------------|
 | `TaffyTree` | Main layout tree. Create nodes, set styles, compute and read layouts. |
-| `NodeId` | Identifies a node within a `TaffyTree`. |
-| `Style` | CSS-like styling properties for a node. |
-| `Layout` | Computed layout result: position, size, padding, border, margin. |
 | `NodeContext` | Measure function for leaf nodes with content. |
+| `MeasureFunction` | Extended measure function with node context. |
 
-### Geometry Types
+### Geometry Types (`geometry` package)
 
 | Type | Description |
 |------|-------------|
@@ -195,24 +256,60 @@ tree.ComputeLayout(root, taffy.Size[taffy.AvailableSpace]{
 | `Point[T]` | X and Y coordinate pair. |
 | `Rect[T]` | Left, right, top, bottom edges. |
 | `Line[T]` | Start and end pair. |
+| `Option[T]` | Optional value wrapper. |
 
-### Style Value Types
+### Style Types (`style` package)
 
 | Type | Description |
 |------|-------------|
+| `Style` | CSS-like styling properties for a node. |
 | `Dimension` | Size value: length, percent, or auto. |
 | `LengthPercentage` | Length or percentage (no auto). |
 | `LengthPercentageAuto` | Length, percentage, or auto. |
 | `AvailableSpace` | Available space: definite, min-content, or max-content. |
 
+### Style Interfaces (`style` package)
+
+| Interface | Description |
+|-----------|-------------|
+| `CoreStyle` | Core style properties shared by all layout modes. |
+| `FlexboxContainerStyle` | Flexbox container properties. |
+| `FlexboxItemStyle` | Flexbox item properties. |
+| `GridContainerStyle` | Grid container properties. |
+| `GridItemStyle` | Grid item properties. |
+| `BlockContainerStyle` | Block container properties. |
+| `BlockItemStyle` | Block item properties. |
+
+### Tree Interfaces (`tree` package)
+
+| Interface | Description |
+|-----------|-------------|
+| `LayoutPartialTree` | Core layout interface for all algorithms. |
+| `LayoutFlexboxContainer` | Extends LayoutPartialTree for flexbox. |
+| `LayoutGridContainer` | Extends LayoutPartialTree for grid. |
+| `LayoutBlockContainer` | Extends LayoutPartialTree for block. |
+| `TraversePartialTree` | Downward tree traversal. |
+| `CacheTree` | Layout result caching. |
+| `RoundTree` | Layout rounding. |
+| `PrintTree` | Debug printing. |
+
+### Layout Types (`tree` package)
+
+| Type | Description |
+|------|-------------|
+| `NodeId` | Identifies a node within a tree. |
+| `Layout` | Computed layout result: position, size, padding, border, margin. |
+| `LayoutInput` | Input parameters for layout computation. |
+| `LayoutOutput` | Result of layout computation. |
+
 ### Display Modes
 
 | Value | Description |
 |-------|-------------|
-| `DisplayFlex` | Flexbox layout (default). |
-| `DisplayGrid` | CSS Grid layout. |
-| `DisplayBlock` | Block layout. |
-| `DisplayNone` | Node is hidden. |
+| `style.DisplayFlex` | Flexbox layout (default). |
+| `style.DisplayGrid` | CSS Grid layout. |
+| `style.DisplayBlock` | Block layout. |
+| `style.DisplayNone` | Node is hidden. |
 
 ## Learning Resources
 
