@@ -38,9 +38,13 @@ type measureCacheEntry struct {
 // Cache stores cached layout results for a single node in the tree.
 type Cache struct {
 	// finalLayoutEntry is the cache entry for the node's final layout.
-	finalLayoutEntry *layoutCacheEntry
+	finalLayoutEntry layoutCacheEntry
+	// hasFinalLayout tracks if finalLayoutEntry contains a valid entry.
+	hasFinalLayout bool
 	// measureEntries are the cache entries for the node's preliminary size measurements.
-	measureEntries [cacheSize]*measureCacheEntry
+	measureEntries [cacheSize]measureCacheEntry
+	// measureValid tracks which measureEntries slots contain valid entries.
+	measureValid [cacheSize]bool
 	// isEmpty tracks if all cache entries are empty.
 	isEmpty bool
 }
@@ -107,10 +111,10 @@ func (c *Cache) Get(input *LayoutInput) *LayoutOutput {
 
 	switch input.RunMode {
 	case RunModePerformLayout:
-		if c.finalLayoutEntry == nil {
+		if !c.hasFinalLayout {
 			return nil
 		}
-		entry := c.finalLayoutEntry
+		entry := &c.finalLayoutEntry
 		cachedSize := entry.content.Size
 
 		widthMatch := knownDimensions.Width == entry.knownDimensions.Width ||
@@ -123,16 +127,16 @@ func (c *Cache) Get(input *LayoutInput) *LayoutOutput {
 			entry.availableSpace.Height.IsRoughlyEqual(availableSpace.Height)
 
 		if widthMatch && heightMatch && widthSpaceMatch && heightSpaceMatch {
-			result := entry.content
-			return &result
+			return &entry.content
 		}
 		return nil
 
 	case RunModeComputeSize:
-		for _, entry := range c.measureEntries {
-			if entry == nil {
+		for i, valid := range c.measureValid {
+			if !valid {
 				continue
 			}
+			entry := &c.measureEntries[i]
 			cachedSize := entry.content
 
 			widthMatch := knownDimensions.Width == entry.knownDimensions.Width ||
@@ -166,7 +170,8 @@ func (c *Cache) Store(input *LayoutInput, output LayoutOutput) {
 	switch input.RunMode {
 	case RunModePerformLayout:
 		c.isEmpty = false
-		c.finalLayoutEntry = &layoutCacheEntry{
+		c.hasFinalLayout = true
+		c.finalLayoutEntry = layoutCacheEntry{
 			knownDimensions: knownDimensions,
 			availableSpace:  availableSpace,
 			content:         output,
@@ -174,7 +179,8 @@ func (c *Cache) Store(input *LayoutInput, output LayoutOutput) {
 	case RunModeComputeSize:
 		c.isEmpty = false
 		slot := computeCacheSlot(knownDimensions, availableSpace)
-		c.measureEntries[slot] = &measureCacheEntry{
+		c.measureValid[slot] = true
+		c.measureEntries[slot] = measureCacheEntry{
 			knownDimensions: knownDimensions,
 			availableSpace:  availableSpace,
 			content:         output.Size,
@@ -190,20 +196,18 @@ func (c *Cache) Clear() ClearState {
 		return ClearStateAlreadyEmpty
 	}
 	c.isEmpty = true
-	c.finalLayoutEntry = nil
-	for i := range c.measureEntries {
-		c.measureEntries[i] = nil
-	}
+	c.hasFinalLayout = false
+	c.measureValid = [cacheSize]bool{}
 	return ClearStateCleared
 }
 
-// isEmptyCheck returns true if all cache entries are nil.
+// isEmptyCheck returns true if all cache entries are empty.
 func (c *Cache) IsEmptyCheck() bool {
-	if c.finalLayoutEntry != nil {
+	if c.hasFinalLayout {
 		return false
 	}
-	for _, entry := range c.measureEntries {
-		if entry != nil {
+	for _, valid := range c.measureValid {
+		if valid {
 			return false
 		}
 	}
