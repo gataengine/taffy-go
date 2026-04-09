@@ -21,10 +21,10 @@ func collectFlexLines(
 	constants *algoConstants,
 	availableSpace geometry.Size[style.AvailableSpace],
 	flexItems []flexItem,
-) []*flexLine {
+) []flexLine {
 	if !constants.isWrap {
-		lines := make([]*flexLine, 0, 1)
-		lines = append(lines, &flexLine{items: flexItems, crossSize: 0.0, offsetCross: 0.0})
+		lines := make([]flexLine, 0, 1)
+		lines = append(lines, flexLine{items: flexItems, crossSize: 0.0, offsetCross: 0.0})
 		return lines
 	}
 
@@ -41,15 +41,15 @@ func collectFlexLines(
 	switch mainAxisAvailableSpace.Tag {
 	case style.AvailableSpaceMaxContent:
 		// Items will never wrap.
-		lines := make([]*flexLine, 0, 1)
-		lines = append(lines, &flexLine{items: flexItems, crossSize: 0.0, offsetCross: 0.0})
+		lines := make([]flexLine, 0, 1)
+		lines = append(lines, flexLine{items: flexItems, crossSize: 0.0, offsetCross: 0.0})
 		return lines
 
 	case style.AvailableSpaceMinContent:
 		// Each item in its own line.
-		lines := make([]*flexLine, 0, len(flexItems))
+		lines := make([]flexLine, 0, len(flexItems))
 		for i := range flexItems {
-			lines = append(lines, &flexLine{
+			lines = append(lines, flexLine{
 				items:     flexItems[i : i+1],
 				crossSize: 0.0, offsetCross: 0.0,
 			})
@@ -58,7 +58,7 @@ func collectFlexLines(
 
 	default: // Definite
 		mainAvail := mainAxisAvailableSpace.Value
-		lines := make([]*flexLine, 0, 1)
+		lines := make([]flexLine, 0, 1)
 		mainAxisGap := sizeMain(constants.gap, constants.dir)
 		remaining := flexItems
 
@@ -78,7 +78,7 @@ func collectFlexLines(
 				}
 			}
 
-			lines = append(lines, &flexLine{
+			lines = append(lines, flexLine{
 				items:     remaining[:splitIdx],
 				crossSize: 0.0, offsetCross: 0.0,
 			})
@@ -247,7 +247,7 @@ func calculateChildrenBaseLines(
 	t tree.LayoutFlexboxContainer,
 	nodeSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
-	flexLines []*flexLine,
+	flexLines []flexLine,
 	constants *algoConstants,
 ) {
 	if !constants.isRow {
@@ -317,7 +317,7 @@ func calculateChildrenBaseLines(
 	}
 }
 
-func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[lib.Option[float32]], constants *algoConstants) {
+func calculateCrossSize(flexLines []flexLine, nodeSize geometry.Size[lib.Option[float32]], constants *algoConstants) {
 	if !constants.isWrap && sizeOptionCross(nodeSize, constants.dir).IsSome {
 		crossAxisPaddingBorder := rectCrossAxisSum(constants.contentBoxInset, constants.dir)
 		crossMinSize := sizeOptionCross(constants.minSize, constants.dir)
@@ -330,16 +330,16 @@ func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[lib.Option
 		v = geometry.F32Max(v-crossAxisPaddingBorder, 0.0)
 		flexLines[0].crossSize = v
 	} else {
-		for _, line := range flexLines {
+		for li := range flexLines {
 			maxBaseline := float32(0.0)
-			for _, child := range line.items {
+			for _, child := range flexLines[li].items {
 				if child.baseline > maxBaseline {
 					maxBaseline = child.baseline
 				}
 			}
 
 			crossSize := float32(0.0)
-			for _, child := range line.items {
+			for _, child := range flexLines[li].items {
 				var s float32
 				if child.alignSelf == style.AlignItemsBaseline &&
 					!rectBoolCrossStart(child.marginIsAuto, constants.dir) &&
@@ -352,7 +352,7 @@ func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[lib.Option
 					crossSize = s
 				}
 			}
-			line.crossSize = crossSize
+			flexLines[li].crossSize = crossSize
 		}
 
 		// Single-line: clamp by min/max.
@@ -369,7 +369,7 @@ func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[lib.Option
 	}
 }
 
-func handleAlignContentStretch(flexLines []*flexLine, nodeSize geometry.Size[lib.Option[float32]], constants *algoConstants) {
+func handleAlignContentStretch(flexLines []flexLine, nodeSize geometry.Size[lib.Option[float32]], constants *algoConstants) {
 	if constants.alignContent != style.AlignContentStretch {
 		return
 	}
@@ -396,15 +396,15 @@ func handleAlignContentStretch(flexLines []*flexLine, nodeSize geometry.Size[lib
 	if linesTotalCross < containerMinInnerCross {
 		remaining := containerMinInnerCross - linesTotalCross
 		addition := remaining / float32(len(flexLines))
-		for _, line := range flexLines {
-			line.crossSize += addition
+		for i := range flexLines {
+			flexLines[i].crossSize += addition
 		}
 	}
 }
 
 func determineUsedCrossSize(
 	t tree.LayoutFlexboxContainer,
-	flexLines []*flexLine,
+	flexLines []flexLine,
 	constants *algoConstants,
 ) {
 	calc := t.ResolveCalcValue
@@ -450,7 +450,7 @@ func determineUsedCrossSize(
 	}
 }
 
-func distributeRemainingFreeSpace(flexLines []*flexLine, constants *algoConstants) {
+func distributeRemainingFreeSpace(flexLines []flexLine, constants *algoConstants) {
 	for _, line := range flexLines {
 		totalMainAxisGap := sumAxisGaps(sizeMain(constants.gap, constants.dir), len(line.items))
 		usedSpace := totalMainAxisGap
@@ -515,7 +515,7 @@ func distributeRemainingFreeSpace(flexLines []*flexLine, constants *algoConstant
 	}
 }
 
-func resolveCrossAxisAutoMargins(flexLines []*flexLine, constants *algoConstants) {
+func resolveCrossAxisAutoMargins(flexLines []flexLine, constants *algoConstants) {
 	for _, line := range flexLines {
 		lineCrossSize := line.crossSize
 		maxBaseline := float32(0.0)
@@ -608,7 +608,7 @@ func alignFlexItemsAlongCrossAxis(
 }
 
 func determineContainerCrossSize(
-	flexLines []*flexLine,
+	flexLines []flexLine,
 	nodeSize geometry.Size[lib.Option[float32]],
 	constants *algoConstants,
 ) float32 {
@@ -637,7 +637,7 @@ func determineContainerCrossSize(
 	return totalLineCrossSize
 }
 
-func alignFlexLinesPerAlignContent(flexLines []*flexLine, constants *algoConstants, totalCrossSize float32) {
+func alignFlexLinesPerAlignContent(flexLines []flexLine, constants *algoConstants, totalCrossSize float32) {
 	numLines := len(flexLines)
 	gap := sizeCross(constants.gap, constants.dir)
 	totalCrossAxisGap := sumAxisGaps(gap, numLines)
@@ -649,12 +649,11 @@ func alignFlexLinesPerAlignContent(flexLines []*flexLine, constants *algoConstan
 	if constants.isWrapReverse {
 		for revI := numLines - 1; revI >= 0; revI-- {
 			enumI := numLines - 1 - revI
-			line := flexLines[revI]
-			line.offsetCross = compute.ComputeAlignmentOffset(freeSpace, numLines, gap, alignContentMode, constants.isWrapReverse, enumI == 0)
+			flexLines[revI].offsetCross = compute.ComputeAlignmentOffset(freeSpace, numLines, gap, alignContentMode, constants.isWrapReverse, enumI == 0)
 		}
 	} else {
-		for i, line := range flexLines {
-			line.offsetCross = compute.ComputeAlignmentOffset(freeSpace, numLines, gap, alignContentMode, constants.isWrapReverse, i == 0)
+		for i := range flexLines {
+			flexLines[i].offsetCross = compute.ComputeAlignmentOffset(freeSpace, numLines, gap, alignContentMode, constants.isWrapReverse, i == 0)
 		}
 	}
 }

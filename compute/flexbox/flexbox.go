@@ -598,14 +598,14 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 	}
 
 	// 6. Resolve the flexible lengths.
-	for _, line := range flexLines {
-		resolveFlexibleLengths(line, &constants)
+	for i := range flexLines {
+		resolveFlexibleLengths(&flexLines[i], &constants)
 	}
 
 	// 9.4. Cross Size Determination
 	// 7. Determine the hypothetical cross size of each item.
-	for _, line := range flexLines {
-		determineHypotheticalCrossSize(t, line, &constants, availableSpace)
+	for i := range flexLines {
+		determineHypotheticalCrossSize(t, &flexLines[i], &constants, availableSpace)
 	}
 
 	// Calculate child baselines.
@@ -838,7 +838,7 @@ func determineAvailableSpace(
 func determineContainerMainSize(
 	t tree.LayoutFlexboxContainer,
 	availableSpace geometry.Size[style.AvailableSpace],
-	lines []*flexLine,
+	lines []flexLine,
 	constants *algoConstants,
 ) {
 	dir := constants.dir
@@ -1045,7 +1045,7 @@ func determineContainerMainSize(
 
 func finalLayoutPass(
 	t tree.LayoutFlexboxContainer,
-	flexLines []*flexLine,
+	flexLines []flexLine,
 	constants *algoConstants,
 ) geometry.Size[float32] {
 	var totalOffsetCross float32
@@ -1060,16 +1060,16 @@ func finalLayoutPass(
 	if constants.isWrapReverse {
 		for revI := len(flexLines) - 1; revI >= 0; revI-- {
 			calculateLayoutLine(
-				t, flexLines[revI],
+				t, &flexLines[revI],
 				&totalOffsetCross, &contentSize,
 				constants.containerSize, constants.nodeInnerSize, constants.contentBoxInset,
 				constants.dir, constants.layoutDirection,
 			)
 		}
 	} else {
-		for _, line := range flexLines {
+		for i := range flexLines {
 			calculateLayoutLine(
-				t, line,
+				t, &flexLines[i],
 				&totalOffsetCross, &contentSize,
 				constants.containerSize, constants.nodeInnerSize, constants.contentBoxInset,
 				constants.dir, constants.layoutDirection,
