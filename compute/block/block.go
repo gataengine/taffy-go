@@ -3,6 +3,7 @@
 package block
 
 import (
+	"taffy-go/lib"
 	"math"
 
 	"taffy-go/geometry"
@@ -146,9 +147,9 @@ type blockItem struct {
 	float_       style.Float
 	clear_       style.Clear
 
-	size    geometry.Size[geometry.Option[float32]]
-	minSize geometry.Size[geometry.Option[float32]]
-	maxSize geometry.Size[geometry.Option[float32]]
+	size    geometry.Size[lib.Option[float32]]
+	minSize geometry.Size[lib.Option[float32]]
+	maxSize geometry.Size[lib.Option[float32]]
 
 	overflow       geometry.Point[style.Overflow]
 	scrollbarWidth float32
@@ -203,8 +204,8 @@ func computeContentSizeContribution(
 func measureChildSizeBoth(
 	t tree.LayoutPartialTree,
 	nodeId tree.NodeId,
-	knownDimensions geometry.Size[geometry.Option[float32]],
-	parentSize geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
+	parentSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	sizingMode tree.SizingMode,
 	verticalMarginsAreCollapsible geometry.Line[bool],
@@ -268,17 +269,17 @@ func computeBlockLayout(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMinSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	maxSize := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMaxSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 
-	var clampedStyleSize geometry.Size[geometry.Option[float32]]
+	var clampedStyleSize geometry.Size[lib.Option[float32]]
 	if inputs.SizingMode == tree.SizingModeInherentSize {
 		clampedStyleSize = geometry.SizeMaybeClamp(
 			geometry.SizeMaybeAdd(
@@ -286,7 +287,7 @@ func computeBlockLayout(
 					style.MaybeResolveSizeDimOption(coreStyle.GetSize(), parentSize, calc),
 					aspectRatio,
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 			),
 			minSize,
 			maxSize,
@@ -296,11 +297,11 @@ func computeBlockLayout(
 	}
 
 	// If both min and max in a given axis are set and max <= min then this determines the size in that axis
-	minMaxDefiniteSize := geometry.SizeZipMap(minSize, maxSize, func(mn, mx geometry.Option[float32]) geometry.Option[float32] {
+	minMaxDefiniteSize := geometry.SizeZipMap(minSize, maxSize, func(mn, mx lib.Option[float32]) lib.Option[float32] {
 		if mn.IsSome && mx.IsSome && mx.Value <= mn.Value {
 			return mn
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	})
 
 	styledBasedKnownDimensions := geometry.SizeMaybeMax(
@@ -308,7 +309,7 @@ func computeBlockLayout(
 			geometry.SizeOptionOr(knownDimensions, minMaxDefiniteSize),
 			clampedStyleSize,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSize.Width), Height: geometry.Some(paddingBorderSize.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSize.Width), Height: lib.Some(paddingBorderSize.Height)},
 	)
 
 	// Short-circuit if both dimensions known and only computing size
@@ -394,9 +395,9 @@ func computeBlockInner(
 	paddingBorder := geometry.RectAddF32(padding, border)
 	paddingBorderSize := geometry.RectSumAxes(paddingBorder)
 	contentBoxInset := geometry.RectAddF32(paddingBorder, scrollbarGutter)
-	containerContentBoxSize := geometry.SizeMaybeSub(knownDimensions, geometry.Size[geometry.Option[float32]]{
-		Width:  geometry.Some(geometry.RectHorizontalAxisSum(contentBoxInset)),
-		Height: geometry.Some(geometry.RectVerticalAxisSum(contentBoxInset)),
+	containerContentBoxSize := geometry.SizeMaybeSub(knownDimensions, geometry.Size[lib.Option[float32]]{
+		Width:  lib.Some(geometry.RectHorizontalAxisSum(contentBoxInset)),
+		Height: lib.Some(geometry.RectVerticalAxisSum(contentBoxInset)),
 	})
 
 	// Apply content box inset
@@ -412,21 +413,21 @@ func computeBlockInner(
 			style.MaybeResolveSizeDimOption(coreStyle.GetSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	minSize := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMinSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	maxSize := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMaxSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 
 	overflow := coreStyle.GetOverflow()
@@ -473,7 +474,7 @@ func computeBlockInner(
 			geometry.RectHorizontalAxisSum(contentBoxInset)
 		containerOuterWidth = geometry.MaybeMaxF32(
 			geometry.MaybeClampF32(intrinsicWidth, minSize.Width, maxSize.Width),
-			geometry.Some(paddingBorderSize.Width),
+			lib.Some(paddingBorderSize.Width),
 		)
 	}
 
@@ -485,7 +486,7 @@ func computeBlockInner(
 		})
 	}
 
-	containerPercentageResolutionHeight := func() geometry.Option[float32] {
+	containerPercentageResolutionHeight := func() lib.Option[float32] {
 		h := knownDimensions.Height
 		if h.IsSome {
 			return h
@@ -498,8 +499,8 @@ func computeBlockInner(
 	}()
 
 	// 3. Perform final item layout and return content height
-	resolvedPadding := style.ResolveRectLPWidth(rawPadding, geometry.Some(containerOuterWidth), calc)
-	resolvedBorder := style.ResolveRectLPWidth(rawBorder, geometry.Some(containerOuterWidth), calc)
+	resolvedPadding := style.ResolveRectLPWidth(rawPadding, lib.Some(containerOuterWidth), calc)
+	resolvedBorder := style.ResolveRectLPWidth(rawBorder, lib.Some(containerOuterWidth), calc)
 	resolvedContentBoxInset := geometry.RectAddF32(geometry.RectAddF32(resolvedPadding, resolvedBorder), scrollbarGutter)
 
 	inflowContentSize, intrinsicOuterHeight, firstChildTopMarginSet, lastChildBottomMarginSet :=
@@ -527,7 +528,7 @@ func computeBlockInner(
 			minSize.Height,
 			maxSize.Height,
 		),
-		geometry.Some(paddingBorderSize.Height),
+		lib.Some(paddingBorderSize.Height),
 	)
 	finalOuterSize := geometry.Size[float32]{Width: containerOuterWidth, Height: containerOuterHeight}
 
@@ -614,7 +615,7 @@ func computeBlockInner(
 func generateBlockItemList(
 	t tree.LayoutBlockContainer,
 	node tree.NodeId,
-	nodeInnerSize geometry.Size[geometry.Option[float32]],
+	nodeInnerSize geometry.Size[lib.Option[float32]],
 ) []blockItem {
 	childIDs := t.ChildIds(node)
 	var items []blockItem
@@ -646,7 +647,7 @@ func generateBlockItemList(
 		isScrollContainer := childOverflow.X.IsScrollContainer() || childOverflow.Y.IsScrollContainer()
 		isInSameBfc := isBlock && !isTable && position != style.PositionAbsolute && isNotFloated && !isScrollContainer
 
-		bsa := geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)}
+		bsa := geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)}
 
 		items = append(items, blockItem{
 			nodeID:      childNodeID,
@@ -759,7 +760,7 @@ func performFinalLayoutOnInFlowChildren(
 	t tree.LayoutBlockContainer,
 	items []blockItem,
 	containerOuterWidth float32,
-	containerPercentageResolutionHeight geometry.Option[float32],
+	containerPercentageResolutionHeight lib.Option[float32],
 	contentBoxInset geometry.Rect[float32],
 	resolvedContentBoxInset geometry.Rect[float32],
 	textAlign style.TextAlign,
@@ -770,8 +771,8 @@ func performFinalLayoutOnInFlowChildren(
 	calc := t.ResolveCalcValue
 
 	containerInnerWidth := containerOuterWidth - geometry.RectHorizontalAxisSum(resolvedContentBoxInset)
-	containerPctResHeight := geometry.MaybeSubOption(containerPercentageResolutionHeight, geometry.Some(geometry.RectVerticalAxisSum(resolvedContentBoxInset)))
-	parentSize := geometry.Size[geometry.Option[float32]]{Width: geometry.Some(containerInnerWidth), Height: containerPctResHeight}
+	containerPctResHeight := geometry.MaybeSubOption(containerPercentageResolutionHeight, lib.Some(geometry.RectVerticalAxisSum(resolvedContentBoxInset)))
+	parentSize := geometry.Size[lib.Option[float32]]{Width: lib.Some(containerInnerWidth), Height: containerPctResHeight}
 	availableSpace := geometry.Size[style.AvailableSpace]{
 		Width:  style.AvailableSpaceFromDefinite(containerInnerWidth),
 		Height: style.AvailableSpaceMinContentValue,
@@ -804,7 +805,7 @@ func performFinalLayoutOnInFlowChildren(
 			continue
 		}
 
-		itemMargin := geometry.Rect[geometry.Option[float32]]{
+		itemMargin := geometry.Rect[lib.Option[float32]]{
 			Left:   style.MaybeResolveLPAF32(item.margin.Left, containerOuterWidth, calc),
 			Right:  style.MaybeResolveLPAF32(item.margin.Right, containerOuterWidth, calc),
 			Top:    style.MaybeResolveLPAF32(item.margin.Top, containerOuterWidth, calc),
@@ -906,14 +907,14 @@ func performFinalLayoutOnInFlowChildren(
 			}
 		}
 
-		var knownDimensions geometry.Size[geometry.Option[float32]]
+		var knownDimensions geometry.Size[lib.Option[float32]]
 		if item.isTable {
 			knownDimensions = geometry.SizeOptionNone
 		} else {
 			w := item.size.Width.UnwrapOr(stretchWidth)
 			w = geometry.MaybeClampF32(w, item.minSize.Width, item.maxSize.Width)
 			knownDimensions = geometry.SizeMaybeClamp(
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(w), Height: item.size.Height},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(w), Height: item.size.Height},
 				item.minSize,
 				item.maxSize,
 			)
@@ -1186,14 +1187,14 @@ func performBlockAbsoluteLayout(
 		}
 
 		aspectRatio := childCoreStyle.GetAspectRatio()
-		margin := geometry.Rect[geometry.Option[float32]]{
+		margin := geometry.Rect[lib.Option[float32]]{
 			Left:   style.MaybeResolveLPAF32(childCoreStyle.GetMargin().Left, areaWidth, calc),
 			Right:  style.MaybeResolveLPAF32(childCoreStyle.GetMargin().Right, areaWidth, calc),
 			Top:    style.MaybeResolveLPAF32(childCoreStyle.GetMargin().Top, areaWidth, calc),
 			Bottom: style.MaybeResolveLPAF32(childCoreStyle.GetMargin().Bottom, areaWidth, calc),
 		}
-		padding := style.ResolveRectLPWidth(childCoreStyle.GetPadding(), geometry.Some(areaWidth), calc)
-		border := style.ResolveRectLPWidth(childCoreStyle.GetBorder(), geometry.Some(areaWidth), calc)
+		padding := style.ResolveRectLPWidth(childCoreStyle.GetPadding(), lib.Some(areaWidth), calc)
+		border := style.ResolveRectLPWidth(childCoreStyle.GetBorder(), lib.Some(areaWidth), calc)
 		paddingBorderSum := geometry.RectSumAxes(geometry.RectAddF32(padding, border))
 		boxSizingAdjustment := geometry.SizeZeroF32
 		if childCoreStyle.GetBoxSizing() == style.BoxSizingContentBox {
@@ -1206,8 +1207,8 @@ func performBlockAbsoluteLayout(
 		top := style.MaybeResolveLPAF32(childCoreStyle.GetInset().Top, areaHeight, calc)
 		bottom := style.MaybeResolveLPAF32(childCoreStyle.GetInset().Bottom, areaHeight, calc)
 
-		bsa := geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)}
-		areaSizeOpt := geometry.Size[geometry.Option[float32]]{Width: geometry.Some(areaSize.Width), Height: geometry.Some(areaSize.Height)}
+		bsa := geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)}
+		areaSizeOpt := geometry.Size[lib.Option[float32]]{Width: lib.Some(areaSize.Width), Height: lib.Some(areaSize.Height)}
 
 		// Compute known dimensions from size styles
 		styleSize := geometry.SizeMaybeAdd(
@@ -1226,9 +1227,9 @@ func performBlockAbsoluteLayout(
 					),
 					bsa,
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSum.Width), Height: geometry.Some(paddingBorderSum.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSum.Width), Height: lib.Some(paddingBorderSum.Height)},
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSum.Width), Height: geometry.Some(paddingBorderSum.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSum.Width), Height: lib.Some(paddingBorderSum.Height)},
 		)
 		maxSize := geometry.SizeMaybeAdd(
 			geometry.SizeOptionMaybeApplyAspectRatio(
@@ -1242,14 +1243,14 @@ func performBlockAbsoluteLayout(
 		// Fill in width from left/right
 		if !knownDimensions.Width.IsSome && left.IsSome && right.IsSome {
 			newWidthRaw := geometry.MaybeSubF32(geometry.MaybeSubF32(areaWidth, margin.Left), margin.Right) - left.Value - right.Value
-			knownDimensions.Width = geometry.Some(geometry.F32Max(newWidthRaw, 0))
+			knownDimensions.Width = lib.Some(geometry.F32Max(newWidthRaw, 0))
 			knownDimensions = geometry.SizeMaybeClamp(geometry.SizeOptionMaybeApplyAspectRatio(knownDimensions, aspectRatio), minSize, maxSize)
 		}
 
 		// Fill in height from top/bottom
 		if !knownDimensions.Height.IsSome && top.IsSome && bottom.IsSome {
 			newHeightRaw := geometry.MaybeSubF32(geometry.MaybeSubF32(areaHeight, margin.Top), margin.Bottom) - top.Value - bottom.Value
-			knownDimensions.Height = geometry.Some(geometry.F32Max(newHeightRaw, 0))
+			knownDimensions.Height = lib.Some(geometry.F32Max(newHeightRaw, 0))
 			knownDimensions = geometry.SizeMaybeClamp(geometry.SizeOptionMaybeApplyAspectRatio(knownDimensions, aspectRatio), minSize, maxSize)
 		}
 
@@ -1274,7 +1275,7 @@ func performBlockAbsoluteLayout(
 		layoutOutput := tree.PerformChildLayout(
 			t,
 			item.nodeID,
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(finalSize.Width), Height: geometry.Some(finalSize.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(finalSize.Width), Height: lib.Some(finalSize.Height)},
 			areaSizeOpt,
 			geometry.Size[style.AvailableSpace]{
 				Width:  style.AvailableSpaceFromDefinite(geometry.MaybeClampF32(areaWidth, minSize.Width, maxSize.Width)),

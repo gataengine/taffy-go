@@ -3,6 +3,7 @@
 package taffy
 
 import (
+	"taffy-go/lib"
 	"taffy-go/compute"
 	"taffy-go/compute/block"
 	"taffy-go/compute/flexbox"
@@ -48,8 +49,8 @@ func (v *taffyView) SetUnroundedLayout(nodeId tree.NodeId, layout *tree.Layout) 
 }
 
 // measureFunc returns a closure that calls the tree's measure function for the given node.
-func (v *taffyView) measureFunc(nodeId tree.NodeId) func(geometry.Size[geometry.Option[float32]], geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
-	return func(knownDimensions geometry.Size[geometry.Option[float32]], availableSpace geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
+func (v *taffyView) measureFunc(nodeId tree.NodeId) func(geometry.Size[lib.Option[float32]], geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
+	return func(knownDimensions geometry.Size[lib.Option[float32]], availableSpace geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
 		ctx := v.taffy.nodeContexts[nodeId]
 		if v.measureFunction != nil {
 			return v.measureFunction(knownDimensions, availableSpace, nodeId, &ctx, &v.taffy.nodes[nodeId].style)
@@ -247,27 +248,27 @@ func computeRootLayout(t *taffyView, root tree.NodeId, availableSpace geometry.S
 		minSize := geometry.SizeOptionMaybeApplyAspectRatio(
 			geometry.SizeMaybeAdd(
 				style.MaybeResolveSizeDimOption(st.GetMinSize(), parentSize, calc),
-				geometry.Size[geometry.Option[float32]]{
-					Width:  geometry.Some(boxSizingAdjustment.Width),
-					Height: geometry.Some(boxSizingAdjustment.Height),
+				geometry.Size[lib.Option[float32]]{
+					Width:  lib.Some(boxSizingAdjustment.Width),
+					Height: lib.Some(boxSizingAdjustment.Height),
 				},
 			),
 			aspectRatio,
 		)
 		maxSize := geometry.SizeMaybeAdd(
 			style.MaybeResolveSizeDimOption(st.GetMaxSize(), parentSize, calc),
-			geometry.Size[geometry.Option[float32]]{
-				Width:  geometry.Some(boxSizingAdjustment.Width),
-				Height: geometry.Some(boxSizingAdjustment.Height),
+			geometry.Size[lib.Option[float32]]{
+				Width:  lib.Some(boxSizingAdjustment.Width),
+				Height: lib.Some(boxSizingAdjustment.Height),
 			},
 		)
 		clampedStyleSize := geometry.SizeMaybeClamp(
 			geometry.SizeOptionMaybeApplyAspectRatio(
 				geometry.SizeMaybeAdd(
 					style.MaybeResolveSizeDimOption(st.GetSize(), parentSize, calc),
-					geometry.Size[geometry.Option[float32]]{
-						Width:  geometry.Some(boxSizingAdjustment.Width),
-						Height: geometry.Some(boxSizingAdjustment.Height),
+					geometry.Size[lib.Option[float32]]{
+						Width:  lib.Some(boxSizingAdjustment.Width),
+						Height: lib.Some(boxSizingAdjustment.Height),
 					},
 				),
 				aspectRatio,
@@ -277,18 +278,18 @@ func computeRootLayout(t *taffyView, root tree.NodeId, availableSpace geometry.S
 		)
 
 		// If both min and max in a given axis are set and max <= min then this determines the size.
-		minMaxDefiniteSize := geometry.SizeZipMap(minSize, maxSize, func(min, max geometry.Option[float32]) geometry.Option[float32] {
+		minMaxDefiniteSize := geometry.SizeZipMap(minSize, maxSize, func(min, max lib.Option[float32]) lib.Option[float32] {
 			if min.IsSome && max.IsSome && max.Value <= min.Value {
 				return min
 			}
-			return geometry.None[float32]()
+			return lib.None[float32]()
 		})
 
 		// Block nodes automatically stretch to fill available width if definite.
 		marginHSum := geometry.RectHorizontalAxisSum(margin)
-		availableSpaceBasedSize := geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.MaybeSubOption(availableSpace.Width.IntoOption(), geometry.Some(marginHSum)),
-			Height: geometry.None[float32](),
+		availableSpaceBasedSize := geometry.Size[lib.Option[float32]]{
+			Width:  geometry.MaybeSubOption(availableSpace.Width.IntoOption(), lib.Some(marginHSum)),
+			Height: lib.None[float32](),
 		}
 
 		styledBasedKnownDimensions := geometry.SizeMaybeMax(
@@ -299,9 +300,9 @@ func computeRootLayout(t *taffyView, root tree.NodeId, availableSpace geometry.S
 				),
 				availableSpaceBasedSize,
 			),
-			geometry.Size[geometry.Option[float32]]{
-				Width:  geometry.Some(paddingBorderSize.Width),
-				Height: geometry.Some(paddingBorderSize.Height),
+			geometry.Size[lib.Option[float32]]{
+				Width:  lib.Some(paddingBorderSize.Width),
+				Height: lib.Some(paddingBorderSize.Height),
 			},
 		)
 

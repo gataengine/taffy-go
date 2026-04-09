@@ -3,6 +3,7 @@
 package tree
 
 import (
+	"taffy-go/lib"
 	"taffy-go/geometry"
 	"taffy-go/style"
 )
@@ -22,14 +23,14 @@ const (
 
 // layoutCacheEntry stores a cached result alongside the input that produced it.
 type layoutCacheEntry struct {
-	knownDimensions geometry.Size[geometry.Option[float32]]
+	knownDimensions geometry.Size[lib.Option[float32]]
 	availableSpace  geometry.Size[style.AvailableSpace]
 	content         LayoutOutput
 }
 
 // measureCacheEntry stores a cached size measurement alongside the input that produced it.
 type measureCacheEntry struct {
-	knownDimensions geometry.Size[geometry.Option[float32]]
+	knownDimensions geometry.Size[lib.Option[float32]]
 	availableSpace  geometry.Size[style.AvailableSpace]
 	content         geometry.Size[float32]
 }
@@ -61,7 +62,7 @@ func NewCache() Cache {
 //   - Slot 6: neither known, x=MaxContent/Definite, y=MinContent
 //   - Slot 7: neither known, x=MinContent, y=MaxContent/Definite
 //   - Slot 8: neither known, x=MinContent, y=MinContent
-func computeCacheSlot(knownDimensions geometry.Size[geometry.Option[float32]], availableSpace geometry.Size[style.AvailableSpace]) int {
+func computeCacheSlot(knownDimensions geometry.Size[lib.Option[float32]], availableSpace geometry.Size[style.AvailableSpace]) int {
 	hasKnownWidth := knownDimensions.Width.IsSome
 	hasKnownHeight := knownDimensions.Height.IsSome
 

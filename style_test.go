@@ -204,13 +204,13 @@ var _ = Describe("Style", func() {
 			Expect(result.IsSome).To(BeFalse())
 		})
 
-		It("Hidden MaybeIntoAutomaticMinSize returns geometry.Some(0.0)", func() {
+		It("Hidden MaybeIntoAutomaticMinSize returns lib.Some(0.0)", func() {
 			result := style.OverflowHidden.MaybeIntoAutomaticMinSize()
 			Expect(result.IsSome).To(BeTrue())
 			Expect(result.Value).To(Equal(float32(0.0)))
 		})
 
-		It("Scroll MaybeIntoAutomaticMinSize returns geometry.Some(0.0)", func() {
+		It("Scroll MaybeIntoAutomaticMinSize returns lib.Some(0.0)", func() {
 			result := style.OverflowScroll.MaybeIntoAutomaticMinSize()
 			Expect(result.IsSome).To(BeTrue())
 			Expect(result.Value).To(Equal(float32(0.0)))

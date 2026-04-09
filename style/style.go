@@ -2,7 +2,10 @@
 // This file is a port of style/mod.rs from the Taffy Rust layout engine.
 package style
 
-import "taffy-go/geometry"
+import (
+	"taffy-go/geometry"
+	"taffy-go/lib"
+)
 
 // ---------------------------------------------------------------------------
 // Display
@@ -106,11 +109,11 @@ func (o Overflow) IsScrollContainer() bool {
 // MaybeIntoAutomaticMinSize returns Some(0.0) if the overflow mode would cause
 // the automatic minimum size of a Flexbox or CSS Grid item to be 0.
 // Otherwise returns None.
-func (o Overflow) MaybeIntoAutomaticMinSize() geometry.Option[float32] {
+func (o Overflow) MaybeIntoAutomaticMinSize() lib.Option[float32] {
 	if o.IsScrollContainer() {
-		return geometry.Some[float32](0.0)
+		return lib.Some[float32](0.0)
 	}
-	return geometry.None[float32]()
+	return lib.None[float32]()
 }
 
 // ---------------------------------------------------------------------------
@@ -151,7 +154,7 @@ type CoreStyle interface {
 	GetSize() geometry.Size[Dimension]
 	GetMinSize() geometry.Size[Dimension]
 	GetMaxSize() geometry.Size[Dimension]
-	GetAspectRatio() geometry.Option[float32]
+	GetAspectRatio() lib.Option[float32]
 	GetMargin() geometry.Rect[LengthPercentageAuto]
 	GetPadding() geometry.Rect[LengthPercentage]
 	GetBorder() geometry.Rect[LengthPercentage]
@@ -186,7 +189,7 @@ type Style struct {
 	Size        geometry.Size[Dimension]
 	MinSize     geometry.Size[Dimension]
 	MaxSize     geometry.Size[Dimension]
-	AspectRatio geometry.Option[float32]
+	AspectRatio lib.Option[float32]
 
 	// Spacing properties
 	Margin  geometry.Rect[LengthPercentageAuto]
@@ -194,12 +197,12 @@ type Style struct {
 	Border  geometry.Rect[LengthPercentage]
 
 	// Alignment properties
-	AlignItems     geometry.Option[AlignItems]
-	AlignSelf      geometry.Option[AlignItems]
-	JustifyItems   geometry.Option[AlignItems]
-	JustifySelf    geometry.Option[AlignItems]
-	AlignContent   geometry.Option[AlignContent]
-	JustifyContent geometry.Option[AlignContent]
+	AlignItems     lib.Option[AlignItems]
+	AlignSelf      lib.Option[AlignItems]
+	JustifyItems   lib.Option[AlignItems]
+	JustifySelf    lib.Option[AlignItems]
+	AlignContent   lib.Option[AlignContent]
+	JustifyContent lib.Option[AlignContent]
 	Gap            geometry.Size[LengthPercentage]
 
 	// Block container properties
@@ -270,7 +273,7 @@ func DefaultStyle() Style {
 			Width:  autoDim,
 			Height: autoDim,
 		},
-		AspectRatio: geometry.None[float32](),
+		AspectRatio: lib.None[float32](),
 		Margin: geometry.Rect[LengthPercentageAuto]{
 			Left:   LengthPercentageAuto{Tag: LPALength, Value: 0},
 			Right:  LengthPercentageAuto{Tag: LPALength, Value: 0},
@@ -289,12 +292,12 @@ func DefaultStyle() Style {
 			Top:    zeroLP,
 			Bottom: zeroLP,
 		},
-		AlignItems:     geometry.None[AlignItems](),
-		AlignSelf:      geometry.None[AlignItems](),
-		JustifyItems:   geometry.None[AlignItems](),
-		JustifySelf:    geometry.None[AlignItems](),
-		AlignContent:   geometry.None[AlignContent](),
-		JustifyContent: geometry.None[AlignContent](),
+		AlignItems:     lib.None[AlignItems](),
+		AlignSelf:      lib.None[AlignItems](),
+		JustifyItems:   lib.None[AlignItems](),
+		JustifySelf:    lib.None[AlignItems](),
+		AlignContent:   lib.None[AlignContent](),
+		JustifyContent: lib.None[AlignContent](),
 		Gap: geometry.Size[LengthPercentage]{
 			Width:  zeroLP,
 			Height: zeroLP,
@@ -373,7 +376,7 @@ func (s *Style) GetMaxSize() geometry.Size[Dimension] {
 	return s.MaxSize
 }
 
-func (s *Style) GetAspectRatio() geometry.Option[float32] {
+func (s *Style) GetAspectRatio() lib.Option[float32] {
 	return s.AspectRatio
 }
 
@@ -429,15 +432,15 @@ func (s *Style) GetGap() geometry.Size[LengthPercentage] {
 	return s.Gap
 }
 
-func (s *Style) GetAlignContent() geometry.Option[AlignContent] {
+func (s *Style) GetAlignContent() lib.Option[AlignContent] {
 	return s.AlignContent
 }
 
-func (s *Style) GetAlignItems() geometry.Option[AlignItems] {
+func (s *Style) GetAlignItems() lib.Option[AlignItems] {
 	return s.AlignItems
 }
 
-func (s *Style) GetJustifyContent() geometry.Option[AlignContent] {
+func (s *Style) GetJustifyContent() lib.Option[AlignContent] {
 	return s.JustifyContent
 }
 
@@ -457,7 +460,7 @@ func (s *Style) GetFlexShrink() float32 {
 	return s.FlexShrink
 }
 
-func (s *Style) GetAlignSelf() geometry.Option[AlignItems] {
+func (s *Style) GetAlignSelf() lib.Option[AlignItems] {
 	return s.AlignSelf
 }
 
@@ -489,7 +492,7 @@ func (s *Style) GetGridAutoFlow() GridAutoFlow {
 	return s.GridAutoFlow
 }
 
-func (s *Style) GetJustifyItems() geometry.Option[AlignItems] {
+func (s *Style) GetJustifyItems() lib.Option[AlignItems] {
 	return s.JustifyItems
 }
 
@@ -513,7 +516,7 @@ func (s *Style) GetGridColumn() geometry.Line[GridPlacement] {
 	return s.GridColumn
 }
 
-func (s *Style) GetJustifySelf() geometry.Option[AlignSelf] {
+func (s *Style) GetJustifySelf() lib.Option[AlignSelf] {
 	return s.JustifySelf
 }
 

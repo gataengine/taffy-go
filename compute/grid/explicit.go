@@ -3,6 +3,7 @@
 package grid
 
 import (
+	"taffy-go/lib"
 	"math"
 
 	"taffy-go/geometry"
@@ -23,7 +24,7 @@ const (
 // Returns (numAutoRepetitions, gridTemplateTrackCount).
 func computeExplicitGridSizeInAxis(
 	containerStyle style.GridContainerStyle,
-	autoFitContainerSize geometry.Option[float32],
+	autoFitContainerSize lib.Option[float32],
 	strategy autoRepeatStrategy,
 	resolveCalcValue style.CalcResolver,
 	axis geometry.AbsoluteAxis,
@@ -123,7 +124,7 @@ func computeExplicitGridSizeInAxis(
 		numRepetitions = 1
 	} else {
 		innerContainerSize := autoFitContainerSize.Value
-		parentSize := geometry.Some(innerContainerSize)
+		parentSize := lib.Some(innerContainerSize)
 
 		trackDefiniteValue := func(sf style.TrackSizingFunction) float32 {
 			maxSize := style.TrackMaxSizingFunction_(sf).DefiniteValue(parentSize, resolveCalcValue)
@@ -163,7 +164,7 @@ func computeExplicitGridSizeInAxis(
 
 		gapSize := style.ResolveOrZeroLP(
 			containerStyle.GetGap().GetAbs(axis),
-			geometry.Some(innerContainerSize),
+			lib.Some(innerContainerSize),
 			resolveCalcValue,
 		)
 

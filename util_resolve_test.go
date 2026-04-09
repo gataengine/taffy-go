@@ -2,6 +2,7 @@
 package taffy
 
 import (
+	"taffy-go/lib"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"taffy-go/geometry"
@@ -34,10 +35,10 @@ func sizeFromPercent(w, h float32) geometry.Size[style.Dimension] {
 	}
 }
 
-func sizeOptionNew(w, h float32) geometry.Size[geometry.Option[float32]] {
-	return geometry.Size[geometry.Option[float32]]{
-		Width:  geometry.Some(w),
-		Height: geometry.Some(h),
+func sizeOptionNew(w, h float32) geometry.Size[lib.Option[float32]] {
+	return geometry.Size[lib.Option[float32]]{
+		Width:  lib.Some(w),
+		Height: lib.Some(h),
 	}
 }
 
@@ -80,24 +81,24 @@ var _ = Describe("MaybeResolve", func() {
 
 	Describe("maybe_resolve_dimension", func() {
 		It("resolve_auto", func() {
-			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, geometry.None[float32](), noopCalc)).To(Equal(geometry.None[float32]()))
-			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, geometry.Some[float32](5.0), noopCalc)).To(Equal(geometry.None[float32]()))
-			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, geometry.Some[float32](-5.0), noopCalc)).To(Equal(geometry.None[float32]()))
-			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, geometry.Some[float32](0.0), noopCalc)).To(Equal(geometry.None[float32]()))
+			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, lib.None[float32](), noopCalc)).To(Equal(lib.None[float32]()))
+			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, lib.Some[float32](5.0), noopCalc)).To(Equal(lib.None[float32]()))
+			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, lib.Some[float32](-5.0), noopCalc)).To(Equal(lib.None[float32]()))
+			Expect(style.MaybeResolveDimOption(style.DimensionAutoValue, lib.Some[float32](0.0), noopCalc)).To(Equal(lib.None[float32]()))
 		})
 
 		It("resolve_length", func() {
-			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), geometry.None[float32](), noopCalc)).To(Equal(geometry.Some[float32](1.0)))
-			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), geometry.Some[float32](5.0), noopCalc)).To(Equal(geometry.Some[float32](1.0)))
-			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), geometry.Some[float32](-5.0), noopCalc)).To(Equal(geometry.Some[float32](1.0)))
-			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), geometry.Some[float32](0.0), noopCalc)).To(Equal(geometry.Some[float32](1.0)))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), lib.None[float32](), noopCalc)).To(Equal(lib.Some[float32](1.0)))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), lib.Some[float32](5.0), noopCalc)).To(Equal(lib.Some[float32](1.0)))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), lib.Some[float32](-5.0), noopCalc)).To(Equal(lib.Some[float32](1.0)))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromLength(1.0), lib.Some[float32](0.0), noopCalc)).To(Equal(lib.Some[float32](1.0)))
 		})
 
 		It("resolve_percent", func() {
-			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), geometry.None[float32](), noopCalc)).To(Equal(geometry.None[float32]()))
-			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), geometry.Some[float32](5.0), noopCalc)).To(Equal(geometry.Some[float32](5.0)))
-			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), geometry.Some[float32](-5.0), noopCalc)).To(Equal(geometry.Some[float32](-5.0)))
-			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), geometry.Some[float32](50.0), noopCalc)).To(Equal(geometry.Some[float32](50.0)))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), lib.None[float32](), noopCalc)).To(Equal(lib.None[float32]()))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), lib.Some[float32](5.0), noopCalc)).To(Equal(lib.Some[float32](5.0)))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), lib.Some[float32](-5.0), noopCalc)).To(Equal(lib.Some[float32](-5.0)))
+			Expect(style.MaybeResolveDimOption(style.DimensionFromPercent(1.0), lib.Some[float32](50.0), noopCalc)).To(Equal(lib.Some[float32](50.0)))
 		})
 	})
 
@@ -137,24 +138,24 @@ var _ = Describe("ResolveOrZero", func() {
 
 	Describe("resolve_or_zero_dimension", func() {
 		It("resolve_or_zero_auto", func() {
-			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, geometry.None[float32](), noopCalc)).To(Equal(float32(0.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, geometry.Some[float32](5.0), noopCalc)).To(Equal(float32(0.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, geometry.Some[float32](-5.0), noopCalc)).To(Equal(float32(0.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, geometry.Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, lib.None[float32](), noopCalc)).To(Equal(float32(0.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, lib.Some[float32](5.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, lib.Some[float32](-5.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionAutoValue, lib.Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
 		})
 
 		It("resolve_or_zero_length", func() {
-			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), geometry.None[float32](), noopCalc)).To(Equal(float32(5.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), geometry.Some[float32](5.0), noopCalc)).To(Equal(float32(5.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), geometry.Some[float32](-5.0), noopCalc)).To(Equal(float32(5.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), geometry.Some[float32](0.0), noopCalc)).To(Equal(float32(5.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), lib.None[float32](), noopCalc)).To(Equal(float32(5.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), lib.Some[float32](5.0), noopCalc)).To(Equal(float32(5.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), lib.Some[float32](-5.0), noopCalc)).To(Equal(float32(5.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromLength(5.0), lib.Some[float32](0.0), noopCalc)).To(Equal(float32(5.0)))
 		})
 
 		It("resolve_or_zero_percent", func() {
-			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), geometry.None[float32](), noopCalc)).To(Equal(float32(0.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), geometry.Some[float32](5.0), noopCalc)).To(Equal(float32(25.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), geometry.Some[float32](-5.0), noopCalc)).To(Equal(float32(-25.0)))
-			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), geometry.Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), lib.None[float32](), noopCalc)).To(Equal(float32(0.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), lib.Some[float32](5.0), noopCalc)).To(Equal(float32(25.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), lib.Some[float32](-5.0), noopCalc)).To(Equal(float32(-25.0)))
+			Expect(style.ResolveOrZeroDim(style.DimensionFromPercent(5.0), lib.Some[float32](0.0), noopCalc)).To(Equal(float32(0.0)))
 		})
 	})
 
@@ -186,29 +187,29 @@ var _ = Describe("ResolveOrZero", func() {
 	})
 
 	// -----------------------------------------------------------------------
-	// resolve_or_zero_rect_dimension_to_rect_f32_via_option (geometry.Option[float32] context)
+	// resolve_or_zero_rect_dimension_to_rect_f32_via_option (lib.Option[float32] context)
 	// -----------------------------------------------------------------------
 
 	Describe("resolve_or_zero_rect_dimension_option_context", func() {
 		It("resolve_or_zero_auto", func() {
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), geometry.None[float32](), noopCalc)).To(Equal(geometry.RectZeroF32))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), geometry.Some[float32](5.0), noopCalc)).To(Equal(geometry.RectZeroF32))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), geometry.Some[float32](-5.0), noopCalc)).To(Equal(geometry.RectZeroF32))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), geometry.Some[float32](0.0), noopCalc)).To(Equal(geometry.RectZeroF32))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), lib.None[float32](), noopCalc)).To(Equal(geometry.RectZeroF32))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), lib.Some[float32](5.0), noopCalc)).To(Equal(geometry.RectZeroF32))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), lib.Some[float32](-5.0), noopCalc)).To(Equal(geometry.RectZeroF32))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectDimensionAuto(), lib.Some[float32](0.0), noopCalc)).To(Equal(geometry.RectZeroF32))
 		})
 
 		It("resolve_or_zero_length", func() {
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), geometry.None[float32](), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), geometry.Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), geometry.Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), geometry.Some[float32](0.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), lib.None[float32](), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), lib.Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), lib.Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromLength(5.0, 5.0, 5.0, 5.0), lib.Some[float32](0.0), noopCalc)).To(Equal(rectNewF32(5.0, 5.0, 5.0, 5.0)))
 		})
 
 		It("resolve_or_zero_percent", func() {
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), geometry.None[float32](), noopCalc)).To(Equal(geometry.RectZeroF32))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), geometry.Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(25.0, 25.0, 25.0, 25.0)))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), geometry.Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(-25.0, -25.0, -25.0, -25.0)))
-			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), geometry.Some[float32](0.0), noopCalc)).To(Equal(geometry.RectZeroF32))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), lib.None[float32](), noopCalc)).To(Equal(geometry.RectZeroF32))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), lib.Some[float32](5.0), noopCalc)).To(Equal(rectNewF32(25.0, 25.0, 25.0, 25.0)))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), lib.Some[float32](-5.0), noopCalc)).To(Equal(rectNewF32(-25.0, -25.0, -25.0, -25.0)))
+			Expect(style.ResolveOrZeroRectDimOptionContext(rectFromPercent(5.0, 5.0, 5.0, 5.0), lib.Some[float32](0.0), noopCalc)).To(Equal(geometry.RectZeroF32))
 		})
 	})
 })

@@ -3,6 +3,7 @@
 package taffy
 
 import (
+	"taffy-go/lib"
 	"fmt"
 
 	"taffy-go/compute"
@@ -39,8 +40,8 @@ func (nd *nodeData) markDirty() tree.ClearState {
 // NodeContext is a user-provided measure function for leaf nodes.
 // It computes the intrinsic size of the node given constraints.
 type NodeContext = func(
-	knownDimensions geometry.Size[geometry.Option[float32]],
-	parentSize geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
+	parentSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	sizingMode tree.SizingMode,
 ) geometry.Size[float32]
@@ -432,7 +433,7 @@ func (t *TaffyTree) IsDirty(node tree.NodeId) bool {
 // MeasureFunction is a function type used by taffyView during layout computation.
 // It computes the intrinsic size of a leaf node given constraints.
 type MeasureFunction = func(
-	knownDimensions geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	nodeId tree.NodeId,
 	context *NodeContext,

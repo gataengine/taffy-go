@@ -3,6 +3,7 @@
 package tree
 
 import (
+	"taffy-go/lib"
 	"taffy-go/geometry"
 	"taffy-go/style"
 )
@@ -99,8 +100,8 @@ type LayoutBlockContainer interface {
 func MeasureChildSize(
 	tree LayoutPartialTree,
 	nodeId NodeId,
-	knownDimensions geometry.Size[geometry.Option[float32]],
-	parentSize geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
+	parentSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	sizingMode SizingMode,
 	axis geometry.AbsoluteAxis,
@@ -122,8 +123,8 @@ func MeasureChildSize(
 func PerformChildLayout(
 	tree LayoutPartialTree,
 	nodeId NodeId,
-	knownDimensions geometry.Size[geometry.Option[float32]],
-	parentSize geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
+	parentSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	sizingMode SizingMode,
 	verticalMarginsAreCollapsible geometry.Line[bool],

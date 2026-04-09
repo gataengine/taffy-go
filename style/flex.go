@@ -2,7 +2,10 @@
 // This file is a port of flex.rs from the Taffy Rust layout engine.
 package style
 
-import "taffy-go/geometry"
+import (
+	"taffy-go/geometry"
+	"taffy-go/lib"
+)
 
 // FlexDirection controls the direction of the flexbox layout main axis.
 //
@@ -85,9 +88,9 @@ type FlexboxContainerStyle interface {
 	GetFlexDirection() FlexDirection
 	GetFlexWrap() FlexWrap
 	GetGap() geometry.Size[LengthPercentage]
-	GetAlignContent() geometry.Option[AlignContent]
-	GetAlignItems() geometry.Option[AlignItems]
-	GetJustifyContent() geometry.Option[AlignContent]
+	GetAlignContent() lib.Option[AlignContent]
+	GetAlignItems() lib.Option[AlignItems]
+	GetJustifyContent() lib.Option[AlignContent]
 }
 
 // FlexboxItemStyle is the set of styles required for a Flexbox item (child of a Flexbox container).
@@ -95,5 +98,5 @@ type FlexboxItemStyle interface {
 	GetFlexBasis() Dimension
 	GetFlexGrow() float32
 	GetFlexShrink() float32
-	GetAlignSelf() geometry.Option[AlignItems]
+	GetAlignSelf() lib.Option[AlignItems]
 }

@@ -3,9 +3,9 @@
 package grid
 
 import (
+	"taffy-go/lib"
 	"math"
 
-	"taffy-go/geometry"
 	"taffy-go/style"
 )
 
@@ -124,7 +124,7 @@ func (t *gridTrack) hasIntrinsicSizingFunction() bool {
 }
 
 // fitContentLimit returns the fit-content limit for this track.
-func (t *gridTrack) fitContentLimit(axisAvailableGridSpace geometry.Option[float32]) float32 {
+func (t *gridTrack) fitContentLimit(axisAvailableGridSpace lib.Option[float32]) float32 {
 	switch t.maxTrackSizingFunction.Tag {
 	case style.MaxTrackFitContentPx:
 		return t.maxTrackSizingFunction.Value
@@ -139,7 +139,7 @@ func (t *gridTrack) fitContentLimit(axisAvailableGridSpace geometry.Option[float
 }
 
 // fitContentLimitedGrowthLimit returns the growth limit clamped by the fit-content limit.
-func (t *gridTrack) fitContentLimitedGrowthLimit(axisAvailableGridSpace geometry.Option[float32]) float32 {
+func (t *gridTrack) fitContentLimitedGrowthLimit(axisAvailableGridSpace lib.Option[float32]) float32 {
 	limit := t.fitContentLimit(axisAvailableGridSpace)
 	if t.growthLimit < limit {
 		return t.growthLimit

@@ -3,6 +3,7 @@
 package tree
 
 import (
+	"taffy-go/lib"
 	"taffy-go/geometry"
 	"taffy-go/style"
 )
@@ -123,9 +124,9 @@ type LayoutInput struct {
 	// Axis is which axis we need the size of.
 	Axis RequestedAxis
 	// KnownDimensions are dimensions (width/height) which should be taken as fixed when performing layout.
-	KnownDimensions geometry.Size[geometry.Option[float32]]
+	KnownDimensions geometry.Size[lib.Option[float32]]
 	// ParentSize dimensions are intended to be used for percentage resolution.
-	ParentSize geometry.Size[geometry.Option[float32]]
+	ParentSize geometry.Size[lib.Option[float32]]
 	// AvailableSpace represents an amount of space to layout into, used as a soft constraint for wrapping.
 	AvailableSpace geometry.Size[style.AvailableSpace]
 	// VerticalMarginsAreCollapsible is specific to CSS Block layout for correctly computing margin collapsing.
@@ -150,7 +151,7 @@ type LayoutOutput struct {
 	// ContentSize is the size of the content within the node.
 	ContentSize geometry.Size[float32]
 	// FirstBaselines is the first baseline of the node in each dimension, if any.
-	FirstBaselines geometry.Point[geometry.Option[float32]]
+	FirstBaselines geometry.Point[lib.Option[float32]]
 	// TopMargin is the top margin that can be collapsed with (for CSS block layout).
 	TopMargin CollapsibleMarginSet
 	// BottomMargin is the bottom margin that can be collapsed with (for CSS block layout).
@@ -173,7 +174,7 @@ var HiddenLayoutOutput = LayoutOutput{
 var DefaultLayoutOutput = HiddenLayoutOutput
 
 // LayoutOutputFromSizesAndBaselines constructs a LayoutOutput from size, content size, and baselines.
-func LayoutOutputFromSizesAndBaselines(size geometry.Size[float32], contentSize geometry.Size[float32], firstBaselines geometry.Point[geometry.Option[float32]]) LayoutOutput {
+func LayoutOutputFromSizesAndBaselines(size geometry.Size[float32], contentSize geometry.Size[float32], firstBaselines geometry.Point[lib.Option[float32]]) LayoutOutput {
 	return LayoutOutput{
 		Size:                      size,
 		ContentSize:               contentSize,

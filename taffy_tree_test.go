@@ -1,6 +1,7 @@
 package taffy
 
 import (
+	"taffy-go/lib"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"taffy-go/geometry"
@@ -46,8 +47,8 @@ var _ = Describe("TaffyTree", func() {
 		It("creates a leaf node with a measure context", func() {
 			tree := New()
 			ctx := NodeContext(func(
-				_ geometry.Size[geometry.Option[float32]],
-				_ geometry.Size[geometry.Option[float32]],
+				_ geometry.Size[lib.Option[float32]],
+				_ geometry.Size[lib.Option[float32]],
 				_ geometry.Size[style.AvailableSpace],
 				_ treepkg.SizingMode,
 			) geometry.Size[float32] {
@@ -140,8 +141,8 @@ var _ = Describe("TaffyTree", func() {
 			Expect(tree.GetNodeContext(node)).To(BeNil())
 
 			ctx := NodeContext(func(
-				_ geometry.Size[geometry.Option[float32]],
-				_ geometry.Size[geometry.Option[float32]],
+				_ geometry.Size[lib.Option[float32]],
+				_ geometry.Size[lib.Option[float32]],
 				_ geometry.Size[style.AvailableSpace],
 				_ treepkg.SizingMode,
 			) geometry.Size[float32] {
@@ -154,8 +155,8 @@ var _ = Describe("TaffyTree", func() {
 		It("removes context when nil is passed", func() {
 			tree := New()
 			ctx := NodeContext(func(
-				_ geometry.Size[geometry.Option[float32]],
-				_ geometry.Size[geometry.Option[float32]],
+				_ geometry.Size[lib.Option[float32]],
+				_ geometry.Size[lib.Option[float32]],
 				_ geometry.Size[style.AvailableSpace],
 				_ treepkg.SizingMode,
 			) geometry.Size[float32] {

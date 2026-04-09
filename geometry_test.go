@@ -1,6 +1,7 @@
 package taffy
 
 import (
+	"taffy-go/lib"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"taffy-go/geometry"
@@ -8,33 +9,33 @@ import (
 
 var _ = Describe("Option", func() {
 	It("Some holds a value", func() {
-		o := geometry.Some(42)
+		o := lib.Some(42)
 		Expect(o.IsSome).To(BeTrue())
 		Expect(o.Value).To(Equal(42))
 	})
 
 	It("None holds no value", func() {
-		o := geometry.None[int]()
+		o := lib.None[int]()
 		Expect(o.IsSome).To(BeFalse())
 	})
 
 	It("UnwrapOr returns value when Some", func() {
-		Expect(geometry.Some(7).UnwrapOr(0)).To(Equal(7))
+		Expect(lib.Some(7).UnwrapOr(0)).To(Equal(7))
 	})
 
 	It("UnwrapOr returns alt when None", func() {
-		Expect(geometry.None[int]().UnwrapOr(99)).To(Equal(99))
+		Expect(lib.None[int]().UnwrapOr(99)).To(Equal(99))
 	})
 
 	It("Or returns self when Some", func() {
-		a := geometry.Some(1)
-		b := geometry.Some(2)
+		a := lib.Some(1)
+		b := lib.Some(2)
 		Expect(a.Or(b)).To(Equal(a))
 	})
 
 	It("Or returns alt when None", func() {
-		a := geometry.None[int]()
-		b := geometry.Some(2)
+		a := lib.None[int]()
+		b := lib.Some(2)
 		Expect(a.Or(b)).To(Equal(b))
 	})
 })
@@ -294,48 +295,48 @@ var _ = Describe("Size", func() {
 var _ = Describe("SizeOption", func() {
 	It("geometry.SizeOptionMaybeApplyAspectRatio does nothing when aspect ratio is None", func() {
 		s := geometry.NewSizeOptionF32(100, 50)
-		result := geometry.SizeOptionMaybeApplyAspectRatio(s, geometry.None[float32]())
+		result := geometry.SizeOptionMaybeApplyAspectRatio(s, lib.None[float32]())
 		Expect(result).To(Equal(s))
 	})
 
 	It("geometry.SizeOptionMaybeApplyAspectRatio computes height from width", func() {
-		s := geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.Some(float32(100)),
-			Height: geometry.None[float32](),
+		s := geometry.Size[lib.Option[float32]]{
+			Width:  lib.Some(float32(100)),
+			Height: lib.None[float32](),
 		}
 		// aspect ratio = width/height = 2, so height = width/ratio = 50
-		result := geometry.SizeOptionMaybeApplyAspectRatio(s, geometry.Some(float32(2)))
+		result := geometry.SizeOptionMaybeApplyAspectRatio(s, lib.Some(float32(2)))
 		Expect(result.Width.Value).To(Equal(float32(100)))
 		Expect(result.Height.Value).To(Equal(float32(50)))
 	})
 
 	It("geometry.SizeOptionMaybeApplyAspectRatio computes width from height", func() {
-		s := geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.None[float32](),
-			Height: geometry.Some(float32(50)),
+		s := geometry.Size[lib.Option[float32]]{
+			Width:  lib.None[float32](),
+			Height: lib.Some(float32(50)),
 		}
 		// aspect ratio = 2, so width = height * ratio = 100
-		result := geometry.SizeOptionMaybeApplyAspectRatio(s, geometry.Some(float32(2)))
+		result := geometry.SizeOptionMaybeApplyAspectRatio(s, lib.Some(float32(2)))
 		Expect(result.Width.Value).To(Equal(float32(100)))
 		Expect(result.Height.Value).To(Equal(float32(50)))
 	})
 
 	It("geometry.SizeOptionMaybeApplyAspectRatio does nothing when both are Some", func() {
 		s := geometry.NewSizeOptionF32(100, 50)
-		result := geometry.SizeOptionMaybeApplyAspectRatio(s, geometry.Some(float32(3)))
+		result := geometry.SizeOptionMaybeApplyAspectRatio(s, lib.Some(float32(3)))
 		Expect(result).To(Equal(s))
 	})
 
 	It("geometry.SizeOptionMaybeApplyAspectRatio does nothing when both are None", func() {
 		s := geometry.SizeOptionNone
-		result := geometry.SizeOptionMaybeApplyAspectRatio(s, geometry.Some(float32(2)))
+		result := geometry.SizeOptionMaybeApplyAspectRatio(s, lib.Some(float32(2)))
 		Expect(result).To(Equal(s))
 	})
 
 	It("geometry.SizeOptionUnwrapOr returns values where Some, alt where None", func() {
-		s := geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.Some(float32(10)),
-			Height: geometry.None[float32](),
+		s := geometry.Size[lib.Option[float32]]{
+			Width:  lib.Some(float32(10)),
+			Height: lib.None[float32](),
 		}
 		alt := geometry.Size[float32]{Width: 99, Height: 88}
 		result := geometry.SizeOptionUnwrapOr(s, alt)
@@ -349,9 +350,9 @@ var _ = Describe("SizeOption", func() {
 	})
 
 	It("geometry.SizeOptionBothAxisDefined returns false when one is None", func() {
-		s := geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.Some(float32(1)),
-			Height: geometry.None[float32](),
+		s := geometry.Size[lib.Option[float32]]{
+			Width:  lib.Some(float32(1)),
+			Height: lib.None[float32](),
 		}
 		Expect(geometry.SizeOptionBothAxisDefined(s)).To(BeFalse())
 	})

@@ -3,9 +3,9 @@
 package style
 
 import (
+	"taffy-go/lib"
 	"math"
 
-	"taffy-go/geometry"
 )
 
 // LengthPercentageTag identifies the variant of a LengthPercentage value.
@@ -177,11 +177,11 @@ func (d Dimension) IsAuto() bool {
 }
 
 // IntoOption returns Some(value) if this is a Length variant, otherwise None.
-func (d Dimension) IntoOption() geometry.Option[float32] {
+func (d Dimension) IntoOption() lib.Option[float32] {
 	if d.Tag == DimensionLength {
-		return geometry.Some(d.Value)
+		return lib.Some(d.Value)
 	}
-	return geometry.None[float32]()
+	return lib.None[float32]()
 }
 
 // DimensionZero is a Dimension with value 0.

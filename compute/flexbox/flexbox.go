@@ -3,6 +3,7 @@
 package flexbox
 
 import (
+	"taffy-go/lib"
 	"math"
 
 	"taffy-go/compute"
@@ -64,15 +65,15 @@ func sizeWithCross[T any](s geometry.Size[T], dir style.FlexDirection, val T) ge
 	return r
 }
 
-// sizeFromCross creates a geometry.Size[geometry.Option[float32]] with only the cross axis set.
-func sizeFromCross(dir style.FlexDirection, val geometry.Option[float32]) geometry.Size[geometry.Option[float32]] {
+// sizeFromCross creates a geometry.Size[lib.Option[float32]] with only the cross axis set.
+func sizeFromCross(dir style.FlexDirection, val lib.Option[float32]) geometry.Size[lib.Option[float32]] {
 	s := geometry.SizeOptionNone
 	sizeSetCross(&s, dir, val)
 	return s
 }
 
 // sizeOptionMain returns the main-axis option component.
-func sizeOptionMain(s geometry.Size[geometry.Option[float32]], dir style.FlexDirection) geometry.Option[float32] {
+func sizeOptionMain(s geometry.Size[lib.Option[float32]], dir style.FlexDirection) lib.Option[float32] {
 	if dir.IsRow() {
 		return s.Width
 	}
@@ -80,7 +81,7 @@ func sizeOptionMain(s geometry.Size[geometry.Option[float32]], dir style.FlexDir
 }
 
 // sizeOptionCross returns the cross-axis option component.
-func sizeOptionCross(s geometry.Size[geometry.Option[float32]], dir style.FlexDirection) geometry.Option[float32] {
+func sizeOptionCross(s geometry.Size[lib.Option[float32]], dir style.FlexDirection) lib.Option[float32] {
 	if dir.IsRow() {
 		return s.Height
 	}
@@ -88,17 +89,17 @@ func sizeOptionCross(s geometry.Size[geometry.Option[float32]], dir style.FlexDi
 }
 
 // sizeOptionSetMain sets the main-axis option.
-func sizeOptionSetMain(s *geometry.Size[geometry.Option[float32]], dir style.FlexDirection, val geometry.Option[float32]) {
+func sizeOptionSetMain(s *geometry.Size[lib.Option[float32]], dir style.FlexDirection, val lib.Option[float32]) {
 	sizeSetMain(s, dir, val)
 }
 
 // sizeOptionSetCross sets the cross-axis option.
-func sizeOptionSetCross(s *geometry.Size[geometry.Option[float32]], dir style.FlexDirection, val geometry.Option[float32]) {
+func sizeOptionSetCross(s *geometry.Size[lib.Option[float32]], dir style.FlexDirection, val lib.Option[float32]) {
 	sizeSetCross(s, dir, val)
 }
 
 // sizeOptionWithMain returns a copy with main axis replaced.
-func sizeOptionWithMain(s geometry.Size[geometry.Option[float32]], dir style.FlexDirection, val geometry.Option[float32]) geometry.Size[geometry.Option[float32]] {
+func sizeOptionWithMain(s geometry.Size[lib.Option[float32]], dir style.FlexDirection, val lib.Option[float32]) geometry.Size[lib.Option[float32]] {
 	return sizeWithMain(s, dir, val)
 }
 
@@ -213,7 +214,7 @@ func rectCrossEnd(r geometry.Rect[float32], dir style.FlexDirection) float32 {
 }
 
 // rectOptionMainStart returns the main-start Option value.
-func rectOptionMainStart(r geometry.Rect[geometry.Option[float32]], dir style.FlexDirection) geometry.Option[float32] {
+func rectOptionMainStart(r geometry.Rect[lib.Option[float32]], dir style.FlexDirection) lib.Option[float32] {
 	switch dir {
 	case style.FlexDirectionRow:
 		return r.Left
@@ -227,7 +228,7 @@ func rectOptionMainStart(r geometry.Rect[geometry.Option[float32]], dir style.Fl
 }
 
 // rectOptionMainEnd returns the main-end Option value.
-func rectOptionMainEnd(r geometry.Rect[geometry.Option[float32]], dir style.FlexDirection) geometry.Option[float32] {
+func rectOptionMainEnd(r geometry.Rect[lib.Option[float32]], dir style.FlexDirection) lib.Option[float32] {
 	switch dir {
 	case style.FlexDirectionRow:
 		return r.Right
@@ -241,7 +242,7 @@ func rectOptionMainEnd(r geometry.Rect[geometry.Option[float32]], dir style.Flex
 }
 
 // rectOptionCrossStart returns the cross-start Option value.
-func rectOptionCrossStart(r geometry.Rect[geometry.Option[float32]], dir style.FlexDirection) geometry.Option[float32] {
+func rectOptionCrossStart(r geometry.Rect[lib.Option[float32]], dir style.FlexDirection) lib.Option[float32] {
 	switch dir {
 	case style.FlexDirectionRow, style.FlexDirectionRowReverse:
 		return r.Top
@@ -251,7 +252,7 @@ func rectOptionCrossStart(r geometry.Rect[geometry.Option[float32]], dir style.F
 }
 
 // rectOptionCrossEnd returns the cross-end Option value.
-func rectOptionCrossEnd(r geometry.Rect[geometry.Option[float32]], dir style.FlexDirection) geometry.Option[float32] {
+func rectOptionCrossEnd(r geometry.Rect[lib.Option[float32]], dir style.FlexDirection) lib.Option[float32] {
 	switch dir {
 	case style.FlexDirectionRow, style.FlexDirectionRowReverse:
 		return r.Bottom
@@ -341,7 +342,7 @@ func asClampF32(a style.AvailableSpace, min, max float32) style.AvailableSpace {
 }
 
 // asClampOption clamps an style.AvailableSpace with optional min/max.
-func asClampOption(a style.AvailableSpace, min_, max_ geometry.Option[float32]) style.AvailableSpace {
+func asClampOption(a style.AvailableSpace, min_, max_ lib.Option[float32]) style.AvailableSpace {
 	if a.Tag == style.AvailableSpaceDefinite {
 		v := a.Value
 		if min_.IsSome && max_.IsSome {
@@ -389,10 +390,10 @@ func computeContentSizeContribution(
 	return geometry.SizeZeroF32
 }
 
-// resolveRectLPAToOption resolves a geometry.Rect[style.LengthPercentageAuto] to geometry.Rect[geometry.Option[float32]]
+// resolveRectLPAToOption resolves a geometry.Rect[style.LengthPercentageAuto] to geometry.Rect[lib.Option[float32]]
 // where all four sides are resolved against the same context value.
-func resolveRectLPAToOption(rect geometry.Rect[style.LengthPercentageAuto], context float32, calc style.CalcResolver) geometry.Rect[geometry.Option[float32]] {
-	return geometry.Rect[geometry.Option[float32]]{
+func resolveRectLPAToOption(rect geometry.Rect[style.LengthPercentageAuto], context float32, calc style.CalcResolver) geometry.Rect[lib.Option[float32]] {
+	return geometry.Rect[lib.Option[float32]]{
 		Left:   style.MaybeResolveLPAF32(rect.Left, context, calc),
 		Right:  style.MaybeResolveLPAF32(rect.Right, context, calc),
 		Top:    style.MaybeResolveLPAF32(rect.Top, context, calc),
@@ -404,8 +405,8 @@ func resolveRectLPAToOption(rect geometry.Rect[style.LengthPercentageAuto], cont
 func measureChildSizeBoth(
 	t tree.LayoutPartialTree,
 	nodeId tree.NodeId,
-	knownDimensions geometry.Size[geometry.Option[float32]],
-	parentSize geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
+	parentSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	sizingMode tree.SizingMode,
 	verticalMarginsAreCollapsible geometry.Line[bool],
@@ -430,9 +431,9 @@ type flexItem struct {
 	node  tree.NodeId
 	order uint32
 
-	size    geometry.Size[geometry.Option[float32]]
-	minSize geometry.Size[geometry.Option[float32]]
-	maxSize geometry.Size[geometry.Option[float32]]
+	size    geometry.Size[lib.Option[float32]]
+	minSize geometry.Size[lib.Option[float32]]
+	maxSize geometry.Size[lib.Option[float32]]
 
 	alignSelf      style.AlignSelf
 	overflow       geometry.Point[style.Overflow]
@@ -442,7 +443,7 @@ type flexItem struct {
 
 	resolvedMinimumMainSize float32
 
-	inset        geometry.Rect[geometry.Option[float32]]
+	inset        geometry.Rect[lib.Option[float32]]
 	margin       geometry.Rect[float32]
 	marginIsAuto geometry.Rect[bool]
 	padding      geometry.Rect[float32]
@@ -487,8 +488,8 @@ type algoConstants struct {
 	isWrap          bool
 	isWrapReverse   bool
 
-	minSize geometry.Size[geometry.Option[float32]]
-	maxSize geometry.Size[geometry.Option[float32]]
+	minSize geometry.Size[lib.Option[float32]]
+	maxSize geometry.Size[lib.Option[float32]]
 
 	margin          geometry.Rect[float32]
 	border          geometry.Rect[float32]
@@ -498,10 +499,10 @@ type algoConstants struct {
 
 	alignItems     style.AlignItems
 	alignContent   style.AlignContent
-	justifyContent geometry.Option[style.AlignContent]
+	justifyContent lib.Option[style.AlignContent]
 
-	nodeOuterSize      geometry.Size[geometry.Option[float32]]
-	nodeInnerSize      geometry.Size[geometry.Option[float32]]
+	nodeOuterSize      geometry.Size[lib.Option[float32]]
+	nodeInnerSize      geometry.Size[lib.Option[float32]]
 	containerSize      geometry.Size[float32]
 	innerContainerSize geometry.Size[float32]
 }
@@ -537,17 +538,17 @@ func ComputeFlexboxLayout(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMinSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	maxSize := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMaxSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 
-	var clampedStyleSize geometry.Size[geometry.Option[float32]]
+	var clampedStyleSize geometry.Size[lib.Option[float32]]
 	if inputs.SizingMode == tree.SizingModeInherentSize {
 		clampedStyleSize = geometry.SizeMaybeClamp(
 			geometry.SizeMaybeAdd(
@@ -555,7 +556,7 @@ func ComputeFlexboxLayout(
 					style.MaybeResolveSizeDimOption(coreStyle.GetSize(), parentSize, calc),
 					aspectRatio,
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 			),
 			minSize,
 			maxSize,
@@ -565,18 +566,18 @@ func ComputeFlexboxLayout(
 	}
 
 	// If both min and max in a given axis are set and max <= min then this determines the size.
-	minMaxDefiniteSize := geometry.SizeZipMap(minSize, maxSize, func(min, max geometry.Option[float32]) geometry.Option[float32] {
+	minMaxDefiniteSize := geometry.SizeZipMap(minSize, maxSize, func(min, max lib.Option[float32]) lib.Option[float32] {
 		if min.IsSome && max.IsSome && max.Value <= min.Value {
 			return min
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	})
 
 	styledBasedKnownDimensions := geometry.SizeMaybeMax(
 		geometry.SizeOptionOr(knownDimensions,
 			geometry.SizeOptionOr(minMaxDefiniteSize, clampedStyleSize),
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSum.Width), Height: geometry.Some(paddingBorderSum.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSum.Width), Height: lib.Some(paddingBorderSum.Height)},
 	)
 
 	// Short-circuit if container size is fully known and we only need the size.
@@ -633,8 +634,8 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 		sizeSetMain(&constants.containerSize, constants.dir, outerMainSize)
 	} else {
 		determineContainerMainSize(t, availableSpace, flexLines, &constants)
-		sizeOptionSetMain(&constants.nodeInnerSize, constants.dir, geometry.Some(sizeMain(constants.innerContainerSize, constants.dir)))
-		sizeOptionSetMain(&constants.nodeOuterSize, constants.dir, geometry.Some(sizeMain(constants.containerSize, constants.dir)))
+		sizeOptionSetMain(&constants.nodeInnerSize, constants.dir, lib.Some(sizeMain(constants.innerContainerSize, constants.dir)))
+		sizeOptionSetMain(&constants.nodeOuterSize, constants.dir, lib.Some(sizeMain(constants.containerSize, constants.dir)))
 
 		// Re-resolve percentage gaps.
 		containerStyle := t.GetFlexboxContainerStyle(node)
@@ -646,7 +647,7 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 			}
 			return containerStyle.GetGap().Height
 		}()
-		newGap := style.MaybeResolveLPOption(mainGapLP, geometry.Some(innerContainerSizeMain), calc).UnwrapOr(0.0)
+		newGap := style.MaybeResolveLPOption(mainGapLP, lib.Some(innerContainerSizeMain), calc).UnwrapOr(0.0)
 		sizeSetMain(&constants.gap, constants.dir, newGap)
 	}
 
@@ -715,7 +716,7 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 	}
 
 	// 8.5. Calculate flex container baselines.
-	var firstVerticalBaseline geometry.Option[float32]
+	var firstVerticalBaseline lib.Option[float32]
 	if len(flexLines) > 0 {
 		var baselineChild *flexItem
 		for _, item := range flexLines[0].items {
@@ -732,14 +733,14 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 			if !constants.isRow {
 				offsetVertical = baselineChild.offsetMain
 			}
-			firstVerticalBaseline = geometry.Some(offsetVertical + baselineChild.baseline)
+			firstVerticalBaseline = lib.Some(offsetVertical + baselineChild.baseline)
 		}
 	}
 
 	return tree.LayoutOutputFromSizesAndBaselines(
 		constants.containerSize,
 		geometry.SizeF32Max(inflowContentSize, absoluteContentSize),
-		geometry.Point[geometry.Option[float32]]{X: geometry.None[float32](), Y: firstVerticalBaseline},
+		geometry.Point[lib.Option[float32]]{X: lib.None[float32](), Y: firstVerticalBaseline},
 	)
 }
 
@@ -750,8 +751,8 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 func computeConstants(
 	t tree.LayoutFlexboxContainer,
 	node tree.NodeId,
-	knownDimensions geometry.Size[geometry.Option[float32]],
-	parentSize geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
+	parentSize geometry.Size[lib.Option[float32]],
 ) algoConstants {
 	containerStyle := t.GetFlexboxContainerStyle(node)
 	coreStyle := t.GetCoreContainerStyle(node)
@@ -805,12 +806,12 @@ func computeConstants(
 	}
 
 	nodeOuterSize := knownDimensions
-	nodeInnerSize := geometry.SizeMaybeSub(nodeOuterSize, geometry.Size[geometry.Option[float32]]{
-		Width:  geometry.Some(geometry.RectHorizontalAxisSum(contentBoxInset)),
-		Height: geometry.Some(geometry.RectVerticalAxisSum(contentBoxInset)),
+	nodeInnerSize := geometry.SizeMaybeSub(nodeOuterSize, geometry.Size[lib.Option[float32]]{
+		Width:  lib.Some(geometry.RectHorizontalAxisSum(contentBoxInset)),
+		Height: lib.Some(geometry.RectVerticalAxisSum(contentBoxInset)),
 	})
 
-	nodeInnerSizeOr := geometry.SizeOptionOr(nodeInnerSize, geometry.Size[geometry.Option[float32]]{Width: geometry.Some[float32](0), Height: geometry.Some[float32](0)})
+	nodeInnerSizeOr := geometry.SizeOptionOr(nodeInnerSize, geometry.Size[lib.Option[float32]]{Width: lib.Some[float32](0), Height: lib.Some[float32](0)})
 	gap := geometry.Size[float32]{
 		Width:  style.MaybeResolveLPOption(containerStyle.GetGap().Width, nodeInnerSizeOr.Width, calc).UnwrapOr(0.0),
 		Height: style.MaybeResolveLPOption(containerStyle.GetGap().Height, nodeInnerSizeOr.Height, calc).UnwrapOr(0.0),
@@ -828,14 +829,14 @@ func computeConstants(
 				style.MaybeResolveSizeDimOption(coreStyle.GetMinSize(), parentSize, calc),
 				aspectRatio,
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 		),
 		maxSize: geometry.SizeMaybeAdd(
 			geometry.SizeOptionMaybeApplyAspectRatio(
 				style.MaybeResolveSizeDimOption(coreStyle.GetMaxSize(), parentSize, calc),
 				aspectRatio,
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 		),
 		margin:             margin,
 		border:             border,
@@ -893,25 +894,25 @@ func generateAnonymousFlexItems(
 					style.MaybeResolveSizeDimOption(childCoreStyle.GetSize(), constants.nodeInnerSize, calc),
 					aspectRatio,
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdj.Width), Height: geometry.Some(boxSizingAdj.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdj.Width), Height: lib.Some(boxSizingAdj.Height)},
 			),
 			minSize: geometry.SizeMaybeAdd(
 				geometry.SizeOptionMaybeApplyAspectRatio(
 					style.MaybeResolveSizeDimOption(childCoreStyle.GetMinSize(), constants.nodeInnerSize, calc),
 					aspectRatio,
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdj.Width), Height: geometry.Some(boxSizingAdj.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdj.Width), Height: lib.Some(boxSizingAdj.Height)},
 			),
 			maxSize: geometry.SizeMaybeAdd(
 				geometry.SizeOptionMaybeApplyAspectRatio(
 					style.MaybeResolveSizeDimOption(childCoreStyle.GetMaxSize(), constants.nodeInnerSize, calc),
 					aspectRatio,
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdj.Width), Height: geometry.Some(boxSizingAdj.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdj.Width), Height: lib.Some(boxSizingAdj.Height)},
 			),
 
 			inset: geometry.RectZipSize(childCoreStyle.GetInset(), constants.nodeInnerSize,
-				func(p style.LengthPercentageAuto, s geometry.Option[float32]) geometry.Option[float32] {
+				func(p style.LengthPercentageAuto, s lib.Option[float32]) lib.Option[float32] {
 					return style.MaybeResolveLPAOption(p, s, calc)
 				},
 			),
@@ -950,7 +951,7 @@ func generateAnonymousFlexItems(
 // ---------------------------------------------------------------------------
 
 func determineAvailableSpace(
-	knownDimensions geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
 	outerAvailableSpace geometry.Size[style.AvailableSpace],
 	constants *algoConstants,
 ) geometry.Size[style.AvailableSpace] {
@@ -1024,13 +1025,13 @@ func determineFlexBaseSize(
 		}
 
 		// Known dimensions for child sizing.
-		childKnownDimensions := sizeOptionWithMain(child.size, dir, geometry.None[float32]())
+		childKnownDimensions := sizeOptionWithMain(child.size, dir, lib.None[float32]())
 		if child.alignSelf == style.AlignItemsStretch &&
 			!rectBoolCrossStart(child.marginIsAuto, constants.dir) &&
 			!rectBoolCrossEnd(child.marginIsAuto, constants.dir) &&
 			!sizeOptionCross(childKnownDimensions, dir).IsSome {
 			sizeSetCross(&childKnownDimensions, dir,
-				geometry.MaybeSubOption(crossAxisAvailableSpace.IntoOption(), geometry.Some(rectCrossAxisSum(child.margin, dir))),
+				geometry.MaybeSubOption(crossAxisAvailableSpace.IntoOption(), lib.Some(rectCrossAxisSum(child.margin, dir))),
 			)
 		}
 
@@ -1084,16 +1085,16 @@ func determineFlexBaseSize(
 		// Hypothetical main size.
 		child.innerFlexBasis = child.flexBasis - rectMainAxisSum(child.padding, constants.dir) - rectMainAxisSum(child.border, constants.dir)
 
-		paddingBorderAxesSums := geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.Some(geometry.RectSumAxes(geometry.RectAddF32(child.padding, child.border)).Width),
-			Height: geometry.Some(geometry.RectSumAxes(geometry.RectAddF32(child.padding, child.border)).Height),
+		paddingBorderAxesSums := geometry.Size[lib.Option[float32]]{
+			Width:  lib.Some(geometry.RectSumAxes(geometry.RectAddF32(child.padding, child.border)).Width),
+			Height: lib.Some(geometry.RectSumAxes(geometry.RectAddF32(child.padding, child.border)).Height),
 		}
 
 		// Resolve minimum main size.
 		overflowMin := geometry.SizeZipMap(
 			geometry.PointToSize(child.overflow),
 			geometry.Size[style.Overflow]{Width: style.OverflowVisible, Height: style.OverflowVisible}, // placeholder
-			func(o style.Overflow, _ style.Overflow) geometry.Option[float32] {
+			func(o style.Overflow, _ style.Overflow) lib.Option[float32] {
 				return o.MaybeIntoAutomaticMinSize()
 			},
 		)
@@ -1123,7 +1124,7 @@ func determineFlexBaseSize(
 		}
 
 		hypotheticalInnerMinMain := geometry.MaybeMaxF32(child.resolvedMinimumMainSize, sizeOptionMain(paddingBorderAxesSums, constants.dir))
-		hypotheticalInnerSize := geometry.MaybeClampF32(child.flexBasis, geometry.Some(hypotheticalInnerMinMain), sizeOptionMain(child.maxSize, constants.dir))
+		hypotheticalInnerSize := geometry.MaybeClampF32(child.flexBasis, lib.Some(hypotheticalInnerMinMain), sizeOptionMain(child.maxSize, constants.dir))
 		hypotheticalOuterSize := hypotheticalInnerSize + rectMainAxisSum(child.margin, constants.dir)
 
 		sizeSetMain(&child.hypotheticalInnerSize, constants.dir, hypotheticalInnerSize)
@@ -1132,11 +1133,11 @@ func determineFlexBaseSize(
 }
 
 // maybeAddF32IfSome adds addend to opt if opt is Some, returns opt unchanged if addend is 0 or opt is None.
-func maybeAddF32IfSome(opt geometry.Option[float32], addend float32) geometry.Option[float32] {
+func maybeAddF32IfSome(opt lib.Option[float32], addend float32) lib.Option[float32] {
 	if !opt.IsSome {
 		return opt
 	}
-	return geometry.Some(opt.Value + addend)
+	return lib.Some(opt.Value + addend)
 }
 
 // ---------------------------------------------------------------------------
@@ -1290,14 +1291,14 @@ func determineContainerMainSize(
 					stylePreferred := sizeOptionMain(item.size, dir)
 					styleMax := sizeOptionMain(item.maxSize, dir)
 
-					clampingBasis := geometry.MaybeMaxOption(geometry.Some(item.flexBasis), stylePreferred)
+					clampingBasis := geometry.MaybeMaxOption(lib.Some(item.flexBasis), stylePreferred)
 					flexBasisMin := clampingBasis
 					if item.flexShrink != 0.0 {
-						flexBasisMin = geometry.None[float32]()
+						flexBasisMin = lib.None[float32]()
 					}
 					flexBasisMax := clampingBasis
 					if item.flexGrow != 0.0 {
-						flexBasisMax = geometry.None[float32]()
+						flexBasisMax = lib.None[float32]()
 					}
 
 					minMainSize := func() float32 {
@@ -1349,10 +1350,10 @@ func determineContainerMainSize(
 
 						childAvailableSpace := avWithCross(availableSpace, dir, crossAxisAvailableSpace)
 
-						childKnownDimensions := sizeOptionWithMain(item.size, dir, geometry.None[float32]())
+						childKnownDimensions := sizeOptionWithMain(item.size, dir, lib.None[float32]())
 						if item.alignSelf == style.AlignItemsStretch && !sizeOptionCross(childKnownDimensions, dir).IsSome {
 							sizeSetCross(&childKnownDimensions, dir,
-								geometry.MaybeSubOption(crossAxisAvailableSpace.IntoOption(), geometry.Some(rectCrossAxisSum(item.margin, dir))),
+								geometry.MaybeSubOption(crossAxisAvailableSpace.IntoOption(), lib.Some(rectCrossAxisSum(item.margin, dir))),
 							)
 						}
 
@@ -1417,7 +1418,7 @@ func determineContainerMainSize(
 	innerMainSize := geometry.F32Max(outerMainSize-mainContentBoxInset, 0.0)
 	sizeSetMain(&constants.containerSize, dir, outerMainSize)
 	sizeSetMain(&constants.innerContainerSize, dir, innerMainSize)
-	sizeOptionSetMain(&constants.nodeInnerSize, dir, geometry.Some(innerMainSize))
+	sizeOptionSetMain(&constants.nodeInnerSize, dir, lib.Some(innerMainSize))
 }
 
 // ---------------------------------------------------------------------------
@@ -1468,7 +1469,7 @@ func resolveFlexibleLengths(line *flexLine, constants *algoConstants) {
 	}
 
 	initialFreeSpace := geometry.MaybeSubF32(sizeOptionMain(constants.nodeInnerSize, constants.dir).UnwrapOr(0.0),
-		geometry.Some(usedSpace))
+		lib.Some(usedSpace))
 
 	// 4. Loop.
 	for {
@@ -1509,15 +1510,15 @@ func resolveFlexibleLengths(line *flexLine, constants *algoConstants) {
 		if growing && sumFlexGrow < 1.0 {
 			freeSpace = geometry.MaybeMinF32(
 				initialFreeSpace*sumFlexGrow-totalMainAxisGap,
-				geometry.MaybeSubOption(nodeInnerMainOpt, geometry.Some(usedSpace)),
+				geometry.MaybeSubOption(nodeInnerMainOpt, lib.Some(usedSpace)),
 			)
 		} else if shrinking && sumFlexShrink < 1.0 {
 			freeSpace = geometry.MaybeMaxF32(
 				initialFreeSpace*sumFlexShrink-totalMainAxisGap,
-				geometry.MaybeSubOption(nodeInnerMainOpt, geometry.Some(usedSpace)),
+				geometry.MaybeSubOption(nodeInnerMainOpt, lib.Some(usedSpace)),
 			)
 		} else {
-			maybeFS := geometry.MaybeSubOption(nodeInnerMainOpt, geometry.Some(usedSpace))
+			maybeFS := geometry.MaybeSubOption(nodeInnerMainOpt, lib.Some(usedSpace))
 			freeSpace = maybeFS.UnwrapOr(usedFlexFactor - usedSpace)
 		}
 
@@ -1546,7 +1547,7 @@ func resolveFlexibleLengths(line *flexLine, constants *algoConstants) {
 		// d. Fix min/max violations.
 		totalViolation := float32(0.0)
 		for _, child := range unfrozen {
-			resolvedMinMain := geometry.Some(child.resolvedMinimumMainSize)
+			resolvedMinMain := lib.Some(child.resolvedMinimumMainSize)
 			maxMain := sizeOptionMain(child.maxSize, constants.dir)
 			clamped := geometry.F32Max(geometry.MaybeClampF32(sizeMain(child.targetSize, constants.dir), resolvedMinMain, maxMain), 0.0)
 			child.violation = clamped - sizeMain(child.targetSize, constants.dir)
@@ -1599,19 +1600,19 @@ func determineHypotheticalCrossSize(
 				sizeOptionCross(child.minSize, constants.dir),
 				sizeOptionCross(child.maxSize, constants.dir),
 			),
-			geometry.Some(paddingBorderSum),
+			lib.Some(paddingBorderSum),
 		)
 		// Only use child cross if it was present in child.size.
-		var childCrossOpt geometry.Option[float32]
+		var childCrossOpt lib.Option[float32]
 		if sizeOptionCross(child.size, constants.dir).IsSome {
 			clampedVal := geometry.MaybeClampF32(
 				sizeOptionCross(child.size, constants.dir).Value,
 				sizeOptionCross(child.minSize, constants.dir),
 				sizeOptionCross(child.maxSize, constants.dir),
 			)
-			childCrossOpt = geometry.Some(geometry.F32Max(clampedVal, paddingBorderSum))
+			childCrossOpt = lib.Some(geometry.F32Max(clampedVal, paddingBorderSum))
 		} else {
-			childCrossOpt = geometry.None[float32]()
+			childCrossOpt = lib.None[float32]()
 		}
 
 		childAvailableCross := asClampOption(
@@ -1624,18 +1625,18 @@ func determineHypotheticalCrossSize(
 		if childCrossOpt.IsSome {
 			childInnerCross = childCrossOpt.Value
 		} else {
-			knownDims := geometry.Size[geometry.Option[float32]]{
-				Width: func() geometry.Option[float32] {
+			knownDims := geometry.Size[lib.Option[float32]]{
+				Width: func() lib.Option[float32] {
 					if constants.isRow {
-						return geometry.Some(sizeMain(child.targetSize, constants.dir))
+						return lib.Some(sizeMain(child.targetSize, constants.dir))
 					}
 					return childCrossOpt
 				}(),
-				Height: func() geometry.Option[float32] {
+				Height: func() lib.Option[float32] {
 					if constants.isRow {
 						return childCrossOpt
 					}
-					return geometry.Some(sizeMain(child.targetSize, constants.dir))
+					return lib.Some(sizeMain(child.targetSize, constants.dir))
 				}(),
 			}
 			avSpace := geometry.Size[style.AvailableSpace]{
@@ -1681,7 +1682,7 @@ func determineHypotheticalCrossSize(
 
 func calculateChildrenBaseLines(
 	t tree.LayoutFlexboxContainer,
-	nodeSize geometry.Size[geometry.Option[float32]],
+	nodeSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	flexLines []*flexLine,
 	constants *algoConstants,
@@ -1706,18 +1707,18 @@ func calculateChildrenBaseLines(
 				continue
 			}
 
-			knownDims := geometry.Size[geometry.Option[float32]]{
-				Width: func() geometry.Option[float32] {
+			knownDims := geometry.Size[lib.Option[float32]]{
+				Width: func() lib.Option[float32] {
 					if constants.isRow {
-						return geometry.Some(sizeMain(child.targetSize, constants.dir))
+						return lib.Some(sizeMain(child.targetSize, constants.dir))
 					}
-					return geometry.Some(sizeCross(child.hypotheticalInnerSize, constants.dir))
+					return lib.Some(sizeCross(child.hypotheticalInnerSize, constants.dir))
 				}(),
-				Height: func() geometry.Option[float32] {
+				Height: func() lib.Option[float32] {
 					if constants.isRow {
-						return geometry.Some(sizeCross(child.hypotheticalInnerSize, constants.dir))
+						return lib.Some(sizeCross(child.hypotheticalInnerSize, constants.dir))
 					}
-					return geometry.Some(sizeMain(child.targetSize, constants.dir))
+					return lib.Some(sizeMain(child.targetSize, constants.dir))
 				}(),
 			}
 
@@ -1756,7 +1757,7 @@ func calculateChildrenBaseLines(
 // calculateCrossSize
 // ---------------------------------------------------------------------------
 
-func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[geometry.Option[float32]], constants *algoConstants) {
+func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[lib.Option[float32]], constants *algoConstants) {
 	if !constants.isWrap && sizeOptionCross(nodeSize, constants.dir).IsSome {
 		crossAxisPaddingBorder := rectCrossAxisSum(constants.contentBoxInset, constants.dir)
 		crossMinSize := sizeOptionCross(constants.minSize, constants.dir)
@@ -1801,8 +1802,8 @@ func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[geometry.O
 			crossMaxSize := sizeOptionCross(constants.maxSize, constants.dir)
 			flexLines[0].crossSize = geometry.MaybeClampF32(
 				flexLines[0].crossSize,
-				geometry.MaybeSubOption(crossMinSize, geometry.Some(crossAxisPaddingBorder)),
-				geometry.MaybeSubOption(crossMaxSize, geometry.Some(crossAxisPaddingBorder)),
+				geometry.MaybeSubOption(crossMinSize, lib.Some(crossAxisPaddingBorder)),
+				geometry.MaybeSubOption(crossMaxSize, lib.Some(crossAxisPaddingBorder)),
 			)
 		}
 	}
@@ -1812,7 +1813,7 @@ func calculateCrossSize(flexLines []*flexLine, nodeSize geometry.Size[geometry.O
 // handleAlignContentStretch
 // ---------------------------------------------------------------------------
 
-func handleAlignContentStretch(flexLines []*flexLine, nodeSize geometry.Size[geometry.Option[float32]], constants *algoConstants) {
+func handleAlignContentStretch(flexLines []*flexLine, nodeSize geometry.Size[lib.Option[float32]], constants *algoConstants) {
 	if constants.alignContent != style.AlignContentStretch {
 		return
 	}
@@ -1824,8 +1825,8 @@ func handleAlignContentStretch(flexLines []*flexLine, nodeSize geometry.Size[geo
 	containerMinInnerCross := func() float32 {
 		v := sizeOptionCross(nodeSize, constants.dir).Or(crossMinSize)
 		v = geometry.MaybeClampOption(v, crossMinSize, crossMaxSize)
-		v = geometry.MaybeSubOption(v, geometry.Some(crossAxisPaddingBorder))
-		v = geometry.MaybeMaxOption(v, geometry.Some[float32](0.0))
+		v = geometry.MaybeSubOption(v, lib.Some(crossAxisPaddingBorder))
+		v = geometry.MaybeMaxOption(v, lib.Some[float32](0.0))
 		return v.UnwrapOr(0.0)
 	}()
 
@@ -1877,7 +1878,7 @@ func determineUsedCrossSize(
 				}
 				maxSizeIgnoringAR := geometry.SizeMaybeAdd(
 					style.MaybeResolveSizeDimOption(childCoreStyle.GetMaxSize(), constants.nodeInnerSize, calc),
-					geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizAdj.Width), Height: geometry.Some(boxSizAdj.Height)},
+					geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizAdj.Width), Height: lib.Some(boxSizAdj.Height)},
 				)
 
 				crossTargetSize = geometry.MaybeClampF32(
@@ -2068,7 +2069,7 @@ func alignFlexItemsAlongCrossAxis(
 
 func determineContainerCrossSize(
 	flexLines []*flexLine,
-	nodeSize geometry.Size[geometry.Option[float32]],
+	nodeSize geometry.Size[lib.Option[float32]],
 	constants *algoConstants,
 ) float32 {
 	totalCrossAxisGap := sumAxisGaps(sizeCross(constants.gap, constants.dir), len(flexLines))
@@ -2134,13 +2135,13 @@ func calculateFlexItem(
 	lineOffsetCross float32,
 	totalContentSize *geometry.Size[float32],
 	containerSize geometry.Size[float32],
-	nodeInnerSize geometry.Size[geometry.Option[float32]],
+	nodeInnerSize geometry.Size[lib.Option[float32]],
 	direction style.FlexDirection,
 	layoutDirection style.Direction,
 ) {
 	layoutOutput := tree.PerformChildLayout(
 		t, item.node,
-		geometry.SizeMapTo(item.targetSize, func(s float32) geometry.Option[float32] { return geometry.Some(s) }),
+		geometry.SizeMapTo(item.targetSize, func(s float32) lib.Option[float32] { return lib.Some(s) }),
 		nodeInnerSize,
 		geometry.SizeMapTo(containerSize, func(s float32) style.AvailableSpace { return style.AvailableSpaceFromDefinite(s) }),
 		tree.SizingModeContentSize,
@@ -2275,7 +2276,7 @@ func calculateLayoutLine(
 	totalOffsetCross *float32,
 	contentSize *geometry.Size[float32],
 	containerSize geometry.Size[float32],
-	nodeInnerSize geometry.Size[geometry.Option[float32]],
+	nodeInnerSize geometry.Size[lib.Option[float32]],
 	paddingBorder geometry.Rect[float32],
 	direction style.FlexDirection,
 	layoutDirection style.Direction,
@@ -2397,8 +2398,8 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 		aspectRatio := childCoreStyle.GetAspectRatio()
 		alignSelf := childStyle.GetAlignSelf().UnwrapOr(constants.alignItems)
 		margin := resolveRectLPAToOption(childCoreStyle.GetMargin(), insetRelativeSize.Width, calc)
-		padding := style.ResolveRectLPWidth(childCoreStyle.GetPadding(), geometry.Some(insetRelativeSize.Width), calc)
-		border := style.ResolveRectLPWidth(childCoreStyle.GetBorder(), geometry.Some(insetRelativeSize.Width), calc)
+		padding := style.ResolveRectLPWidth(childCoreStyle.GetPadding(), lib.Some(insetRelativeSize.Width), calc)
+		border := style.ResolveRectLPWidth(childCoreStyle.GetBorder(), lib.Some(insetRelativeSize.Width), calc)
 		paddingBorderSum := geometry.SizeAddF32(geometry.RectSumAxes(padding), geometry.RectSumAxes(border))
 		boxSizingAdj := geometry.SizeZeroF32
 		if childCoreStyle.GetBoxSizing() == style.BoxSizingContentBox {
@@ -2413,13 +2414,13 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 		bottom := style.MaybeResolveLPAF32(insetS.Bottom, insetRelativeSize.Height, calc)
 
 		// Compute known dimensions from style.
-		insetRelSizeOpt := geometry.Size[geometry.Option[float32]]{Width: geometry.Some(insetRelativeSize.Width), Height: geometry.Some(insetRelativeSize.Height)}
+		insetRelSizeOpt := geometry.Size[lib.Option[float32]]{Width: lib.Some(insetRelativeSize.Width), Height: lib.Some(insetRelativeSize.Height)}
 		styleSize := geometry.SizeMaybeAdd(
 			geometry.SizeOptionMaybeApplyAspectRatio(
 				style.MaybeResolveSizeDimOption(childCoreStyle.GetSize(), insetRelSizeOpt, calc),
 				aspectRatio,
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdj.Width), Height: geometry.Some(boxSizingAdj.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdj.Width), Height: lib.Some(boxSizingAdj.Height)},
 		)
 		minSize := geometry.SizeMaybeMax(
 			geometry.SizeOptionOr(
@@ -2428,18 +2429,18 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 						style.MaybeResolveSizeDimOption(childCoreStyle.GetMinSize(), insetRelSizeOpt, calc),
 						aspectRatio,
 					),
-					geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdj.Width), Height: geometry.Some(boxSizingAdj.Height)},
+					geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdj.Width), Height: lib.Some(boxSizingAdj.Height)},
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSum.Width), Height: geometry.Some(paddingBorderSum.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSum.Width), Height: lib.Some(paddingBorderSum.Height)},
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSum.Width), Height: geometry.Some(paddingBorderSum.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSum.Width), Height: lib.Some(paddingBorderSum.Height)},
 		)
 		maxSize := geometry.SizeMaybeAdd(
 			geometry.SizeOptionMaybeApplyAspectRatio(
 				style.MaybeResolveSizeDimOption(childCoreStyle.GetMaxSize(), insetRelSizeOpt, calc),
 				aspectRatio,
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdj.Width), Height: geometry.Some(boxSizingAdj.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdj.Width), Height: lib.Some(boxSizingAdj.Height)},
 		)
 		knownDimensions := geometry.SizeMaybeClamp(styleSize, minSize, maxSize)
 
@@ -2450,7 +2451,7 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 			newWidthRaw = geometry.MaybeSubF32(newWidthRaw, margin.Right)
 			newWidthRaw -= left.Value
 			newWidthRaw -= right.Value
-			knownDimensions.Width = geometry.Some(geometry.F32Max(newWidthRaw, 0.0))
+			knownDimensions.Width = lib.Some(geometry.F32Max(newWidthRaw, 0.0))
 			knownDimensions = geometry.SizeMaybeClamp(geometry.SizeOptionMaybeApplyAspectRatio(knownDimensions, aspectRatio), minSize, maxSize)
 		}
 
@@ -2461,7 +2462,7 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 			newHeightRaw = geometry.MaybeSubF32(newHeightRaw, margin.Bottom)
 			newHeightRaw -= top.Value
 			newHeightRaw -= bottom.Value
-			knownDimensions.Height = geometry.Some(geometry.F32Max(newHeightRaw, 0.0))
+			knownDimensions.Height = lib.Some(geometry.F32Max(newHeightRaw, 0.0))
 			knownDimensions = geometry.SizeMaybeClamp(geometry.SizeOptionMaybeApplyAspectRatio(knownDimensions, aspectRatio), minSize, maxSize)
 		}
 
@@ -2477,7 +2478,7 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 			geometry.LineFalseBool,
 		)
 		finalSize := geometry.SizeMaybeClamp(
-			geometry.SizeOptionOr(knownDimensions, geometry.Size[geometry.Option[float32]]{Width: geometry.Some(measuredSize.Width), Height: geometry.Some(measuredSize.Height)}),
+			geometry.SizeOptionOr(knownDimensions, geometry.Size[lib.Option[float32]]{Width: lib.Some(measuredSize.Width), Height: lib.Some(measuredSize.Height)}),
 			minSize, maxSize,
 		)
 		finalSizeF32 := geometry.Size[float32]{Width: finalSize.Width.UnwrapOr(0), Height: finalSize.Height.UnwrapOr(0)}
@@ -2543,7 +2544,7 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 		}()
 
 		// Determine flex-relative insets.
-		var startMain, endMain, startCross, endCross geometry.Option[float32]
+		var startMain, endMain, startCross, endCross lib.Option[float32]
 		if constants.isRow {
 			startMain, endMain = left, right
 			startCross, endCross = top, bottom
@@ -2790,5 +2791,5 @@ func sumAxisGaps(gap float32, numItems int) float32 {
 // pointMain returns the main-axis component of a geometry.Point[float32] based on direction.
 // (Already defined above for float32, but we also need it for the scrollbar gutter.)
 
-// geometry.MaybeSubOption subtracts b from a where both are geometry.Option[float32].
+// geometry.MaybeSubOption subtracts b from a where both are lib.Option[float32].
 // Already defined in util_math.go.

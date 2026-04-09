@@ -3,6 +3,7 @@
 package grid
 
 import (
+	"taffy-go/lib"
 	"taffy-go/compute"
 	"taffy-go/geometry"
 	"taffy-go/style"
@@ -71,7 +72,7 @@ func alignAndPositionItem(
 	node tree.NodeId,
 	order uint32,
 	gridArea geometry.Rect[float32],
-	containerAlignmentStyles inBothAbsAxis[geometry.Option[style.AlignItems]],
+	containerAlignmentStyles inBothAbsAxis[lib.Option[style.AlignItems]],
 	baselineShim float32,
 	direction style.Direction,
 ) (geometry.Size[float32], float32, float32) {
@@ -93,16 +94,16 @@ func alignAndPositionItem(
 	alignSelf := childGridStyle.GetAlignSelf()
 
 	position := coreStyle.GetPosition()
-	insetHorizontal := geometry.Line[geometry.Option[float32]]{
+	insetHorizontal := geometry.Line[lib.Option[float32]]{
 		Start: gridMaybeResolveDimOption(coreStyle.GetInset().Left, gridAreaSize.Width, calc),
 		End:   gridMaybeResolveDimOption(coreStyle.GetInset().Right, gridAreaSize.Width, calc),
 	}
-	insetVertical := geometry.Line[geometry.Option[float32]]{
+	insetVertical := geometry.Line[lib.Option[float32]]{
 		Start: gridMaybeResolveDimOption(coreStyle.GetInset().Top, gridAreaSize.Height, calc),
 		End:   gridMaybeResolveDimOption(coreStyle.GetInset().Bottom, gridAreaSize.Height, calc),
 	}
-	padding := style.ResolveRectLPWidth(coreStyle.GetPadding(), geometry.Some(gridAreaSize.Width), calc)
-	border := style.ResolveRectLPWidth(coreStyle.GetBorder(), geometry.Some(gridAreaSize.Width), calc)
+	padding := style.ResolveRectLPWidth(coreStyle.GetPadding(), lib.Some(gridAreaSize.Width), calc)
+	border := style.ResolveRectLPWidth(coreStyle.GetBorder(), lib.Some(gridAreaSize.Width), calc)
 	paddingBorderSize := geometry.RectSumAxes(geometry.RectAddF32(padding, border))
 
 	boxSizingAdjustment := geometry.SizeZeroF32
@@ -110,13 +111,13 @@ func alignAndPositionItem(
 		boxSizingAdjustment = paddingBorderSize
 	}
 
-	gridAreaSizeOpt := geometry.Size[geometry.Option[float32]]{Width: geometry.Some(gridAreaSize.Width), Height: geometry.Some(gridAreaSize.Height)}
+	gridAreaSizeOpt := geometry.Size[lib.Option[float32]]{Width: lib.Some(gridAreaSize.Width), Height: lib.Some(gridAreaSize.Height)}
 	inherentSize := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(coreStyle.GetSize(), gridAreaSizeOpt, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	minSize := geometry.SizeMaybeMax(
 		geometry.SizeOptionOr(
@@ -125,18 +126,18 @@ func alignAndPositionItem(
 					style.MaybeResolveSizeDimOption(coreStyle.GetMinSize(), gridAreaSizeOpt, calc),
 					aspectRatio,
 				),
-				geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+				geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSize.Width), Height: geometry.Some(paddingBorderSize.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSize.Width), Height: lib.Some(paddingBorderSize.Height)},
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSize.Width), Height: geometry.Some(paddingBorderSize.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSize.Width), Height: lib.Some(paddingBorderSize.Height)},
 	)
 	maxSize := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMaxSize(), gridAreaSizeOpt, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 
 	// Resolve alignment styles
@@ -154,11 +155,11 @@ func alignAndPositionItem(
 	}()))
 
 	// Resolve margins (both horizontal and vertical against grid area WIDTH per CSS spec)
-	margin := geometry.Rect[geometry.Option[float32]]{
-		Left:   style.MaybeResolveLPAOption(coreStyle.GetMargin().Left, geometry.Some(gridAreaSize.Width), calc),
-		Right:  style.MaybeResolveLPAOption(coreStyle.GetMargin().Right, geometry.Some(gridAreaSize.Width), calc),
-		Top:    style.MaybeResolveLPAOption(coreStyle.GetMargin().Top, geometry.Some(gridAreaSize.Width), calc),
-		Bottom: style.MaybeResolveLPAOption(coreStyle.GetMargin().Bottom, geometry.Some(gridAreaSize.Width), calc),
+	margin := geometry.Rect[lib.Option[float32]]{
+		Left:   style.MaybeResolveLPAOption(coreStyle.GetMargin().Left, lib.Some(gridAreaSize.Width), calc),
+		Right:  style.MaybeResolveLPAOption(coreStyle.GetMargin().Right, lib.Some(gridAreaSize.Width), calc),
+		Top:    style.MaybeResolveLPAOption(coreStyle.GetMargin().Top, lib.Some(gridAreaSize.Width), calc),
+		Bottom: style.MaybeResolveLPAOption(coreStyle.GetMargin().Bottom, lib.Some(gridAreaSize.Width), calc),
 	}
 
 	gridAreaMinusItemMarginsSize := geometry.Size[float32]{
@@ -171,18 +172,18 @@ func alignAndPositionItem(
 	if !width.IsSome {
 		if position == style.PositionAbsolute {
 			if insetHorizontal.Start.IsSome && insetHorizontal.End.IsSome {
-				width = geometry.Some(geometry.F32Max(gridAreaMinusItemMarginsSize.Width-insetHorizontal.Start.Value-insetHorizontal.End.Value, 0.0))
+				width = lib.Some(geometry.F32Max(gridAreaMinusItemMarginsSize.Width-insetHorizontal.Start.Value-insetHorizontal.End.Value, 0.0))
 			}
 		}
 		if !width.IsSome && margin.Left.IsSome && margin.Right.IsSome &&
 			horizontalAlignment == style.AlignItemsStretch && position != style.PositionAbsolute {
-			width = geometry.Some(gridAreaMinusItemMarginsSize.Width)
+			width = lib.Some(gridAreaMinusItemMarginsSize.Width)
 		}
 	}
 
 	// Reapply aspect ratio
 	sizeWithAR := geometry.SizeOptionMaybeApplyAspectRatio(
-		geometry.Size[geometry.Option[float32]]{Width: width, Height: inherentSize.Height},
+		geometry.Size[lib.Option[float32]]{Width: width, Height: inherentSize.Height},
 		aspectRatio,
 	)
 	width = sizeWithAR.Width
@@ -192,52 +193,52 @@ func alignAndPositionItem(
 	if !height.IsSome {
 		if position == style.PositionAbsolute {
 			if insetVertical.Start.IsSome && insetVertical.End.IsSome {
-				height = geometry.Some(geometry.F32Max(gridAreaMinusItemMarginsSize.Height-insetVertical.Start.Value-insetVertical.End.Value, 0.0))
+				height = lib.Some(geometry.F32Max(gridAreaMinusItemMarginsSize.Height-insetVertical.Start.Value-insetVertical.End.Value, 0.0))
 			}
 		}
 		if !height.IsSome && margin.Top.IsSome && margin.Bottom.IsSome &&
 			verticalAlignment == style.AlignItemsStretch && position != style.PositionAbsolute {
-			height = geometry.Some(gridAreaMinusItemMarginsSize.Height)
+			height = lib.Some(gridAreaMinusItemMarginsSize.Height)
 		}
 	}
 
 	// Reapply aspect ratio after height adjustments
 	sizeWithAR2 := geometry.SizeOptionMaybeApplyAspectRatio(
-		geometry.Size[geometry.Option[float32]]{Width: width, Height: height},
+		geometry.Size[lib.Option[float32]]{Width: width, Height: height},
 		aspectRatio,
 	)
 	width = sizeWithAR2.Width
 	height = sizeWithAR2.Height
 
 	// Clamp by min/max
-	clamped := geometry.SizeMaybeClamp(geometry.Size[geometry.Option[float32]]{Width: width, Height: height}, minSize, maxSize)
+	clamped := geometry.SizeMaybeClamp(geometry.Size[lib.Option[float32]]{Width: width, Height: height}, minSize, maxSize)
 	width = clamped.Width
 	height = clamped.Height
 
 	// Layout node
-	size := geometry.Size[geometry.Option[float32]]{Width: width, Height: height}
+	size := geometry.Size[lib.Option[float32]]{Width: width, Height: height}
 	if position == style.PositionAbsolute && (!width.IsSome || !height.IsSome) {
 		measured := measureChildSizeBoth(
 			t, node, size,
 			gridAreaSizeOpt,
-			geometry.SizeMapTo(geometry.Size[geometry.Option[float32]]{
-				Width:  geometry.Some(gridAreaMinusItemMarginsSize.Width),
-				Height: geometry.Some(gridAreaMinusItemMarginsSize.Height),
-			}, func(opt geometry.Option[float32]) style.AvailableSpace {
+			geometry.SizeMapTo(geometry.Size[lib.Option[float32]]{
+				Width:  lib.Some(gridAreaMinusItemMarginsSize.Width),
+				Height: lib.Some(gridAreaMinusItemMarginsSize.Height),
+			}, func(opt lib.Option[float32]) style.AvailableSpace {
 				return style.AvailableSpaceFromDefinite(opt.Value)
 			}),
 			tree.SizingModeInherentSize,
 			geometry.LineFalseBool,
 		)
-		size = geometry.Size[geometry.Option[float32]]{Width: geometry.Some(measured.Width), Height: geometry.Some(measured.Height)}
+		size = geometry.Size[lib.Option[float32]]{Width: lib.Some(measured.Width), Height: lib.Some(measured.Height)}
 	}
 
 	layoutOutput := tree.PerformChildLayout(
 		t, node, size, gridAreaSizeOpt,
-		geometry.SizeMapTo(geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.Some(gridAreaMinusItemMarginsSize.Width),
-			Height: geometry.Some(gridAreaMinusItemMarginsSize.Height),
-		}, func(opt geometry.Option[float32]) style.AvailableSpace {
+		geometry.SizeMapTo(geometry.Size[lib.Option[float32]]{
+			Width:  lib.Some(gridAreaMinusItemMarginsSize.Width),
+			Height: lib.Some(gridAreaMinusItemMarginsSize.Height),
+		}, func(opt lib.Option[float32]) style.AvailableSpace {
 			return style.AvailableSpaceFromDefinite(opt.Value)
 		}),
 		tree.SizingModeInherentSize, geometry.LineFalseBool,
@@ -245,9 +246,9 @@ func alignAndPositionItem(
 
 	// Resolve final size
 	finalSize := geometry.SizeMaybeClamp(
-		geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.Some(size.Width.UnwrapOr(layoutOutput.Size.Width)),
-			Height: geometry.Some(size.Height.UnwrapOr(layoutOutput.Size.Height)),
+		geometry.Size[lib.Option[float32]]{
+			Width:  lib.Some(size.Width.UnwrapOr(layoutOutput.Size.Width)),
+			Height: lib.Some(size.Height.UnwrapOr(layoutOutput.Size.Height)),
 		},
 		minSize, maxSize,
 	)
@@ -259,7 +260,7 @@ func alignAndPositionItem(
 		justifySelf.UnwrapOr(horizontalAlignment),
 		finalWidth, position,
 		insetHorizontal,
-		geometry.Line[geometry.Option[float32]]{Start: margin.Left, End: margin.Right},
+		geometry.Line[lib.Option[float32]]{Start: margin.Left, End: margin.Right},
 		0.0, direction,
 	)
 	y, yMargin := alignItemWithinArea(
@@ -267,7 +268,7 @@ func alignAndPositionItem(
 		alignSelf.UnwrapOr(verticalAlignment),
 		finalHeight, position,
 		insetVertical,
-		geometry.Line[geometry.Option[float32]]{Start: margin.Top, End: margin.Bottom},
+		geometry.Line[lib.Option[float32]]{Start: margin.Top, End: margin.Bottom},
 		baselineShim, style.DirectionLTR,
 	)
 
@@ -321,8 +322,8 @@ func alignItemWithinArea(
 	alignmentStyle style.AlignSelf,
 	resolvedSize float32,
 	position style.Position,
-	inset geometry.Line[geometry.Option[float32]],
-	margin geometry.Line[geometry.Option[float32]],
+	inset geometry.Line[lib.Option[float32]],
+	margin geometry.Line[lib.Option[float32]],
 	baselineShim float32,
 	direction style.Direction,
 ) (float32, geometry.Line[float32]) {
@@ -411,8 +412,8 @@ func alignItemWithinArea(
 }
 
 // gridMaybeResolveDimOption resolves a Dimension to an Option[float32] against a context.
-func gridMaybeResolveDimOption(dim style.LengthPercentageAuto, context float32, calc style.CalcResolver) geometry.Option[float32] {
-	return style.MaybeResolveLPAOption(dim, geometry.Some(context), calc)
+func gridMaybeResolveDimOption(dim style.LengthPercentageAuto, context float32, calc style.CalcResolver) lib.Option[float32] {
+	return style.MaybeResolveLPAOption(dim, lib.Some(context), calc)
 }
 
 // computeContentSizeContribution computes the content size contribution of a positioned item.
@@ -450,8 +451,8 @@ func computeContentSizeContribution(
 func measureChildSizeBoth(
 	t tree.LayoutPartialTree,
 	nodeId tree.NodeId,
-	knownDimensions geometry.Size[geometry.Option[float32]],
-	parentSize geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
+	parentSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	sizingMode tree.SizingMode,
 	verticalMarginsAreCollapsible geometry.Line[bool],

@@ -3,6 +3,7 @@
 package grid
 
 import (
+	"taffy-go/lib"
 	"sort"
 
 	"taffy-go/geometry"
@@ -42,14 +43,14 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 			style.MaybeResolveSizeDimOption(coreStyle.GetMinSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	maxSize := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(coreStyle.GetMaxSize(), parentSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	preferredSize := geometry.SizeOptionNone
 	if inputs.SizingMode == tree.SizingModeInherentSize {
@@ -58,7 +59,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 				style.MaybeResolveSizeDimOption(coreStyle.GetSize(), parentSize, calc),
 				aspectRatio,
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 		)
 	}
 
@@ -101,11 +102,11 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 
 	outerNodeSize := geometry.SizeMaybeMax(
 		geometry.SizeMaybeClamp(geometry.SizeOptionOr(knownDimensions, preferredSize), minSize, maxSize),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSize.Width), Height: geometry.Some(paddingBorderSize.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSize.Width), Height: lib.Some(paddingBorderSize.Height)},
 	)
-	innerNodeSize := geometry.Size[geometry.Option[float32]]{
-		Width:  geometry.MaybeSubOption(outerNodeSize.Width, geometry.Some(geometry.RectHorizontalAxisSum(contentBoxInset))),
-		Height: geometry.MaybeSubOption(outerNodeSize.Height, geometry.Some(geometry.RectVerticalAxisSum(contentBoxInset))),
+	innerNodeSize := geometry.Size[lib.Option[float32]]{
+		Width:  geometry.MaybeSubOption(outerNodeSize.Width, lib.Some(geometry.RectHorizontalAxisSum(contentBoxInset))),
+		Height: geometry.MaybeSubOption(outerNodeSize.Height, lib.Some(geometry.RectVerticalAxisSum(contentBoxInset))),
 	}
 
 	if runMode == tree.RunModeComputeSize && outerNodeSize.Width.IsSome && outerNodeSize.Height.IsSome {
@@ -119,11 +120,11 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 				geometry.SizeOptionOr(geometry.SizeOptionOr(outerNodeSize, maxSize), minSize),
 				minSize, maxSize,
 			),
-			geometry.Size[geometry.Option[float32]]{Width: geometry.Some(paddingBorderSize.Width), Height: geometry.Some(paddingBorderSize.Height)},
+			geometry.Size[lib.Option[float32]]{Width: lib.Some(paddingBorderSize.Width), Height: lib.Some(paddingBorderSize.Height)},
 		),
-		geometry.Size[geometry.Option[float32]]{
-			Width:  geometry.Some(geometry.RectHorizontalAxisSum(contentBoxInset)),
-			Height: geometry.Some(geometry.RectVerticalAxisSum(contentBoxInset)),
+		geometry.Size[lib.Option[float32]]{
+			Width:  lib.Some(geometry.RectHorizontalAxisSum(contentBoxInset)),
+			Height: lib.Some(geometry.RectVerticalAxisSum(contentBoxInset)),
 		},
 	)
 
@@ -250,7 +251,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		justifyContent, alignContent,
 		availableGridSpace, innerNodeSize,
 		columns, rows, items,
-		func(track *gridTrack, parentSize geometry.Option[float32], t tree.LayoutPartialTree) geometry.Option[float32] {
+		func(track *gridTrack, parentSize lib.Option[float32], t tree.LayoutPartialTree) lib.Option[float32] {
 			return track.maxTrackSizingFunction.DefiniteValue(parentSize, func(id uint64, basis float32) float32 {
 				return t.ResolveCalcValue(id, basis)
 			})
@@ -262,7 +263,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		initialColumnSum += columns[i].baseSize
 	}
 	if !innerNodeSize.Width.IsSome {
-		innerNodeSize.Width = geometry.Some(initialColumnSum)
+		innerNodeSize.Width = lib.Some(initialColumnSum)
 	}
 
 	// Clear caches
@@ -278,8 +279,8 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		alignContent, justifyContent,
 		availableGridSpace, innerNodeSize,
 		rows, columns, items,
-		func(track *gridTrack, _ geometry.Option[float32], _ tree.LayoutPartialTree) geometry.Option[float32] {
-			return geometry.Some(track.baseSize)
+		func(track *gridTrack, _ lib.Option[float32], _ tree.LayoutPartialTree) lib.Option[float32] {
+			return lib.Some(track.baseSize)
 		},
 		false,
 	)
@@ -288,7 +289,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		initialRowSum += rows[i].baseSize
 	}
 	if !innerNodeSize.Height.IsSome {
-		innerNodeSize.Height = geometry.Some(initialRowSum)
+		innerNodeSize.Height = lib.Some(initialRowSum)
 	}
 
 	// 6. Compute container size
@@ -296,14 +297,14 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	containerBorderBox := geometry.Size[float32]{
 		Width: geometry.F32Max(
 			geometry.SizeMaybeClamp(
-				geometry.Size[geometry.Option[float32]]{
-					Width: func() geometry.Option[float32] {
+				geometry.Size[lib.Option[float32]]{
+					Width: func() lib.Option[float32] {
 						if resolvedStyleSize.Width.IsSome {
 							return resolvedStyleSize.Width
 						}
-						return geometry.Some(initialColumnSum + geometry.RectHorizontalAxisSum(contentBoxInset))
+						return lib.Some(initialColumnSum + geometry.RectHorizontalAxisSum(contentBoxInset))
 					}(),
-					Height: geometry.None[float32](),
+					Height: lib.None[float32](),
 				},
 				minSize, maxSize,
 			).Width.UnwrapOr(0.0),
@@ -311,13 +312,13 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		),
 		Height: geometry.F32Max(
 			geometry.SizeMaybeClamp(
-				geometry.Size[geometry.Option[float32]]{
-					Width:  geometry.None[float32](),
-					Height: func() geometry.Option[float32] {
+				geometry.Size[lib.Option[float32]]{
+					Width:  lib.None[float32](),
+					Height: func() lib.Option[float32] {
 						if resolvedStyleSize.Height.IsSome {
 							return resolvedStyleSize.Height
 						}
-						return geometry.Some(initialRowSum + geometry.RectVerticalAxisSum(contentBoxInset))
+						return lib.Some(initialRowSum + geometry.RectVerticalAxisSum(contentBoxInset))
 					}(),
 				},
 				minSize, maxSize,
@@ -370,7 +371,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 			}
 			availSpace := items[i].availableSpace(
 				geometry.AbstractAxisInline, rows, innerNodeSize.Height,
-				func(track *gridTrack, _ geometry.Option[float32]) geometry.Option[float32] { return geometry.Some(track.baseSize) },
+				func(track *gridTrack, _ lib.Option[float32]) lib.Option[float32] { return lib.Some(track.baseSize) },
 			)
 			newMinContentContrib := items[i].minContentContribution(geometry.AbstractAxisInline, t, availSpace, innerNodeSize)
 			if items[i].minContentContributionCache.Width.IsSome &&
@@ -378,16 +379,16 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 				rerunColumnSizing = true
 			}
 			items[i].availableSpaceCache = &availSpace
-			items[i].minContentContributionCache.Width = geometry.Some(newMinContentContrib)
-			items[i].maxContentContributionCache.Width = geometry.None[float32]()
-			items[i].minimumContributionCache.Width = geometry.None[float32]()
+			items[i].minContentContributionCache.Width = lib.Some(newMinContentContrib)
+			items[i].maxContentContributionCache.Width = lib.None[float32]()
+			items[i].minimumContributionCache.Width = lib.None[float32]()
 		}
 	} else {
 		for i := range items {
 			items[i].availableSpaceCache = nil
-			items[i].minContentContributionCache.Width = geometry.None[float32]()
-			items[i].maxContentContributionCache.Width = geometry.None[float32]()
-			items[i].minimumContributionCache.Width = geometry.None[float32]()
+			items[i].minContentContributionCache.Width = lib.None[float32]()
+			items[i].maxContentContributionCache.Width = lib.None[float32]()
+			items[i].minimumContributionCache.Width = lib.None[float32]()
 		}
 	}
 
@@ -399,8 +400,8 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 			justifyContent, alignContent,
 			availableGridSpace, innerNodeSize,
 			columns, rows, items,
-			func(track *gridTrack, _ geometry.Option[float32], _ tree.LayoutPartialTree) geometry.Option[float32] {
-				return geometry.Some(track.baseSize)
+			func(track *gridTrack, _ lib.Option[float32], _ tree.LayoutPartialTree) lib.Option[float32] {
+				return lib.Some(track.baseSize)
 			},
 			hasBaselineAlignedItem,
 		)
@@ -424,7 +425,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 				}
 				availSpace := items[i].availableSpace(
 					geometry.AbstractAxisBlock, columns, innerNodeSize.Width,
-					func(track *gridTrack, _ geometry.Option[float32]) geometry.Option[float32] { return geometry.Some(track.baseSize) },
+					func(track *gridTrack, _ lib.Option[float32]) lib.Option[float32] { return lib.Some(track.baseSize) },
 				)
 				newMinContentContrib := items[i].minContentContribution(geometry.AbstractAxisBlock, t, availSpace, innerNodeSize)
 				if items[i].minContentContributionCache.Height.IsSome &&
@@ -432,16 +433,16 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 					rerunRowSizing = true
 				}
 				items[i].availableSpaceCache = &availSpace
-				items[i].minContentContributionCache.Height = geometry.Some(newMinContentContrib)
-				items[i].maxContentContributionCache.Height = geometry.None[float32]()
-				items[i].minimumContributionCache.Height = geometry.None[float32]()
+				items[i].minContentContributionCache.Height = lib.Some(newMinContentContrib)
+				items[i].maxContentContributionCache.Height = lib.None[float32]()
+				items[i].minimumContributionCache.Height = lib.None[float32]()
 			}
 		} else {
 			for i := range items {
 				items[i].availableSpaceCache = nil
-				items[i].minContentContributionCache.Height = geometry.None[float32]()
-				items[i].maxContentContributionCache.Height = geometry.None[float32]()
-				items[i].minimumContributionCache.Height = geometry.None[float32]()
+				items[i].minContentContributionCache.Height = lib.None[float32]()
+				items[i].maxContentContributionCache.Height = lib.None[float32]()
+				items[i].minimumContributionCache.Height = lib.None[float32]()
 			}
 		}
 
@@ -453,8 +454,8 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 				alignContent, justifyContent,
 				availableGridSpace, innerNodeSize,
 				rows, columns, items,
-				func(track *gridTrack, _ geometry.Option[float32], _ tree.LayoutPartialTree) geometry.Option[float32] {
-					return geometry.Some(track.baseSize)
+				func(track *gridTrack, _ lib.Option[float32], _ tree.LayoutPartialTree) lib.Option[float32] {
+					return lib.Some(track.baseSize)
 				},
 				false,
 			)
@@ -498,7 +499,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		return items[i].sourceOrder < items[j].sourceOrder
 	})
 
-	containerAlignmentStyles := inBothAbsAxis[geometry.Option[style.AlignItems]]{
+	containerAlignmentStyles := inBothAbsAxis[lib.Option[style.AlignItems]]{
 		horizontal: justifyItemsStyle,
 		vertical:   alignItems,
 	}
@@ -545,48 +546,48 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 			)
 			// Apply direction mirroring
 			if direction.IsRTL() {
-				maybeColIndexes = geometry.Line[geometry.Option[style.OriginZeroLine]]{
-					Start: func() geometry.Option[style.OriginZeroLine] {
+				maybeColIndexes = geometry.Line[lib.Option[style.OriginZeroLine]]{
+					Start: func() lib.Option[style.OriginZeroLine] {
 						if maybeColIndexes.Start.IsSome {
 							mirrored := style.OriginZeroLine(int16(finalColCounts.Explicit) - int16(maybeColIndexes.Start.Value))
 							idx, ok := OzLineTryIntoTrackVecIndex(mirrored, finalColCounts)
 							if ok {
-								return geometry.Some(style.OriginZeroLine(idx))
+								return lib.Some(style.OriginZeroLine(idx))
 							}
 						}
-						return geometry.None[style.OriginZeroLine]()
+						return lib.None[style.OriginZeroLine]()
 					}(),
-					End: func() geometry.Option[style.OriginZeroLine] {
+					End: func() lib.Option[style.OriginZeroLine] {
 						if maybeColIndexes.End.IsSome {
 							mirrored := style.OriginZeroLine(int16(finalColCounts.Explicit) - int16(maybeColIndexes.End.Value))
 							idx, ok := OzLineTryIntoTrackVecIndex(mirrored, finalColCounts)
 							if ok {
-								return geometry.Some(style.OriginZeroLine(idx))
+								return lib.Some(style.OriginZeroLine(idx))
 							}
 						}
-						return geometry.None[style.OriginZeroLine]()
+						return lib.None[style.OriginZeroLine]()
 					}(),
 				}
-				maybeColIndexes = geometry.Line[geometry.Option[style.OriginZeroLine]]{Start: maybeColIndexes.End, End: maybeColIndexes.Start}
+				maybeColIndexes = geometry.Line[lib.Option[style.OriginZeroLine]]{Start: maybeColIndexes.End, End: maybeColIndexes.Start}
 			} else {
-				maybeColIndexes = geometry.Line[geometry.Option[style.OriginZeroLine]]{
-					Start: func() geometry.Option[style.OriginZeroLine] {
+				maybeColIndexes = geometry.Line[lib.Option[style.OriginZeroLine]]{
+					Start: func() lib.Option[style.OriginZeroLine] {
 						if maybeColIndexes.Start.IsSome {
 							idx, ok := OzLineTryIntoTrackVecIndex(maybeColIndexes.Start.Value, finalColCounts)
 							if ok {
-								return geometry.Some(style.OriginZeroLine(idx))
+								return lib.Some(style.OriginZeroLine(idx))
 							}
 						}
-						return geometry.None[style.OriginZeroLine]()
+						return lib.None[style.OriginZeroLine]()
 					}(),
-					End: func() geometry.Option[style.OriginZeroLine] {
+					End: func() lib.Option[style.OriginZeroLine] {
 						if maybeColIndexes.End.IsSome {
 							idx, ok := OzLineTryIntoTrackVecIndex(maybeColIndexes.End.Value, finalColCounts)
 							if ok {
-								return geometry.Some(style.OriginZeroLine(idx))
+								return lib.Some(style.OriginZeroLine(idx))
 							}
 						}
-						return geometry.None[style.OriginZeroLine]()
+						return lib.None[style.OriginZeroLine]()
 					}(),
 				}
 			}
@@ -594,24 +595,24 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 			maybeRowIndexes := style.ResolveAbsolutelyPositionedGridTracks(
 				style.IntoOriginZeroNonNamed(nameResolver.resolveRowNames(childGridStyle.GetGridRow()), finalRowCounts.Explicit),
 			)
-			maybeRowIndexes = geometry.Line[geometry.Option[style.OriginZeroLine]]{
-				Start: func() geometry.Option[style.OriginZeroLine] {
+			maybeRowIndexes = geometry.Line[lib.Option[style.OriginZeroLine]]{
+				Start: func() lib.Option[style.OriginZeroLine] {
 					if maybeRowIndexes.Start.IsSome {
 						idx, ok := OzLineTryIntoTrackVecIndex(maybeRowIndexes.Start.Value, finalRowCounts)
 						if ok {
-							return geometry.Some(style.OriginZeroLine(idx))
+							return lib.Some(style.OriginZeroLine(idx))
 						}
 					}
-					return geometry.None[style.OriginZeroLine]()
+					return lib.None[style.OriginZeroLine]()
 				}(),
-				End: func() geometry.Option[style.OriginZeroLine] {
+				End: func() lib.Option[style.OriginZeroLine] {
 					if maybeRowIndexes.End.IsSome {
 						idx, ok := OzLineTryIntoTrackVecIndex(maybeRowIndexes.End.Value, finalRowCounts)
 						if ok {
-							return geometry.Some(style.OriginZeroLine(idx))
+							return lib.Some(style.OriginZeroLine(idx))
 						}
 					}
-					return geometry.None[style.OriginZeroLine]()
+					return lib.None[style.OriginZeroLine]()
 				}(),
 			}
 
@@ -701,7 +702,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	return tree.LayoutOutputFromSizesAndBaselines(
 		containerBorderBox,
 		itemContentSizeContribution,
-		geometry.Point[geometry.Option[float32]]{X: geometry.None[float32](), Y: geometry.Some(gridContainerBaseline)},
+		geometry.Point[lib.Option[float32]]{X: lib.None[float32](), Y: lib.Some(gridContainerBaseline)},
 	)
 }
 
@@ -758,9 +759,9 @@ func rtlColumnOccupancyIndexForInit(columnIndex int, trackCounts TrackCounts) in
 
 // computeConstrainedAvailableSpace computes the constrained available space for the grid.
 func computeConstrainedAvailableSpace(
-	knownDimensions, preferredSize geometry.Size[geometry.Option[float32]],
+	knownDimensions, preferredSize geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
-	minSize, maxSize geometry.Size[geometry.Option[float32]],
+	minSize, maxSize geometry.Size[lib.Option[float32]],
 	paddingBorderSize geometry.Size[float32],
 ) geometry.Size[style.AvailableSpace] {
 	kOrP := geometry.SizeOptionOr(knownDimensions, preferredSize)
@@ -790,7 +791,7 @@ func computeConstrainedAvailableSpace(
 	return result
 }
 
-func clampAvailableSpace(as style.AvailableSpace, min, max geometry.Option[float32]) style.AvailableSpace {
+func clampAvailableSpace(as style.AvailableSpace, min, max lib.Option[float32]) style.AvailableSpace {
 	if as.Tag != style.AvailableSpaceDefinite {
 		return as
 	}

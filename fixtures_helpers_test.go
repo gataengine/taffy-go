@@ -1,6 +1,7 @@
 package taffy
 
 import (
+	"taffy-go/lib"
 	"bytes"
 	"encoding/xml"
 	"fmt"
@@ -386,39 +387,39 @@ func buildStyle(attrs map[string]string) style.Style {
 	if v, ok := attrs["aspect-ratio"]; ok {
 		val, err := strconv.ParseFloat(v, 32)
 		if err == nil {
-			s.AspectRatio = geometry.Some(float32(val))
+			s.AspectRatio = lib.Some(float32(val))
 		}
 	}
 
 	// Alignment (optional)
 	if v, ok := attrs["align-items"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.AlignItems = geometry.Some(ai)
+			s.AlignItems = lib.Some(ai)
 		}
 	}
 	if v, ok := attrs["align-self"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.AlignSelf = geometry.Some(ai)
+			s.AlignSelf = lib.Some(ai)
 		}
 	}
 	if v, ok := attrs["justify-items"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.JustifyItems = geometry.Some(ai)
+			s.JustifyItems = lib.Some(ai)
 		}
 	}
 	if v, ok := attrs["justify-self"]; ok {
 		if ai, parsed := parseAlignItems(v); parsed {
-			s.JustifySelf = geometry.Some(ai)
+			s.JustifySelf = lib.Some(ai)
 		}
 	}
 	if v, ok := attrs["align-content"]; ok {
 		if ac, parsed := parseAlignContent(v); parsed {
-			s.AlignContent = geometry.Some(ac)
+			s.AlignContent = lib.Some(ac)
 		}
 	}
 	if v, ok := attrs["justify-content"]; ok {
 		if ac, parsed := parseAlignContent(v); parsed {
-			s.JustifyContent = geometry.Some(ac)
+			s.JustifyContent = lib.Some(ac)
 		}
 	}
 
@@ -1050,8 +1051,8 @@ const (
 // In Ahem, each character is 10px wide and 10px tall. Lines are separated by zero-width space (U+200B).
 func ahemMeasure(text string, wm writingMode) NodeContext {
 	return func(
-		knownDimensions geometry.Size[geometry.Option[float32]],
-		parentSize geometry.Size[geometry.Option[float32]],
+		knownDimensions geometry.Size[lib.Option[float32]],
+		parentSize geometry.Size[lib.Option[float32]],
 		availableSpace geometry.Size[style.AvailableSpace],
 		sizingMode treepkg.SizingMode,
 	) geometry.Size[float32] {
@@ -1150,8 +1151,8 @@ func sizeAvailableGetAbs(s geometry.Size[style.AvailableSpace], axis geometry.Ab
 	return s.Height
 }
 
-// Helper to get geometry.Option[float32] by absolute axis.
-func sizeGetAbs(s geometry.Size[geometry.Option[float32]], axis geometry.AbsoluteAxis) geometry.Option[float32] {
+// Helper to get lib.Option[float32] by absolute axis.
+func sizeGetAbs(s geometry.Size[lib.Option[float32]], axis geometry.AbsoluteAxis) lib.Option[float32] {
 	if axis == geometry.AbsoluteAxisHorizontal {
 		return s.Width
 	}
@@ -1180,7 +1181,7 @@ func fmax(a, b float32) float32 {
 
 // testMeasureFunction is a MeasureFunction that delegates to the node's NodeContext.
 func testMeasureFunction(
-	knownDimensions geometry.Size[geometry.Option[float32]],
+	knownDimensions geometry.Size[lib.Option[float32]],
 	availableSpace geometry.Size[style.AvailableSpace],
 	nodeId treepkg.NodeId,
 	context *NodeContext,

@@ -2,7 +2,9 @@
 // This file is a port of the AvailableSpace portions of util/math.rs from the Taffy Rust layout engine.
 package style
 
-import "taffy-go/geometry"
+import (
+	"taffy-go/lib"
+)
 
 // ---------------------------------------------------------------------------
 // Internal float32 min/max helpers
@@ -77,7 +79,7 @@ func AsMaybeSubF32(a AvailableSpace, b float32) AvailableSpace {
 // AsMaybeMinOption returns the minimum of a and b.
 // For Definite: applies min if b is Some, else unchanged.
 // For MinContent/MaxContent: collapses to Definite(b) if b is Some, else unchanged.
-func AsMaybeMinOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func AsMaybeMinOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	switch a.Tag {
 	case AvailableSpaceDefinite:
 		if b.IsSome {
@@ -100,7 +102,7 @@ func AsMaybeMinOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpa
 // AsMaybeMaxOption returns the maximum of a and b.
 // For Definite: applies max if b is Some, else unchanged.
 // For MinContent/MaxContent: unchanged regardless of b.
-func AsMaybeMaxOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func AsMaybeMaxOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	switch a.Tag {
 	case AvailableSpaceDefinite:
 		if b.IsSome {
@@ -115,7 +117,7 @@ func AsMaybeMaxOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpa
 // AsMaybeAddOption adds b to a.
 // For Definite: adds b if Some, else unchanged.
 // For MinContent/MaxContent: unchanged.
-func AsMaybeAddOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func AsMaybeAddOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	switch a.Tag {
 	case AvailableSpaceDefinite:
 		if b.IsSome {
@@ -130,7 +132,7 @@ func AsMaybeAddOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpa
 // AsMaybeSubOption subtracts b from a.
 // For Definite: subtracts b if Some, else unchanged.
 // For MinContent/MaxContent: unchanged.
-func AsMaybeSubOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func AsMaybeSubOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	switch a.Tag {
 	case AvailableSpaceDefinite:
 		if b.IsSome {
@@ -150,15 +152,15 @@ func asMaybeMinF32(a AvailableSpace, b float32) AvailableSpace { return AsMaybeM
 func asMaybeMaxF32(a AvailableSpace, b float32) AvailableSpace { return AsMaybeMaxF32(a, b) }
 func asMaybeAddF32(a AvailableSpace, b float32) AvailableSpace { return AsMaybeAddF32(a, b) }
 func asMaybeSubF32(a AvailableSpace, b float32) AvailableSpace { return AsMaybeSubF32(a, b) }
-func asMaybeMinOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func asMaybeMinOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	return AsMaybeMinOption(a, b)
 }
-func asMaybeMaxOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func asMaybeMaxOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	return AsMaybeMaxOption(a, b)
 }
-func asMaybeAddOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func asMaybeAddOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	return AsMaybeAddOption(a, b)
 }
-func asMaybeSubOption(a AvailableSpace, b geometry.Option[float32]) AvailableSpace {
+func asMaybeSubOption(a AvailableSpace, b lib.Option[float32]) AvailableSpace {
 	return AsMaybeSubOption(a, b)
 }

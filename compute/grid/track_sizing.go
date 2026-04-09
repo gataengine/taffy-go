@@ -3,6 +3,7 @@
 package grid
 
 import (
+	"taffy-go/lib"
 	"math"
 	"sort"
 
@@ -98,8 +99,8 @@ func cmpByCrossFlexThenSpanThenStart(axis geometry.AbstractAxis) func(a, b *grid
 // computeAlignmentGutterAdjustment computes a per-gutter additional size adjustment for content sizing.
 func computeAlignmentGutterAdjustment(
 	alignment style.AlignContent,
-	axisInnerNodeSize geometry.Option[float32],
-	getTrackSizeEstimate func(track *gridTrack, basis geometry.Option[float32]) geometry.Option[float32],
+	axisInnerNodeSize lib.Option[float32],
+	getTrackSizeEstimate func(track *gridTrack, basis lib.Option[float32]) lib.Option[float32],
 	tracks []gridTrack,
 ) float32 {
 	if len(tracks) <= 1 {
@@ -205,16 +206,16 @@ func determineIfItemCrossesFlexibleOrIntrinsicTracks(items []gridItem, columns, 
 func trackSizingAlgorithm(
 	t tree.LayoutPartialTree,
 	axis geometry.AbstractAxis,
-	axisMinSize geometry.Option[float32],
-	axisMaxSize geometry.Option[float32],
+	axisMinSize lib.Option[float32],
+	axisMaxSize lib.Option[float32],
 	axisAlignment style.AlignContent,
 	otherAxisAlignment style.AlignContent,
 	availableGridSpace geometry.Size[style.AvailableSpace],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 	axisTracks []gridTrack,
 	otherAxisTracks []gridTrack,
 	items []gridItem,
-	getTrackSizeEstimate func(track *gridTrack, parentSize geometry.Option[float32], tree tree.LayoutPartialTree) geometry.Option[float32],
+	getTrackSizeEstimate func(track *gridTrack, parentSize lib.Option[float32], tree tree.LayoutPartialTree) lib.Option[float32],
 	hasBaselineAlignedItem bool,
 ) {
 	// 11.4 Initialise Track sizes
@@ -245,7 +246,7 @@ func trackSizingAlgorithm(
 	gutterAlignmentAdjustment := computeAlignmentGutterAdjustment(
 		otherAxisAlignment,
 		innerNodeSize.GetAbstract(axis.Other()),
-		func(track *gridTrack, basis geometry.Option[float32]) geometry.Option[float32] {
+		func(track *gridTrack, basis lib.Option[float32]) lib.Option[float32] {
 			return getTrackSizeEstimate(track, basis, t)
 		},
 		otherAxisTracks,
@@ -292,7 +293,7 @@ func trackSizingAlgorithm(
 }
 
 // initializeTrackSizes initializes each track's base size and growth limit.
-func initializeTrackSizes(t tree.LayoutPartialTree, axisTracks []gridTrack, axisInnerNodeSize geometry.Option[float32]) {
+func initializeTrackSizes(t tree.LayoutPartialTree, axisTracks []gridTrack, axisInnerNodeSize lib.Option[float32]) {
 	calc := func(id uint64, basis float32) float32 {
 		return t.ResolveCalcValue(id, basis)
 	}
@@ -311,7 +312,7 @@ func resolveItemBaselines(
 	t tree.LayoutPartialTree,
 	axis geometry.AbstractAxis,
 	items []gridItem,
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) {
 	otherAxis := axis.Other()
 	sort.SliceStable(items, func(i, j int) bool {
@@ -358,7 +359,7 @@ func resolveItemBaselines(
 			baselineVal += style.ResolveOrZeroLPA(rowItems[i].marginStyle.Top, innerNodeSize.Width, func(id uint64, basis float32) float32 {
 				return t.ResolveCalcValue(id, basis)
 			})
-			rowItems[i].baseline = geometry.Some(baselineVal)
+			rowItems[i].baseline = lib.Some(baselineVal)
 		}
 
 		// Compute max baseline
@@ -384,8 +385,8 @@ func resolveIntrinsicTrackSizes(
 	otherAxisTracks []gridTrack,
 	items []gridItem,
 	axisAvailableGridSpace style.AvailableSpace,
-	innerNodeSize geometry.Size[geometry.Option[float32]],
-	getTrackSizeEstimate func(track *gridTrack, parentSize geometry.Option[float32], tree tree.LayoutPartialTree) geometry.Option[float32],
+	innerNodeSize geometry.Size[lib.Option[float32]],
+	getTrackSizeEstimate func(track *gridTrack, parentSize lib.Option[float32], tree tree.LayoutPartialTree) lib.Option[float32],
 ) {
 	// Sort items
 	cmp := cmpByCrossFlexThenSpanThenStart(axis)
@@ -804,7 +805,7 @@ func distributeItemSpaceToGrowthLimit(
 	space float32,
 	tracks []gridTrack,
 	trackIsAffected func(*gridTrack) bool,
-	axisInnerNodeSize geometry.Option[float32],
+	axisInnerNodeSize lib.Option[float32],
 ) {
 	if space == 0.0 {
 		return
@@ -870,7 +871,7 @@ func distributeItemSpaceToGrowthLimit(
 }
 
 // maximiseTracks distributes free space to tracks with finite growth limits, up to their limits.
-func maximiseTracks(axisTracks []gridTrack, axisInnerNodeSize geometry.Option[float32], axisAvailableGridSpace style.AvailableSpace) {
+func maximiseTracks(axisTracks []gridTrack, axisInnerNodeSize lib.Option[float32], axisAvailableGridSpace style.AvailableSpace) {
 	var usedSpace float32
 	for i := range axisTracks {
 		usedSpace += axisTracks[i].baseSize
@@ -902,10 +903,10 @@ func expandFlexibleTracks(
 	axis geometry.AbstractAxis,
 	axisTracks []gridTrack,
 	items []gridItem,
-	axisMinSize geometry.Option[float32],
-	axisMaxSize geometry.Option[float32],
+	axisMinSize lib.Option[float32],
+	axisMaxSize lib.Option[float32],
 	axisAvailableSpaceForExpansion style.AvailableSpace,
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) {
 	var flexFraction float32
 	switch axisAvailableSpaceForExpansion.Tag {
@@ -1033,7 +1034,7 @@ func findSizeOfFr(tracks []gridTrack, spaceToFill float32) float32 {
 // stretchAutoTracks stretches tracks with auto max sizing functions.
 func stretchAutoTracks(
 	axisTracks []gridTrack,
-	axisMinSize geometry.Option[float32],
+	axisMinSize lib.Option[float32],
 	axisAvailableSpaceForExpansion style.AvailableSpace,
 ) {
 	numAutoTracks := 0
@@ -1126,12 +1127,12 @@ func itemAvailableSpaceCached(
 	item *gridItem,
 	axis geometry.AbstractAxis,
 	otherAxisTracks []gridTrack,
-	innerNodeSize geometry.Size[geometry.Option[float32]],
-	getTrackSizeEstimate func(track *gridTrack, parentSize geometry.Option[float32], tree tree.LayoutPartialTree) geometry.Option[float32],
+	innerNodeSize geometry.Size[lib.Option[float32]],
+	getTrackSizeEstimate func(track *gridTrack, parentSize lib.Option[float32], tree tree.LayoutPartialTree) lib.Option[float32],
 	t tree.LayoutPartialTree,
-) geometry.Size[geometry.Option[float32]] {
+) geometry.Size[lib.Option[float32]] {
 	return item.availableSpaceCached(axis, otherAxisTracks, innerNodeSize.GetAbstract(axis.Other()),
-		func(track *gridTrack, availableSpace geometry.Option[float32]) geometry.Option[float32] {
+		func(track *gridTrack, availableSpace lib.Option[float32]) lib.Option[float32] {
 			return getTrackSizeEstimate(track, availableSpace, t)
 		})
 }
@@ -1140,8 +1141,8 @@ func itemMinContentContributionCached(
 	item *gridItem,
 	axis geometry.AbstractAxis,
 	t tree.LayoutPartialTree,
-	availSpace geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	availSpace geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	return item.minContentContributionCached(axis, t, availSpace, innerNodeSize)
 }
@@ -1150,8 +1151,8 @@ func itemMaxContentContributionCached(
 	item *gridItem,
 	axis geometry.AbstractAxis,
 	t tree.LayoutPartialTree,
-	availSpace geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	availSpace geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	return item.maxContentContributionCached(axis, t, availSpace, innerNodeSize)
 }
@@ -1161,8 +1162,8 @@ func itemMinimumContributionCached(
 	t tree.LayoutPartialTree,
 	axis geometry.AbstractAxis,
 	axisTracks []gridTrack,
-	availSpace geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	availSpace geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	return item.minimumContributionCached(t, axis, axisTracks, availSpace, innerNodeSize)
 }

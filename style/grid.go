@@ -3,6 +3,7 @@
 package style
 
 import (
+	"taffy-go/lib"
 	"math"
 
 	"taffy-go/geometry"
@@ -285,29 +286,29 @@ func ResolveDefiniteGridLines(l geometry.Line[OriginZeroGridPlacement]) geometry
 }
 
 // ResolveAbsolutelyPositionedGridTracks resolves placement for absolutely positioned items.
-func ResolveAbsolutelyPositionedGridTracks(l geometry.Line[OriginZeroGridPlacement]) geometry.Line[geometry.Option[OriginZeroLine]] {
+func ResolveAbsolutelyPositionedGridTracks(l geometry.Line[OriginZeroGridPlacement]) geometry.Line[lib.Option[OriginZeroLine]] {
 	start := l.Start
 	end := l.End
 	switch {
 	case start.Tag == GenericGridPlacementLine && end.Tag == GenericGridPlacementLine:
 		t1, t2 := start.Line, end.Line
 		if t1 == t2 {
-			return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.Some(t1), End: geometry.Some(t1.AddU16(1))}
+			return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.Some(t1), End: lib.Some(t1.AddU16(1))}
 		}
 		if int16(t1) < int16(t2) {
-			return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.Some(t1), End: geometry.Some(t2)}
+			return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.Some(t1), End: lib.Some(t2)}
 		}
-		return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.Some(t2), End: geometry.Some(t1)}
+		return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.Some(t2), End: lib.Some(t1)}
 	case start.Tag == GenericGridPlacementLine && end.Tag == GenericGridPlacementSpan:
-		return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.Some(start.Line), End: geometry.Some(start.Line.AddU16(end.Span))}
+		return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.Some(start.Line), End: lib.Some(start.Line.AddU16(end.Span))}
 	case start.Tag == GenericGridPlacementLine && end.Tag == GenericGridPlacementAuto:
-		return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.Some(start.Line), End: geometry.None[OriginZeroLine]()}
+		return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.Some(start.Line), End: lib.None[OriginZeroLine]()}
 	case start.Tag == GenericGridPlacementSpan && end.Tag == GenericGridPlacementLine:
-		return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.Some(end.Line.SubU16(start.Span)), End: geometry.Some(end.Line)}
+		return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.Some(end.Line.SubU16(start.Span)), End: lib.Some(end.Line)}
 	case start.Tag == GenericGridPlacementAuto && end.Tag == GenericGridPlacementLine:
-		return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.None[OriginZeroLine](), End: geometry.Some(end.Line)}
+		return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.None[OriginZeroLine](), End: lib.Some(end.Line)}
 	default:
-		return geometry.Line[geometry.Option[OriginZeroLine]]{Start: geometry.None[OriginZeroLine](), End: geometry.None[OriginZeroLine]()}
+		return geometry.Line[lib.Option[OriginZeroLine]]{Start: lib.None[OriginZeroLine](), End: lib.None[OriginZeroLine]()}
 	}
 }
 
@@ -522,40 +523,40 @@ func (m MinTrackSizingFunction) IsMaxContent() bool {
 
 // DefiniteValue resolves this min track sizing function to a concrete value if possible.
 // Returns None for intrinsic sizing functions.
-func (m MinTrackSizingFunction) DefiniteValue(parentSize geometry.Option[float32], calcResolver CalcResolver) geometry.Option[float32] {
+func (m MinTrackSizingFunction) DefiniteValue(parentSize lib.Option[float32], calcResolver CalcResolver) lib.Option[float32] {
 	switch m.Tag {
 	case MinTrackLength:
-		return geometry.Some(m.Value)
+		return lib.Some(m.Value)
 	case MinTrackPercent:
 		if parentSize.IsSome {
-			return geometry.Some(m.Value * parentSize.Value)
+			return lib.Some(m.Value * parentSize.Value)
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	case MinTrackCalc:
 		if parentSize.IsSome && calcResolver != nil {
 			id := uint64(math.Float32bits(m.Value))
-			return geometry.Some(calcResolver(id, parentSize.Value))
+			return lib.Some(calcResolver(id, parentSize.Value))
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	default:
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	}
 }
 
 // ResolvedPercentageSize resolves percentage values against the parent size.
 // Non-percentage values return None.
-func (m MinTrackSizingFunction) ResolvedPercentageSize(parentSize float32, calcResolver CalcResolver) geometry.Option[float32] {
+func (m MinTrackSizingFunction) ResolvedPercentageSize(parentSize float32, calcResolver CalcResolver) lib.Option[float32] {
 	switch m.Tag {
 	case MinTrackPercent:
-		return geometry.Some(m.Value * parentSize)
+		return lib.Some(m.Value * parentSize)
 	case MinTrackCalc:
 		if calcResolver != nil {
 			id := uint64(math.Float32bits(m.Value))
-			return geometry.Some(calcResolver(id, parentSize))
+			return lib.Some(calcResolver(id, parentSize))
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	default:
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	}
 }
 
@@ -743,7 +744,7 @@ func (m MaxTrackSizingFunction) IsMaxOrFitContent() bool {
 }
 
 // HasDefiniteValue reports whether the value can be resolved using DefiniteValue.
-func (m MaxTrackSizingFunction) HasDefiniteValue(parentSize geometry.Option[float32]) bool {
+func (m MaxTrackSizingFunction) HasDefiniteValue(parentSize lib.Option[float32]) bool {
 	switch m.Tag {
 	case MaxTrackLength:
 		return true
@@ -757,36 +758,36 @@ func (m MaxTrackSizingFunction) HasDefiniteValue(parentSize geometry.Option[floa
 }
 
 // DefiniteValue resolves this max track sizing function to a concrete value if possible.
-func (m MaxTrackSizingFunction) DefiniteValue(parentSize geometry.Option[float32], calcResolver CalcResolver) geometry.Option[float32] {
+func (m MaxTrackSizingFunction) DefiniteValue(parentSize lib.Option[float32], calcResolver CalcResolver) lib.Option[float32] {
 	switch m.Tag {
 	case MaxTrackLength:
-		return geometry.Some(m.Value)
+		return lib.Some(m.Value)
 	case MaxTrackPercent:
 		if parentSize.IsSome {
-			return geometry.Some(m.Value * parentSize.Value)
+			return lib.Some(m.Value * parentSize.Value)
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	case MaxTrackCalc:
 		if parentSize.IsSome && calcResolver != nil {
 			id := uint64(math.Float32bits(m.Value))
-			return geometry.Some(calcResolver(id, parentSize.Value))
+			return lib.Some(calcResolver(id, parentSize.Value))
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	default:
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	}
 }
 
 // DefiniteLimit resolves the maximum size, also considering fit-content() sizing functions.
-func (m MaxTrackSizingFunction) DefiniteLimit(parentSize geometry.Option[float32], calcResolver CalcResolver) geometry.Option[float32] {
+func (m MaxTrackSizingFunction) DefiniteLimit(parentSize lib.Option[float32], calcResolver CalcResolver) lib.Option[float32] {
 	switch m.Tag {
 	case MaxTrackFitContentPx:
-		return geometry.Some(m.Value)
+		return lib.Some(m.Value)
 	case MaxTrackFitContentPercent:
 		if parentSize.IsSome {
-			return geometry.Some(m.Value * parentSize.Value)
+			return lib.Some(m.Value * parentSize.Value)
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	default:
 		return m.DefiniteValue(parentSize, calcResolver)
 	}
@@ -794,20 +795,20 @@ func (m MaxTrackSizingFunction) DefiniteLimit(parentSize geometry.Option[float32
 
 // ResolvedPercentageSize resolves percentage values against the parent size.
 // Non-percentage values return None.
-func (m MaxTrackSizingFunction) ResolvedPercentageSize(parentSize float32, calcResolver CalcResolver) geometry.Option[float32] {
+func (m MaxTrackSizingFunction) ResolvedPercentageSize(parentSize float32, calcResolver CalcResolver) lib.Option[float32] {
 	switch m.Tag {
 	case MaxTrackPercent:
-		return geometry.Some(m.Value * parentSize)
+		return lib.Some(m.Value * parentSize)
 	case MaxTrackFitContentPercent:
-		return geometry.Some(m.Value * parentSize)
+		return lib.Some(m.Value * parentSize)
 	case MaxTrackCalc:
 		if calcResolver != nil {
 			id := uint64(math.Float32bits(m.Value))
-			return geometry.Some(calcResolver(id, parentSize))
+			return lib.Some(calcResolver(id, parentSize))
 		}
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	default:
-		return geometry.None[float32]()
+		return lib.None[float32]()
 	}
 }
 
@@ -1156,10 +1157,10 @@ type GridContainerStyle interface {
 	GetGridTemplateAreas() []GridTemplateArea
 	GetGridAutoFlow() GridAutoFlow
 	GetGap() geometry.Size[LengthPercentage]
-	GetAlignContent() geometry.Option[AlignContent]
-	GetJustifyContent() geometry.Option[JustifyContent]
-	GetAlignItems() geometry.Option[AlignItems]
-	GetJustifyItems() geometry.Option[AlignItems]
+	GetAlignContent() lib.Option[AlignContent]
+	GetJustifyContent() lib.Option[JustifyContent]
+	GetAlignItems() lib.Option[AlignItems]
+	GetJustifyItems() lib.Option[AlignItems]
 	GetGridTemplateColumnNames() [][]string
 	GetGridTemplateRowNames() [][]string
 }
@@ -1168,6 +1169,6 @@ type GridContainerStyle interface {
 type GridItemStyle interface {
 	GetGridRow() geometry.Line[GridPlacement]
 	GetGridColumn() geometry.Line[GridPlacement]
-	GetAlignSelf() geometry.Option[AlignSelf]
-	GetJustifySelf() geometry.Option[AlignSelf]
+	GetAlignSelf() lib.Option[AlignSelf]
+	GetJustifySelf() lib.Option[AlignSelf]
 }

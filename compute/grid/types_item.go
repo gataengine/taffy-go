@@ -3,6 +3,7 @@
 package grid
 
 import (
+	"taffy-go/lib"
 	"taffy-go/geometry"
 	"taffy-go/style"
 	"taffy-go/tree"
@@ -35,7 +36,7 @@ type gridItem struct {
 	// maxSize is the item's max_size style.
 	maxSize geometry.Size[style.Dimension]
 	// aspectRatio is the item's aspect_ratio style.
-	aspectRatio geometry.Option[float32]
+	aspectRatio lib.Option[float32]
 	// paddingStyle is the item's padding style.
 	paddingStyle geometry.Rect[style.LengthPercentage]
 	// borderStyle is the item's border style.
@@ -47,7 +48,7 @@ type gridItem struct {
 	// justifySelf is the item's justify_self, or the parent's justify_items if not set.
 	justifySelf style.AlignSelf
 	// baseline is the items first baseline (horizontal).
-	baseline geometry.Option[float32]
+	baseline lib.Option[float32]
 	// baselineShim is a shim for baseline alignment that acts like an extra top margin.
 	baselineShim float32
 
@@ -66,13 +67,13 @@ type gridItem struct {
 	crossesIntrinsicColumn bool
 
 	// availableSpaceCache is a cache for the available space input to intrinsic sizing computation.
-	availableSpaceCache *geometry.Size[geometry.Option[float32]]
+	availableSpaceCache *geometry.Size[lib.Option[float32]]
 	// minContentContributionCache is a cache for the min-content size.
-	minContentContributionCache geometry.Size[geometry.Option[float32]]
+	minContentContributionCache geometry.Size[lib.Option[float32]]
 	// minimumContributionCache is a cache for the minimum contribution.
-	minimumContributionCache geometry.Size[geometry.Option[float32]]
+	minimumContributionCache geometry.Size[lib.Option[float32]]
 	// maxContentContributionCache is a cache for the max-content size.
-	maxContentContributionCache geometry.Size[geometry.Option[float32]]
+	maxContentContributionCache geometry.Size[lib.Option[float32]]
 
 	// yPosition is the final y position. Used to compute baseline alignment for the container.
 	yPosition float32
@@ -111,7 +112,7 @@ func newGridItemWithPlacementStyleAndOrder(
 		marginStyle:            coreStyle.GetMargin(),
 		alignSelf:              alignSelf,
 		justifySelf:            justifySelf,
-		baseline:               geometry.None[float32](),
+		baseline:               lib.None[float32](),
 		baselineShim:           0.0,
 		rowIndexes:             geometry.Line[uint16]{Start: 0, End: 0},
 		columnIndexes:          geometry.Line[uint16]{Start: 0, End: 0},
@@ -193,9 +194,9 @@ func (gi *gridItem) crossesIntrinsicTrack(axis geometry.AbstractAxis) bool {
 func (gi *gridItem) spannedTrackLimit(
 	axis geometry.AbstractAxis,
 	axisTracks []gridTrack,
-	axisParentSize geometry.Option[float32],
+	axisParentSize lib.Option[float32],
 	calcResolver style.CalcResolver,
-) geometry.Option[float32] {
+) lib.Option[float32] {
 	start, end := gi.trackRangeExcludingLines(axis)
 	spannedTracks := axisTracks[start:end]
 
@@ -211,9 +212,9 @@ func (gi *gridItem) spannedTrackLimit(
 		for i := range spannedTracks {
 			limit += spannedTracks[i].maxTrackSizingFunction.DefiniteLimit(axisParentSize, calcResolver).Value
 		}
-		return geometry.Some(limit)
+		return lib.Some(limit)
 	}
-	return geometry.None[float32]()
+	return lib.None[float32]()
 }
 
 // spannedFixedTrackLimit is similar to spannedTrackLimit but excludes FitContent arguments.
@@ -221,9 +222,9 @@ func (gi *gridItem) spannedTrackLimit(
 func (gi *gridItem) spannedFixedTrackLimit(
 	axis geometry.AbstractAxis,
 	axisTracks []gridTrack,
-	axisParentSize geometry.Option[float32],
+	axisParentSize lib.Option[float32],
 	calcResolver style.CalcResolver,
-) geometry.Option[float32] {
+) lib.Option[float32] {
 	start, end := gi.trackRangeExcludingLines(axis)
 	spannedTracks := axisTracks[start:end]
 
@@ -239,9 +240,9 @@ func (gi *gridItem) spannedFixedTrackLimit(
 		for i := range spannedTracks {
 			limit += spannedTracks[i].maxTrackSizingFunction.DefiniteValue(axisParentSize, calcResolver).Value
 		}
-		return geometry.Some(limit)
+		return lib.Some(limit)
 	}
-	return geometry.None[float32]()
+	return lib.None[float32]()
 }
 
 // knownDimensions computes the known_dimensions to be passed to child sizing functions.
@@ -249,9 +250,9 @@ func (gi *gridItem) spannedFixedTrackLimit(
 // allow percentage sizes further down the tree to resolve properly in some cases.
 func (gi *gridItem) knownDimensions(
 	t tree.LayoutPartialTree,
-	innerNodeSize geometry.Size[geometry.Option[float32]],
-	gridAreaSize geometry.Size[geometry.Option[float32]],
-) geometry.Size[geometry.Option[float32]] {
+	innerNodeSize geometry.Size[lib.Option[float32]],
+	gridAreaSize geometry.Size[lib.Option[float32]],
+) geometry.Size[lib.Option[float32]] {
 	margins := gi.marginsAxisSumsWithBaselineShims(innerNodeSize.Width, t)
 
 	aspectRatio := gi.aspectRatio
@@ -271,26 +272,26 @@ func (gi *gridItem) knownDimensions(
 			style.MaybeResolveSizeDimOption(gi.size, gridAreaSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	minSizeResolved := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(gi.minSize, gridAreaSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 	maxSizeResolved := geometry.SizeMaybeAdd(
 		geometry.SizeOptionMaybeApplyAspectRatio(
 			style.MaybeResolveSizeDimOption(gi.maxSize, gridAreaSize, calc),
 			aspectRatio,
 		),
-		geometry.Size[geometry.Option[float32]]{Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height)},
+		geometry.Size[lib.Option[float32]]{Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height)},
 	)
 
-	gridAreaMinusItemMarginsSize := geometry.SizeMaybeSub(gridAreaSize, geometry.Size[geometry.Option[float32]]{
-		Width:  geometry.Some(margins.Width),
-		Height: geometry.Some(margins.Height),
+	gridAreaMinusItemMarginsSize := geometry.SizeMaybeSub(gridAreaSize, geometry.Size[lib.Option[float32]]{
+		Width:  lib.Some(margins.Width),
+		Height: lib.Some(margins.Height),
 	})
 
 	// Compute width
@@ -303,7 +304,7 @@ func (gi *gridItem) knownDimensions(
 	}
 	// Reapply aspect ratio after stretch width adjustments
 	stretchedSize := geometry.SizeOptionMaybeApplyAspectRatio(
-		geometry.Size[geometry.Option[float32]]{Width: width, Height: inherentSize.Height},
+		geometry.Size[lib.Option[float32]]{Width: width, Height: inherentSize.Height},
 		aspectRatio,
 	)
 	width = stretchedSize.Width
@@ -317,14 +318,14 @@ func (gi *gridItem) knownDimensions(
 	}
 	// Reapply aspect ratio after stretch height adjustments
 	stretchedSize2 := geometry.SizeOptionMaybeApplyAspectRatio(
-		geometry.Size[geometry.Option[float32]]{Width: width, Height: height},
+		geometry.Size[lib.Option[float32]]{Width: width, Height: height},
 		aspectRatio,
 	)
 	width = stretchedSize2.Width
 	height = stretchedSize2.Height
 
 	// Clamp size by min and max width/height
-	clamped := geometry.SizeMaybeClamp(geometry.Size[geometry.Option[float32]]{Width: width, Height: height}, minSizeResolved, maxSizeResolved)
+	clamped := geometry.SizeMaybeClamp(geometry.Size[lib.Option[float32]]{Width: width, Height: height}, minSizeResolved, maxSizeResolved)
 	_ = inherentSize // suppress unused
 	return clamped
 }
@@ -335,13 +336,13 @@ func (gi *gridItem) knownDimensions(
 func (gi *gridItem) availableSpace(
 	axis geometry.AbstractAxis,
 	otherAxisTracks []gridTrack,
-	otherAxisAvailableSpace geometry.Option[float32],
-	getTrackSizeEstimate func(track *gridTrack, availableSpace geometry.Option[float32]) geometry.Option[float32],
-) geometry.Size[geometry.Option[float32]] {
+	otherAxisAvailableSpace lib.Option[float32],
+	getTrackSizeEstimate func(track *gridTrack, availableSpace lib.Option[float32]) lib.Option[float32],
+) geometry.Size[lib.Option[float32]] {
 	otherStart, otherEnd := gi.trackRangeExcludingLines(axis.Other())
 	tracks := otherAxisTracks[otherStart:otherEnd]
 
-	var itemOtherAxisSize geometry.Option[float32]
+	var itemOtherAxisSize lib.Option[float32]
 	hasAll := true
 	var sum float32
 	for i := range tracks {
@@ -353,7 +354,7 @@ func (gi *gridItem) availableSpace(
 		sum += est.Value + tracks[i].contentAlignmentAdjustment
 	}
 	if hasAll {
-		itemOtherAxisSize = geometry.Some(sum)
+		itemOtherAxisSize = lib.Some(sum)
 	}
 
 	result := geometry.SizeOptionNone
@@ -365,9 +366,9 @@ func (gi *gridItem) availableSpace(
 func (gi *gridItem) availableSpaceCached(
 	axis geometry.AbstractAxis,
 	otherAxisTracks []gridTrack,
-	otherAxisAvailableSpace geometry.Option[float32],
-	getTrackSizeEstimate func(track *gridTrack, availableSpace geometry.Option[float32]) geometry.Option[float32],
-) geometry.Size[geometry.Option[float32]] {
+	otherAxisAvailableSpace lib.Option[float32],
+	getTrackSizeEstimate func(track *gridTrack, availableSpace lib.Option[float32]) lib.Option[float32],
+) geometry.Size[lib.Option[float32]] {
 	if gi.availableSpaceCache != nil {
 		return *gi.availableSpaceCache
 	}
@@ -379,15 +380,15 @@ func (gi *gridItem) availableSpaceCached(
 // marginsAxisSumsWithBaselineShims computes the item's resolved margins for size contributions.
 // Horizontal percentage margins always resolve to zero if the container size is indefinite.
 func (gi *gridItem) marginsAxisSumsWithBaselineShims(
-	innerNodeWidth geometry.Option[float32],
+	innerNodeWidth lib.Option[float32],
 	t tree.LayoutPartialTree,
 ) geometry.Size[float32] {
 	calc := func(id uint64, basis float32) float32 {
 		return t.ResolveCalcValue(id, basis)
 	}
 	r := geometry.Rect[float32]{
-		Left:   style.ResolveOrZeroLPA(gi.marginStyle.Left, geometry.Some[float32](0.0), calc),
-		Right:  style.ResolveOrZeroLPA(gi.marginStyle.Right, geometry.Some[float32](0.0), calc),
+		Left:   style.ResolveOrZeroLPA(gi.marginStyle.Left, lib.Some[float32](0.0), calc),
+		Right:  style.ResolveOrZeroLPA(gi.marginStyle.Right, lib.Some[float32](0.0), calc),
 		Top:    style.ResolveOrZeroLPA(gi.marginStyle.Top, innerNodeWidth, calc) + gi.baselineShim,
 		Bottom: style.ResolveOrZeroLPA(gi.marginStyle.Bottom, innerNodeWidth, calc),
 	}
@@ -398,11 +399,11 @@ func (gi *gridItem) marginsAxisSumsWithBaselineShims(
 func (gi *gridItem) minContentContribution(
 	axis geometry.AbstractAxis,
 	t tree.LayoutPartialTree,
-	availSpace geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	availSpace geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	knownDims := gi.knownDimensions(t, innerNodeSize, availSpace)
-	asAvailableSpace := geometry.SizeMapTo(availSpace, func(opt geometry.Option[float32]) style.AvailableSpace {
+	asAvailableSpace := geometry.SizeMapTo(availSpace, func(opt lib.Option[float32]) style.AvailableSpace {
 		if opt.IsSome {
 			return style.AvailableSpaceFromDefinite(opt.Value)
 		}
@@ -424,15 +425,15 @@ func (gi *gridItem) minContentContribution(
 func (gi *gridItem) minContentContributionCached(
 	axis geometry.AbstractAxis,
 	t tree.LayoutPartialTree,
-	availSpace geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	availSpace geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	cached := gi.minContentContributionCache.GetAbstract(axis)
 	if cached.IsSome {
 		return cached.Value
 	}
 	size := gi.minContentContribution(axis, t, availSpace, innerNodeSize)
-	gi.minContentContributionCache.SetAbstract(axis, geometry.Some(size))
+	gi.minContentContributionCache.SetAbstract(axis, lib.Some(size))
 	return size
 }
 
@@ -440,11 +441,11 @@ func (gi *gridItem) minContentContributionCached(
 func (gi *gridItem) maxContentContribution(
 	axis geometry.AbstractAxis,
 	t tree.LayoutPartialTree,
-	availSpace geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	availSpace geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	knownDims := gi.knownDimensions(t, innerNodeSize, availSpace)
-	asAvailableSpace := geometry.SizeMapTo(availSpace, func(opt geometry.Option[float32]) style.AvailableSpace {
+	asAvailableSpace := geometry.SizeMapTo(availSpace, func(opt lib.Option[float32]) style.AvailableSpace {
 		if opt.IsSome {
 			return style.AvailableSpaceFromDefinite(opt.Value)
 		}
@@ -466,15 +467,15 @@ func (gi *gridItem) maxContentContribution(
 func (gi *gridItem) maxContentContributionCached(
 	axis geometry.AbstractAxis,
 	t tree.LayoutPartialTree,
-	availSpace geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	availSpace geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	cached := gi.maxContentContributionCache.GetAbstract(axis)
 	if cached.IsSome {
 		return cached.Value
 	}
 	size := gi.maxContentContribution(axis, t, availSpace, innerNodeSize)
-	gi.maxContentContributionCache.SetAbstract(axis, geometry.Some(size))
+	gi.maxContentContributionCache.SetAbstract(axis, lib.Some(size))
 	return size
 }
 
@@ -485,8 +486,8 @@ func (gi *gridItem) minimumContribution(
 	t tree.LayoutPartialTree,
 	axis geometry.AbstractAxis,
 	axisTracks []gridTrack,
-	knownDims geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	knownDims geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	calc := func(id uint64, basis float32) float32 {
 		return t.ResolveCalcValue(id, basis)
@@ -501,16 +502,16 @@ func (gi *gridItem) minimumContribution(
 
 	resolvedSize := style.MaybeResolveSizeDimOption(gi.size, innerNodeSize, calc)
 	resolvedSize = geometry.SizeOptionMaybeApplyAspectRatio(resolvedSize, gi.aspectRatio)
-	resolvedSize = geometry.SizeMaybeAdd(resolvedSize, geometry.Size[geometry.Option[float32]]{
-		Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height),
+	resolvedSize = geometry.SizeMaybeAdd(resolvedSize, geometry.Size[lib.Option[float32]]{
+		Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height),
 	})
 	sizeVal := resolvedSize.GetAbstract(axis)
 
 	if !sizeVal.IsSome {
 		resolvedMinSize := style.MaybeResolveSizeDimOption(gi.minSize, innerNodeSize, calc)
 		resolvedMinSize = geometry.SizeOptionMaybeApplyAspectRatio(resolvedMinSize, gi.aspectRatio)
-		resolvedMinSize = geometry.SizeMaybeAdd(resolvedMinSize, geometry.Size[geometry.Option[float32]]{
-			Width: geometry.Some(boxSizingAdjustment.Width), Height: geometry.Some(boxSizingAdjustment.Height),
+		resolvedMinSize = geometry.SizeMaybeAdd(resolvedMinSize, geometry.Size[lib.Option[float32]]{
+			Width: lib.Some(boxSizingAdjustment.Width), Height: lib.Some(boxSizingAdjustment.Height),
 		})
 		minSizeVal := resolvedMinSize.GetAbstract(axis)
 		if minSizeVal.IsSome {
@@ -557,15 +558,15 @@ func (gi *gridItem) minimumContribution(
 
 			// If the item is a compressible replaced element, cap by preferred/max size
 			if gi.isCompressibleReplaced {
-				sizeOpt := style.MaybeResolveDimOption(gi.size.GetAbstract(axis), geometry.Some[float32](0.0), calc)
-				maxSizeOpt := style.MaybeResolveDimOption(gi.maxSize.GetAbstract(axis), geometry.Some[float32](0.0), calc)
+				sizeOpt := style.MaybeResolveDimOption(gi.size.GetAbstract(axis), lib.Some[float32](0.0), calc)
+				maxSizeOpt := style.MaybeResolveDimOption(gi.maxSize.GetAbstract(axis), lib.Some[float32](0.0), calc)
 				minimumContrib = geometry.MaybeMinF32(minimumContrib, sizeOpt)
 				minimumContrib = geometry.MaybeMinF32(minimumContrib, maxSizeOpt)
 			}
 
-			sizeVal = geometry.Some(minimumContrib)
+			sizeVal = lib.Some(minimumContrib)
 		} else {
-			sizeVal = geometry.Some[float32](0.0)
+			sizeVal = lib.Some[float32](0.0)
 		}
 	}
 
@@ -579,14 +580,14 @@ func (gi *gridItem) minimumContributionCached(
 	t tree.LayoutPartialTree,
 	axis geometry.AbstractAxis,
 	axisTracks []gridTrack,
-	knownDims geometry.Size[geometry.Option[float32]],
-	innerNodeSize geometry.Size[geometry.Option[float32]],
+	knownDims geometry.Size[lib.Option[float32]],
+	innerNodeSize geometry.Size[lib.Option[float32]],
 ) float32 {
 	cached := gi.minimumContributionCache.GetAbstract(axis)
 	if cached.IsSome {
 		return cached.Value
 	}
 	size := gi.minimumContribution(t, axis, axisTracks, knownDims, innerNodeSize)
-	gi.minimumContributionCache.SetAbstract(axis, geometry.Some(size))
+	gi.minimumContributionCache.SetAbstract(axis, lib.Some(size))
 	return size
 }

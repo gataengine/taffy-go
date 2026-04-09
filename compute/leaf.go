@@ -3,6 +3,7 @@
 package compute
 
 import (
+	"taffy-go/lib"
 	"taffy-go/geometry"
 	"taffy-go/style"
 	"taffy-go/tree"
@@ -19,7 +20,7 @@ func ComputeLeafLayout(
 	inputs tree.LayoutInput,
 	st style.CoreStyle,
 	calc style.CalcResolver,
-	measureFunction func(geometry.Size[geometry.Option[float32]], geometry.Size[style.AvailableSpace]) geometry.Size[float32],
+	measureFunction func(geometry.Size[lib.Option[float32]], geometry.Size[style.AvailableSpace]) geometry.Size[float32],
 ) tree.LayoutOutput {
 	knownDimensions := inputs.KnownDimensions
 	parentSize := inputs.ParentSize
@@ -44,10 +45,10 @@ func ComputeLeafLayout(
 	// Resolve node's preferred/min/max sizes against the available space.
 	// For ContentSize mode, we pretend the node has no size styles.
 	var (
-		nodeSize    geometry.Size[geometry.Option[float32]]
-		nodeMinSize geometry.Size[geometry.Option[float32]]
-		nodeMaxSize geometry.Size[geometry.Option[float32]]
-		aspectRatio geometry.Option[float32]
+		nodeSize    geometry.Size[lib.Option[float32]]
+		nodeMinSize geometry.Size[lib.Option[float32]]
+		nodeMaxSize geometry.Size[lib.Option[float32]]
+		aspectRatio lib.Option[float32]
 	)
 
 	switch sizingMode {
@@ -55,7 +56,7 @@ func ComputeLeafLayout(
 		nodeSize = knownDimensions
 		nodeMinSize = geometry.SizeOptionNone
 		nodeMaxSize = geometry.SizeOptionNone
-		aspectRatio = geometry.None[float32]()
+		aspectRatio = lib.None[float32]()
 
 	case tree.SizingModeInherentSize:
 		aspectRatio = st.GetAspectRatio()
@@ -63,9 +64,9 @@ func ComputeLeafLayout(
 		styleSize := geometry.SizeOptionMaybeApplyAspectRatio(
 			geometry.SizeMaybeAdd(
 				style.MaybeResolveSizeDimOption(st.GetSize(), parentSize, calc),
-				geometry.Size[geometry.Option[float32]]{
-					Width:  geometry.Some(boxSizingAdjustment.Width),
-					Height: geometry.Some(boxSizingAdjustment.Height),
+				geometry.Size[lib.Option[float32]]{
+					Width:  lib.Some(boxSizingAdjustment.Width),
+					Height: lib.Some(boxSizingAdjustment.Height),
 				},
 			),
 			aspectRatio,
@@ -74,9 +75,9 @@ func ComputeLeafLayout(
 		styleMinSize := geometry.SizeOptionMaybeApplyAspectRatio(
 			geometry.SizeMaybeAdd(
 				style.MaybeResolveSizeDimOption(st.GetMinSize(), parentSize, calc),
-				geometry.Size[geometry.Option[float32]]{
-					Width:  geometry.Some(boxSizingAdjustment.Width),
-					Height: geometry.Some(boxSizingAdjustment.Height),
+				geometry.Size[lib.Option[float32]]{
+					Width:  lib.Some(boxSizingAdjustment.Width),
+					Height: lib.Some(boxSizingAdjustment.Height),
 				},
 			),
 			aspectRatio,
@@ -84,9 +85,9 @@ func ComputeLeafLayout(
 
 		styleMaxSize := geometry.SizeMaybeAdd(
 			style.MaybeResolveSizeDimOption(st.GetMaxSize(), parentSize, calc),
-			geometry.Size[geometry.Option[float32]]{
-				Width:  geometry.Some(boxSizingAdjustment.Width),
-				Height: geometry.Some(boxSizingAdjustment.Height),
+			geometry.Size[lib.Option[float32]]{
+				Width:  lib.Some(boxSizingAdjustment.Width),
+				Height: lib.Some(boxSizingAdjustment.Height),
 			},
 		)
 
@@ -139,8 +140,8 @@ func ComputeLeafLayout(
 				Width:  geometry.MaybeClampF32(size.Width, nodeMinSize.Width, nodeMaxSize.Width),
 				Height: geometry.MaybeClampF32(size.Height, nodeMinSize.Height, nodeMaxSize.Height),
 			}
-			pbSumOptionW := geometry.Some(pbSum.Width)
-			pbSumOptionH := geometry.Some(pbSum.Height)
+			pbSumOptionW := lib.Some(pbSum.Width)
+			pbSumOptionH := lib.Some(pbSum.Height)
 			size = geometry.Size[float32]{
 				Width:  geometry.MaybeMaxF32(size.Width, pbSumOptionW),
 				Height: geometry.MaybeMaxF32(size.Height, pbSumOptionH),
@@ -163,7 +164,7 @@ func ComputeLeafLayout(
 	computedAvailableSpace := geometry.Size[style.AvailableSpace]{
 		Width: func() style.AvailableSpace {
 			as := style.AvailableSpaceFromOptionFloat32(knownDimensions.Width).Or(availableSpace.Width)
-			as = style.AsMaybeSubOption(as, geometry.Some(geometry.RectHorizontalAxisSum(margin)))
+			as = style.AsMaybeSubOption(as, lib.Some(geometry.RectHorizontalAxisSum(margin)))
 			as = as.MaybeSet(knownDimensions.Width)
 			as = as.MaybeSet(nodeSize.Width)
 			return as.MapDefiniteValue(func(size float32) float32 {
@@ -173,7 +174,7 @@ func ComputeLeafLayout(
 		}(),
 		Height: func() style.AvailableSpace {
 			as := style.AvailableSpaceFromOptionFloat32(knownDimensions.Height).Or(availableSpace.Height)
-			as = style.AsMaybeSubOption(as, geometry.Some(geometry.RectVerticalAxisSum(margin)))
+			as = style.AsMaybeSubOption(as, lib.Some(geometry.RectVerticalAxisSum(margin)))
 			as = as.MaybeSet(knownDimensions.Height)
 			as = as.MaybeSet(nodeSize.Height)
 			return as.MapDefiniteValue(func(size float32) float32 {
@@ -184,7 +185,7 @@ func ComputeLeafLayout(
 	}
 
 	// Determine the known dimensions to pass to the measure function.
-	var measureKnownDimensions geometry.Size[geometry.Option[float32]]
+	var measureKnownDimensions geometry.Size[lib.Option[float32]]
 	switch runMode {
 	case tree.RunModeComputeSize:
 		measureKnownDimensions = knownDimensions
@@ -201,12 +202,12 @@ func ComputeLeafLayout(
 	}
 
 	contentBoxInsetSum := geometry.Size[float32]{Width: cbiHSum, Height: cbiVSum}
-	clampedSize := geometry.Size[geometry.Option[float32]]{
+	clampedSize := geometry.Size[lib.Option[float32]]{
 		Width: geometry.SizeOptionOr(knownDimensions, nodeSize).Width.Or(
-			geometry.Some(measuredSize.Width + contentBoxInsetSum.Width),
+			lib.Some(measuredSize.Width + contentBoxInsetSum.Width),
 		),
 		Height: geometry.SizeOptionOr(knownDimensions, nodeSize).Height.Or(
-			geometry.Some(measuredSize.Height + contentBoxInsetSum.Height),
+			lib.Some(measuredSize.Height + contentBoxInsetSum.Height),
 		),
 	}
 	clampedSizeF32 := geometry.Size[float32]{
@@ -226,8 +227,8 @@ func ComputeLeafLayout(
 
 	// Ensure the size is at least the padding+border sum.
 	size = geometry.Size[float32]{
-		Width:  geometry.MaybeMaxF32(size.Width, geometry.Some(pbSum.Width)),
-		Height: geometry.MaybeMaxF32(size.Height, geometry.Some(pbSum.Height)),
+		Width:  geometry.MaybeMaxF32(size.Width, lib.Some(pbSum.Width)),
+		Height: geometry.MaybeMaxF32(size.Height, lib.Some(pbSum.Height)),
 	}
 
 	// Compute the content size (measured size + padding sum axes).

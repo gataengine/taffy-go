@@ -2,37 +2,7 @@
 // This file is a port of geometry.rs from the Taffy Rust layout engine.
 package geometry
 
-// Option represents an optional value, similar to Rust's Option<T>.
-type Option[T any] struct {
-	Value  T
-	IsSome bool
-}
-
-// Some returns an Option containing the given value.
-func Some[T any](v T) Option[T] {
-	return Option[T]{Value: v, IsSome: true}
-}
-
-// None returns an empty Option.
-func None[T any]() Option[T] {
-	return Option[T]{}
-}
-
-// UnwrapOr returns the contained value if Some, otherwise returns the alt value.
-func (o Option[T]) UnwrapOr(alt T) T {
-	if o.IsSome {
-		return o.Value
-	}
-	return alt
-}
-
-// Or returns this Option if Some, otherwise returns alt.
-func (o Option[T]) Or(alt Option[T]) Option[T] {
-	if o.IsSome {
-		return o
-	}
-	return alt
-}
+import "taffy-go/lib"
 
 // AbsoluteAxis represents the simple absolute horizontal and vertical axis.
 type AbsoluteAxis int
@@ -375,26 +345,26 @@ func SizeHasNonZeroArea(s Size[float32]) bool {
 	return s.Width > 0.0 && s.Height > 0.0
 }
 
-// SizeOptionNone is a Size[Option[float32]] with None width and height.
-var SizeOptionNone = Size[Option[float32]]{
-	Width:  None[float32](),
-	Height: None[float32](),
+// SizeOptionNone is a Size[lib.Option[float32]] with None width and height.
+var SizeOptionNone = Size[lib.Option[float32]]{
+	Width:  lib.None[float32](),
+	Height: lib.None[float32](),
 }
 
-// NewSizeOptionF32 creates a Size[Option[float32]] with Some(width) and Some(height).
-func NewSizeOptionF32(width, height float32) Size[Option[float32]] {
-	return Size[Option[float32]]{
-		Width:  Some(width),
-		Height: Some(height),
+// NewSizeOptionF32 creates a Size[lib.Option[float32]] with lib.Some(width) and lib.Some(height).
+func NewSizeOptionF32(width, height float32) Size[lib.Option[float32]] {
+	return Size[lib.Option[float32]]{
+		Width:  lib.Some(width),
+		Height: lib.Some(height),
 	}
 }
 
-// SizeOptionMaybeApplyAspectRatio applies aspect_ratio (if supplied) to a Size[Option[float32]].
+// SizeOptionMaybeApplyAspectRatio applies aspect_ratio (if supplied) to a Size[lib.Option[float32]].
 //   - If width is Some but height is None, height is computed from width and aspect_ratio.
 //   - If height is Some but width is None, width is computed from height and aspect_ratio.
 //
 // If aspect_ratio is None, this function returns size unchanged.
-func SizeOptionMaybeApplyAspectRatio(size Size[Option[float32]], aspectRatio Option[float32]) Size[Option[float32]] {
+func SizeOptionMaybeApplyAspectRatio(size Size[lib.Option[float32]], aspectRatio lib.Option[float32]) Size[lib.Option[float32]] {
 	if !aspectRatio.IsSome {
 		return size
 	}
@@ -404,17 +374,17 @@ func SizeOptionMaybeApplyAspectRatio(size Size[Option[float32]], aspectRatio Opt
 	switch {
 	case hasWidth && !hasHeight:
 		w := size.Width.Value
-		return Size[Option[float32]]{Width: Some(w), Height: Some(w / ratio)}
+		return Size[lib.Option[float32]]{Width: lib.Some(w), Height: lib.Some(w / ratio)}
 	case !hasWidth && hasHeight:
 		h := size.Height.Value
-		return Size[Option[float32]]{Width: Some(h * ratio), Height: Some(h)}
+		return Size[lib.Option[float32]]{Width: lib.Some(h * ratio), Height: lib.Some(h)}
 	default:
 		return size
 	}
 }
 
 // SizeOptionUnwrapOr performs Option.UnwrapOr on each component separately.
-func SizeOptionUnwrapOr[T any](s Size[Option[T]], alt Size[T]) Size[T] {
+func SizeOptionUnwrapOr[T any](s Size[lib.Option[T]], alt Size[T]) Size[T] {
 	return Size[T]{
 		Width:  s.Width.UnwrapOr(alt.Width),
 		Height: s.Height.UnwrapOr(alt.Height),
@@ -422,15 +392,15 @@ func SizeOptionUnwrapOr[T any](s Size[Option[T]], alt Size[T]) Size[T] {
 }
 
 // SizeOptionOr performs Option.Or on each component separately.
-func SizeOptionOr[T any](s Size[Option[T]], alt Size[Option[T]]) Size[Option[T]] {
-	return Size[Option[T]]{
+func SizeOptionOr[T any](s Size[lib.Option[T]], alt Size[lib.Option[T]]) Size[lib.Option[T]] {
+	return Size[lib.Option[T]]{
 		Width:  s.Width.Or(alt.Width),
 		Height: s.Height.Or(alt.Height),
 	}
 }
 
 // SizeOptionBothAxisDefined returns true if both Width and Height are Some.
-func SizeOptionBothAxisDefined[T any](s Size[Option[T]]) bool {
+func SizeOptionBothAxisDefined[T any](s Size[lib.Option[T]]) bool {
 	return s.Width.IsSome && s.Height.IsSome
 }
 
@@ -445,8 +415,8 @@ type Point[T any] struct {
 // PointZeroF32 is a Point[float32] at the origin (0, 0).
 var PointZeroF32 = Point[float32]{X: 0, Y: 0}
 
-// PointNoneF32 is a Point[Option[float32]] with (None, None).
-var PointNoneF32 = Point[Option[float32]]{X: None[float32](), Y: None[float32]()}
+// PointNoneF32 is a Point[lib.Option[float32]] with (None, None).
+var PointNoneF32 = Point[lib.Option[float32]]{X: lib.None[float32](), Y: lib.None[float32]()}
 
 // Map applies f to both X and Y.
 func (p Point[T]) Map(f func(T) T) Point[T] {

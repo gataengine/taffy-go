@@ -3,6 +3,7 @@
 package style
 
 import (
+	"taffy-go/lib"
 	"math"
 
 	"taffy-go/geometry"
@@ -39,7 +40,7 @@ func AvailableSpaceFromFloat32(value float32) AvailableSpace {
 
 // AvailableSpaceFromOptionFloat32 creates an AvailableSpace from an Option[float32].
 // Some(value) maps to Definite(value), None maps to MaxContent.
-func AvailableSpaceFromOptionFloat32(opt geometry.Option[float32]) AvailableSpace {
+func AvailableSpaceFromOptionFloat32(opt lib.Option[float32]) AvailableSpace {
 	if opt.IsSome {
 		return AvailableSpace{Tag: AvailableSpaceDefinite, Value: opt.Value}
 	}
@@ -62,11 +63,11 @@ func (as AvailableSpace) IsDefinite() bool {
 
 // IntoOption converts to Option[float32].
 // Definite values become Some(value). Constraints become None.
-func (as AvailableSpace) IntoOption() geometry.Option[float32] {
+func (as AvailableSpace) IntoOption() lib.Option[float32] {
 	if as.Tag == AvailableSpaceDefinite {
-		return geometry.Some(as.Value)
+		return lib.Some(as.Value)
 	}
-	return geometry.None[float32]()
+	return lib.None[float32]()
 }
 
 // UnwrapOr returns the definite value or the provided default.
@@ -110,7 +111,7 @@ func (as AvailableSpace) UnwrapOrElse(defaultCb func() float32) float32 {
 }
 
 // MaybeSet returns AvailableSpace::Definite containing the option value if Some, else returns self.
-func (as AvailableSpace) MaybeSet(value geometry.Option[float32]) AvailableSpace {
+func (as AvailableSpace) MaybeSet(value lib.Option[float32]) AvailableSpace {
 	if value.IsSome {
 		return AvailableSpace{Tag: AvailableSpaceDefinite, Value: value.Value}
 	}
@@ -154,8 +155,8 @@ func (as AvailableSpace) IsRoughlyEqual(other AvailableSpace) bool {
 }
 
 // SizeAvailableSpaceIntoOptions converts Size[AvailableSpace] into Size[Option[float32]].
-func SizeAvailableSpaceIntoOptions(s geometry.Size[AvailableSpace]) geometry.Size[geometry.Option[float32]] {
-	return geometry.Size[geometry.Option[float32]]{
+func SizeAvailableSpaceIntoOptions(s geometry.Size[AvailableSpace]) geometry.Size[lib.Option[float32]] {
+	return geometry.Size[lib.Option[float32]]{
 		Width:  s.Width.IntoOption(),
 		Height: s.Height.IntoOption(),
 	}
@@ -163,7 +164,7 @@ func SizeAvailableSpaceIntoOptions(s geometry.Size[AvailableSpace]) geometry.Siz
 
 // SizeAvailableSpaceMaybeSet returns a new Size[AvailableSpace] where each axis is set to
 // a Definite value if the corresponding Option is Some, else unchanged.
-func SizeAvailableSpaceMaybeSet(s geometry.Size[AvailableSpace], value geometry.Size[geometry.Option[float32]]) geometry.Size[AvailableSpace] {
+func SizeAvailableSpaceMaybeSet(s geometry.Size[AvailableSpace], value geometry.Size[lib.Option[float32]]) geometry.Size[AvailableSpace] {
 	return geometry.Size[AvailableSpace]{
 		Width:  s.Width.MaybeSet(value.Width),
 		Height: s.Height.MaybeSet(value.Height),
