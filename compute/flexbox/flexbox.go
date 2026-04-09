@@ -665,14 +665,14 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 	var firstVerticalBaseline lib.Option[float32]
 	if len(flexLines) > 0 {
 		var baselineChild *flexItem
-		for _, item := range flexLines[0].items {
-			if constants.isColumn || item.alignSelf == style.AlignItemsBaseline {
-				baselineChild = item
+		for i := range flexLines[0].items {
+			if constants.isColumn || flexLines[0].items[i].alignSelf == style.AlignItemsBaseline {
+				baselineChild = &flexLines[0].items[i]
 				break
 			}
 		}
 		if baselineChild == nil && len(flexLines[0].items) > 0 {
-			baselineChild = flexLines[0].items[0]
+			baselineChild = &flexLines[0].items[0]
 		}
 		if baselineChild != nil {
 			offsetVertical := baselineChild.offsetCross
@@ -902,7 +902,8 @@ func determineContainerMainSize(
 			var mainSize float32
 
 			for _, line := range lines {
-				for _, item := range line.items {
+				for ii := range line.items {
+					item := &line.items[ii]
 					styleMin := sizeOptionMain(item.minSize, dir)
 					stylePreferred := sizeOptionMain(item.size, dir)
 					styleMax := sizeOptionMain(item.maxSize, dir)
@@ -1003,7 +1004,8 @@ func determineContainerMainSize(
 
 				// Add each item's contribution.
 				itemMainSizeSum := float32(0.0)
-				for _, item := range line.items {
+				for ii := range line.items {
+					item := &line.items[ii]
 					flexFraction := item.contentFlexFraction
 					var flexContribution float32
 					if item.contentFlexFraction > 0 {

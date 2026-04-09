@@ -57,10 +57,10 @@ func generateAnonymousFlexItems(
 	t tree.LayoutFlexboxContainer,
 	node tree.NodeId,
 	constants *algoConstants,
-) []*flexItem {
+) []flexItem {
 	calc := t.ResolveCalcValue
 	childIds := t.ChildIds(node)
-	items := make([]*flexItem, 0, len(childIds))
+	items := make([]flexItem, 0, len(childIds))
 
 	for index, child := range childIds {
 		childStyle := t.GetFlexboxChildStyle(child)
@@ -81,7 +81,7 @@ func generateAnonymousFlexItems(
 			boxSizingAdj = pbSum
 		}
 
-		items = append(items, &flexItem{
+		items = append(items, flexItem{
 			node:  child,
 			order: uint32(index),
 
@@ -146,12 +146,13 @@ func determineFlexBaseSize(
 	t tree.LayoutFlexboxContainer,
 	constants *algoConstants,
 	availableSpace geometry.Size[style.AvailableSpace],
-	flexItems []*flexItem,
+	flexItems []flexItem,
 ) {
 	dir := constants.dir
 	calc := t.ResolveCalcValue
 
-	for _, child := range flexItems {
+	for i := range flexItems {
+		child := &flexItems[i]
 		childStyle := t.GetFlexboxChildStyle(child.node)
 		childCoreStyle := t.GetCoreContainerStyle(child.node)
 
@@ -306,7 +307,8 @@ func determineHypotheticalCrossSize(
 	constants *algoConstants,
 	availableSpace geometry.Size[style.AvailableSpace],
 ) {
-	for _, child := range line.items {
+	for i := range line.items {
+		child := &line.items[i]
 		paddingBorderSum := rectCrossAxisSum(geometry.RectAddF32(child.padding, child.border), constants.dir)
 
 		childKnownMain := style.AvailableSpaceFromDefinite(sizeMain(constants.containerSize, constants.dir))

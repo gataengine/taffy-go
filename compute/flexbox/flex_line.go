@@ -12,7 +12,7 @@ import (
 
 // flexLine holds a slice of flex items for one line plus cross-axis sizing info.
 type flexLine struct {
-	items       []*flexItem
+	items       []flexItem
 	crossSize   float32
 	offsetCross float32
 }
@@ -20,7 +20,7 @@ type flexLine struct {
 func collectFlexLines(
 	constants *algoConstants,
 	availableSpace geometry.Size[style.AvailableSpace],
-	flexItems []*flexItem,
+	flexItems []flexItem,
 ) []*flexLine {
 	if !constants.isWrap {
 		lines := make([]*flexLine, 0, 1)
@@ -48,9 +48,9 @@ func collectFlexLines(
 	case style.AvailableSpaceMinContent:
 		// Each item in its own line.
 		lines := make([]*flexLine, 0, len(flexItems))
-		for _, item := range flexItems {
+		for i := range flexItems {
 			lines = append(lines, &flexLine{
-				items:     []*flexItem{item},
+				items:     flexItems[i : i+1],
 				crossSize: 0.0, offsetCross: 0.0,
 			})
 		}
@@ -103,7 +103,8 @@ func resolveFlexibleLengths(line *flexLine, constants *algoConstants) {
 	exactlySized := !growing && !shrinking
 
 	// 2. Size inflexible items.
-	for _, child := range line.items {
+	for i := range line.items {
+		child := &line.items[i]
 		innerTargetSize := sizeMain(child.hypotheticalInnerSize, constants.dir)
 		sizeSetMain(&child.targetSize, constants.dir, innerTargetSize)
 
@@ -160,11 +161,11 @@ func resolveFlexibleLengths(line *flexLine, constants *algoConstants) {
 
 		var unfrozen []*flexItem
 		var sumFlexGrow, sumFlexShrink float32
-		for _, child := range line.items {
-			if !child.frozen {
-				unfrozen = append(unfrozen, child)
-				sumFlexGrow += child.flexGrow
-				sumFlexShrink += child.flexShrink
+		for i := range line.items {
+			if !line.items[i].frozen {
+				unfrozen = append(unfrozen, &line.items[i])
+				sumFlexGrow += line.items[i].flexGrow
+				sumFlexShrink += line.items[i].flexShrink
 			}
 		}
 
@@ -264,7 +265,8 @@ func calculateChildrenBaseLines(
 			continue
 		}
 
-		for _, child := range line.items {
+		for i := range line.items {
+			child := &line.items[i]
 			if child.alignSelf != style.AlignItemsBaseline {
 				continue
 			}
@@ -409,7 +411,8 @@ func determineUsedCrossSize(
 	for _, line := range flexLines {
 		lineCrossSize := line.crossSize
 
-		for _, child := range line.items {
+		for i := range line.items {
+			child := &line.items[i]
 			childCoreStyle := t.GetCoreContainerStyle(child.node)
 
 			var crossTargetSize float32
@@ -468,7 +471,8 @@ func distributeRemainingFreeSpace(flexLines []*flexLine, constants *algoConstant
 
 		if freeSpace > 0 && numAutoMargins > 0 {
 			marginVal := freeSpace / float32(numAutoMargins)
-			for _, child := range line.items {
+			for i := range line.items {
+				child := &line.items[i]
 				if rectBoolMainStart(child.marginIsAuto, constants.dir) {
 					if constants.isRow {
 						child.margin.Left = marginVal
@@ -499,11 +503,12 @@ func distributeRemainingFreeSpace(flexLines []*flexLine, constants *algoConstant
 		if layoutReverse {
 			for revI := len(line.items) - 1; revI >= 0; revI-- {
 				enumI := len(line.items) - 1 - revI
-				child := line.items[revI]
+				child := &line.items[revI]
 				child.offsetMain = compute.ComputeAlignmentOffset(freeSpace, numItems, gap, jcMode, layoutReverse, enumI == 0)
 			}
 		} else {
-			for i, child := range line.items {
+			for i := range line.items {
+				child := &line.items[i]
 				child.offsetMain = compute.ComputeAlignmentOffset(freeSpace, numItems, gap, jcMode, layoutReverse, i == 0)
 			}
 		}
@@ -520,7 +525,8 @@ func resolveCrossAxisAutoMargins(flexLines []*flexLine, constants *algoConstants
 			}
 		}
 
-		for _, child := range line.items {
+		for i := range line.items {
+			child := &line.items[i]
 			freeSpace := lineCrossSize - sizeCross(child.outerTargetSize, constants.dir)
 
 			if rectBoolCrossStart(child.marginIsAuto, constants.dir) && rectBoolCrossEnd(child.marginIsAuto, constants.dir) {
@@ -680,15 +686,15 @@ func calculateLayoutLine(
 	if direction.IsReverse() {
 		for revI := len(line.items) - 1; revI >= 0; revI-- {
 			calculateFlexItem(
-				t, line.items[revI],
+				t, &line.items[revI],
 				&totalOffsetMain, *totalOffsetCross, lineOffsetCross,
 				contentSize, containerSize, nodeInnerSize, direction, layoutDirection,
 			)
 		}
 	} else {
-		for _, item := range line.items {
+		for i := range line.items {
 			calculateFlexItem(
-				t, item,
+				t, &line.items[i],
 				&totalOffsetMain, *totalOffsetCross, lineOffsetCross,
 				contentSize, containerSize, nodeInnerSize, direction, layoutDirection,
 			)
