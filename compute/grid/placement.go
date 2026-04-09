@@ -65,7 +65,7 @@ func maybeMirrorSpan(span geometry.Line[style.OriginZeroLine], axis geometry.Abs
 func placeGridItems(
 	cellOccupancyMatrix *cellOccupancyMatrix,
 	items *[]gridItem,
-	childrenIter func() []gridPlacementChild,
+	children []gridPlacementChild,
 	direction style.Direction,
 	gridAutoFlow style.GridAutoFlow,
 	alignItems style.AlignItems,
@@ -98,7 +98,7 @@ func placeGridItems(
 	}
 
 	// 1. Place children with definite positions
-	for _, child := range childrenIter() {
+	for _, child := range children {
 		oz := mapToOriginZero(child)
 		if !style.IsDefiniteOriginZero(oz.placement.horizontal) || !style.IsDefiniteOriginZero(oz.placement.vertical) {
 			continue
@@ -109,7 +109,7 @@ func placeGridItems(
 	}
 
 	// 2. Place remaining children with definite secondary axis positions
-	for _, child := range childrenIter() {
+	for _, child := range children {
 		oz := mapToOriginZero(child)
 		secondaryIsDefinite := style.IsDefiniteOriginZero(oz.placement.get(secondaryAxis))
 		primaryIsDefinite := style.IsDefiniteOriginZero(oz.placement.get(primaryAxis))
@@ -135,7 +135,7 @@ func placeGridItems(
 	}
 	gridPosition := gridStartPosition
 
-	for _, child := range childrenIter() {
+	for _, child := range children {
 		oz := mapToOriginZero(child)
 		if style.IsDefiniteOriginZero(oz.placement.get(secondaryAxis)) {
 			continue

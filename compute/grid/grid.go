@@ -182,21 +182,18 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	items := make([]gridItem, 0, t.ChildCount(node))
 	cellMatrix := newCellOccupancyMatrix(estColCounts, estRowCounts)
 
-	inFlowChildrenIter := func() []gridPlacementChild {
-		var result []gridPlacementChild
-		for index, childNode := range t.ChildIds(node) {
-			childCoreStyle := t.GetCoreContainerStyle(childNode)
-			childGridStyle := t.GetGridChildStyle(childNode)
-			if childCoreStyle.GetBoxGenerationMode() == style.BoxGenerationModeNone || childCoreStyle.GetPosition() == style.PositionAbsolute {
-				continue
-			}
-			result = append(result, gridPlacementChild{index: index, node: childNode, gridItemStyle: childGridStyle, coreStyle: childCoreStyle})
+	inFlowChildren := make([]gridPlacementChild, 0, t.ChildCount(node))
+	for index, childNode := range t.ChildIds(node) {
+		childCoreStyle := t.GetCoreContainerStyle(childNode)
+		childGridStyle := t.GetGridChildStyle(childNode)
+		if childCoreStyle.GetBoxGenerationMode() == style.BoxGenerationModeNone || childCoreStyle.GetPosition() == style.PositionAbsolute {
+			continue
 		}
-		return result
+		inFlowChildren = append(inFlowChildren, gridPlacementChild{index: index, node: childNode, gridItemStyle: childGridStyle, coreStyle: childCoreStyle})
 	}
 
 	placeGridItems(
-		&cellMatrix, &items, inFlowChildrenIter,
+		&cellMatrix, &items, inFlowChildren,
 		direction, containerStyle.GetGridAutoFlow(),
 		alignItems.UnwrapOr(style.AlignItemsStretch),
 		justifyItemsStyle.UnwrapOr(style.AlignItemsStretch),
