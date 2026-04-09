@@ -268,7 +268,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 
 	// Clear caches
 	for i := range items {
-		items[i].availableSpaceCache = nil
+		items[i].availableSpaceCache = lib.Option[geometry.Size[lib.Option[float32]]]{}
 	}
 
 	// Run track sizing for Block axis
@@ -378,14 +378,14 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 				items[i].minContentContributionCache.Width.Value != newMinContentContrib {
 				rerunColumnSizing = true
 			}
-			items[i].availableSpaceCache = &availSpace
+			items[i].availableSpaceCache = lib.Some(availSpace)
 			items[i].minContentContributionCache.Width = lib.Some(newMinContentContrib)
 			items[i].maxContentContributionCache.Width = lib.None[float32]()
 			items[i].minimumContributionCache.Width = lib.None[float32]()
 		}
 	} else {
 		for i := range items {
-			items[i].availableSpaceCache = nil
+			items[i].availableSpaceCache = lib.Option[geometry.Size[lib.Option[float32]]]{}
 			items[i].minContentContributionCache.Width = lib.None[float32]()
 			items[i].maxContentContributionCache.Width = lib.None[float32]()
 			items[i].minimumContributionCache.Width = lib.None[float32]()
@@ -432,14 +432,14 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 					items[i].minContentContributionCache.Height.Value != newMinContentContrib {
 					rerunRowSizing = true
 				}
-				items[i].availableSpaceCache = &availSpace
+				items[i].availableSpaceCache = lib.Some(availSpace)
 				items[i].minContentContributionCache.Height = lib.Some(newMinContentContrib)
 				items[i].maxContentContributionCache.Height = lib.None[float32]()
 				items[i].minimumContributionCache.Height = lib.None[float32]()
 			}
 		} else {
 			for i := range items {
-				items[i].availableSpaceCache = nil
+				items[i].availableSpaceCache = lib.Option[geometry.Size[lib.Option[float32]]]{}
 				items[i].minContentContributionCache.Height = lib.None[float32]()
 				items[i].maxContentContributionCache.Height = lib.None[float32]()
 				items[i].minimumContributionCache.Height = lib.None[float32]()

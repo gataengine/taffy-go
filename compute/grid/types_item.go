@@ -67,7 +67,7 @@ type gridItem struct {
 	crossesIntrinsicColumn bool
 
 	// availableSpaceCache is a cache for the available space input to intrinsic sizing computation.
-	availableSpaceCache *geometry.Size[lib.Option[float32]]
+	availableSpaceCache lib.Option[geometry.Size[lib.Option[float32]]]
 	// minContentContributionCache is a cache for the min-content size.
 	minContentContributionCache geometry.Size[lib.Option[float32]]
 	// minimumContributionCache is a cache for the minimum contribution.
@@ -120,7 +120,7 @@ func newGridItemWithPlacementStyleAndOrder(
 		crossesFlexibleColumn:  false,
 		crossesIntrinsicRow:    false,
 		crossesIntrinsicColumn: false,
-		availableSpaceCache:    nil,
+		availableSpaceCache:    lib.Option[geometry.Size[lib.Option[float32]]]{},
 		minContentContributionCache: geometry.SizeOptionNone,
 		maxContentContributionCache: geometry.SizeOptionNone,
 		minimumContributionCache:    geometry.SizeOptionNone,
@@ -369,11 +369,11 @@ func (gi *gridItem) availableSpaceCached(
 	otherAxisAvailableSpace lib.Option[float32],
 	getTrackSizeEstimate func(track *gridTrack, availableSpace lib.Option[float32]) lib.Option[float32],
 ) geometry.Size[lib.Option[float32]] {
-	if gi.availableSpaceCache != nil {
-		return *gi.availableSpaceCache
+	if gi.availableSpaceCache.IsSome {
+		return gi.availableSpaceCache.Value
 	}
 	availableSpaces := gi.availableSpace(axis, otherAxisTracks, otherAxisAvailableSpace, getTrackSizeEstimate)
-	gi.availableSpaceCache = &availableSpaces
+	gi.availableSpaceCache = lib.Some(availableSpaces)
 	return availableSpaces
 }
 
