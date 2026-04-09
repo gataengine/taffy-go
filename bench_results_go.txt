@@ -1,0 +1,17 @@
+BenchmarkFlexbox/HugeNested/10000-10   	      61	  17653962 ns/op	13210131 B/op	  134397 allocs/op
+BenchmarkFlexbox/Wide/10000-10         	      45	  29273062 ns/op	15815468 B/op	  174891 allocs/op
+BenchmarkFlexbox/DeepRandom/4000-10    	     124	   9576132 ns/op	 5799026 B/op	   67028 allocs/op
+BenchmarkFlexbox/DeepRandom/10000-10   	      48	  25879079 ns/op	15693796 B/op	  174792 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10      	      68	  16542554 ns/op	11699402 B/op	  139095 allocs/op
+BenchmarkFlexbox/DeepAuto/10000-10     	      26	  43368530 ns/op	31048893 B/op	  360279 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10      	     796	   1481493 ns/op	 1125106 B/op	   13096 allocs/op
+BenchmarkGrid/Wide/31x31-10            	     355	   3352404 ns/op	 1759998 B/op	   13081 allocs/op
+BenchmarkGrid/Wide/100x100-10          	      25	  47176795 ns/op	21029242 B/op	  131585 allocs/op
+BenchmarkGrid/Deep/2x2_levels5-10      	      96	  12477570 ns/op	11346244 B/op	   90087 allocs/op
+BenchmarkGrid/Deep/3x3_levels4-10      	      19	  62119643 ns/op	65342473 B/op	  422445 allocs/op
+BenchmarkGrid/Deep/2x2_levels7-10      	       6	 199277312 ns/op	192358261 B/op	 1533352 allocs/op
+BenchmarkGrid/SuperDeep/100-10         	    1350	    919314 ns/op	  658428 B/op	    7532 allocs/op
+BenchmarkGrid/SuperDeep/1000-10        	     123	   9639320 ns/op	 6588992 B/op	   75636 allocs/op
+BenchmarkTreeCreation/1000-10          	    1686	    718354 ns/op	 1614428 B/op	    2350 allocs/op
+BenchmarkTreeCreation/10000-10         	     100	  11406148 ns/op	15544168 B/op	   23123 allocs/op
+BenchmarkTreeCreation/100000-10        	      16	  67035661 ns/op	150726143 B/op	  230316 allocs/op

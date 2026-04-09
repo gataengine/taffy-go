@@ -1,0 +1,159 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+yoga 'huge nested'/Taffy 0.7 /10000
+                        time:   [6.3047 ms 6.4076 ms 6.5255 ms]
+                        change: [−6.5904% −3.7625% −1.0710%] (p = 0.01 < 0.05)
+                        Performance has improved.
+Found 8 outliers among 100 measurements (8.00%)
+  4 (4.00%) high mild
+  4 (4.00%) high severe
+
+Wide tree/Taffy 0.7 (2-level hierarchy)/10000
+                        time:   [7.6723 ms 7.8176 ms 7.9655 ms]
+                        change: [−6.3145% −2.4438% +1.6424%] (p = 0.31 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+
+Deep tree (auto size)/Taffy 0.7 (12-level hierarchy)/4000
+                        time:   [3.4835 ms 3.5426 ms 3.6016 ms]
+                        change: [−37.470% −19.954% −2.1876%] (p = 0.12 > 0.05)
+                        No change in performance detected.
+Deep tree (auto size)/Taffy 0.7 (14-level hierarchy)/10000
+                        time:   [8.8440 ms 8.9931 ms 9.1740 ms]
+                        change: [−2.7965% −1.1926% +0.5370%] (p = 0.22 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high mild
+
+Deep tree (random size)/Taffy 0.7 (12-level hierarchy)/4000
+                        time:   [2.7243 ms 2.9247 ms 3.2591 ms]
+                        change: [−7.4812% −1.7522% +5.2934%] (p = 0.64 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+Deep tree (random size)/Taffy 0.7 (14-level hierarchy)/10000
+                        time:   [7.3420 ms 7.9828 ms 8.8675 ms]
+                        change: [−3.2345% +2.5285% +11.308%] (p = 0.60 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+
+super deep/Taffy 0.7 /100
+                        time:   [331.83 µs 346.95 µs 360.55 µs]
+                        change: [−5.6572% +0.3279% +6.6058%] (p = 0.92 > 0.05)
+                        No change in performance detected.
+
+grid/wide/31x31/961     time:   [1.3317 ms 1.3755 ms 1.3996 ms]
+                        change: [−14.197% −9.7146% −5.8129%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) low mild
+grid/wide/100x100/10000 time:   [18.412 ms 18.768 ms 19.164 ms]
+                        change: [−7.0719% −2.0269% +2.6281%] (p = 0.49 > 0.05)
+                        No change in performance detected.
+grid/wide/316x316/99856 time:   [225.66 ms 227.35 ms 228.89 ms]
+                        change: [−3.4881% −2.4968% −1.6697%] (p = 0.00 < 0.05)
+                        Performance has improved.
+
+grid/deep/2x2/1024      time:   [2.6518 ms 2.6983 ms 2.7525 ms]
+                        change: [−2.4597% +0.6157% +3.6690%] (p = 0.73 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) low mild
+grid/deep/3x3/6561      time:   [13.045 ms 13.683 ms 15.425 ms]
+                        change: [−3.1930% +4.4209% +16.769%] (p = 0.61 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+grid/deep/2x2/16384     time:   [47.312 ms 47.678 ms 47.924 ms]
+                        change: [−4.1635% −2.5980% −1.3790%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 2 outliers among 10 measurements (20.00%)
+  1 (10.00%) low severe
+  1 (10.00%) low mild
+
+grid/superdeep/1x1/100  time:   [260.90 µs 265.16 µs 268.26 µs]
+                        change: [−3.3222% −1.2338% +1.1349%] (p = 0.31 > 0.05)
+                        No change in performance detected.
+grid/superdeep/1x1/1000 time:   [2.8657 ms 2.9487 ms 3.0418 ms]
+                        change: [−21.757% −9.7600% −0.2652%] (p = 0.18 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 10 measurements (10.00%)
+  1 (10.00%) high severe
+
+mixed_flex_grid/mixed/depth_2_width_4
+                        time:   [546.08 µs 548.66 µs 551.09 µs]
+                        change: [−4.2835% −1.1941% +0.9344%] (p = 0.50 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 40 measurements (5.00%)
+  1 (2.50%) low mild
+  1 (2.50%) high severe
+mixed_flex_grid/mixed/depth_2_width_8
+                        time:   [1.4279 ms 1.4391 ms 1.4507 ms]
+                        change: [−3.2696% −1.5556% −0.0534%] (p = 0.06 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 40 measurements (5.00%)
+  1 (2.50%) low mild
+  1 (2.50%) high mild
+mixed_flex_grid/mixed/depth_4_width_4
+                        time:   [11.161 ms 11.285 ms 11.468 ms]
+                        change: [−3.3185% −1.1720% +0.8199%] (p = 0.32 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 40 measurements (2.50%)
+  1 (2.50%) high severe
+mixed_flex_grid/mixed/depth_4_width_8
+                        time:   [167.33 ms 168.67 ms 170.51 ms]
+                        change: [−8.4751% −4.2123% −0.4480%] (p = 0.04 < 0.05)
+                        Change within noise threshold.
+Found 3 outliers among 40 measurements (7.50%)
+  1 (2.50%) high mild
+  2 (5.00%) high severe
+
+Tree creation/TaffyTree::new/1000
+                        time:   [138.91 µs 141.08 µs 143.56 µs]
+                        change: [−16.964% −7.2066% +1.4813%] (p = 0.19 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+Tree creation/TaffyTree::with_capacity/1000
+                        time:   [182.62 µs 189.29 µs 198.17 µs]
+                        change: [+2.5909% +6.4354% +11.225%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 3 outliers among 100 measurements (3.00%)
+  2 (2.00%) high mild
+  1 (1.00%) high severe
+Tree creation/TaffyTree::new/10000
+                        time:   [3.0262 ms 3.0624 ms 3.0991 ms]
+                        change: [−1.5724% +0.9499% +3.2654%] (p = 0.46 > 0.05)
+                        No change in performance detected.
+Found 5 outliers among 100 measurements (5.00%)
+  2 (2.00%) low mild
+  2 (2.00%) high mild
+  1 (1.00%) high severe
+Tree creation/TaffyTree::with_capacity/10000
+                        time:   [2.4478 ms 2.4760 ms 2.5068 ms]
+                        change: [−3.0878% −1.0761% +0.7396%] (p = 0.30 > 0.05)
+                        No change in performance detected.
+Found 9 outliers among 100 measurements (9.00%)
+  1 (1.00%) low mild
+  6 (6.00%) high mild
+  2 (2.00%) high severe
+Tree creation/TaffyTree::new/100000
+                        time:   [31.070 ms 31.410 ms 31.809 ms]
+                        change: [−2.4460% −0.7789% +0.9944%] (p = 0.39 > 0.05)
+                        No change in performance detected.
+Found 5 outliers among 100 measurements (5.00%)
+  2 (2.00%) high mild
+  3 (3.00%) high severe
+Tree creation/TaffyTree::with_capacity/100000
+                        time:   [35.015 ms 35.689 ms 36.599 ms]
+                        change: [−0.3125% +1.8519% +4.7369%] (p = 0.16 > 0.05)
+                        No change in performance detected.
+Found 11 outliers among 100 measurements (11.00%)
+  5 (5.00%) high mild
+  6 (6.00%) high severe
+
