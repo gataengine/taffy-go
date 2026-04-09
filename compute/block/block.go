@@ -896,7 +896,7 @@ func performFinalLayoutOnInFlowChildren(
 
 			if hasActiveFloats {
 				slot := blockCtx.findContentSlot(minY, item.clear_, nil)
-				hasActiveFloats = slot.segmentID != nil
+				hasActiveFloats = slot.segmentID.IsSome
 				stretchWidth = slot.width - itemNonAutoXMarginSum
 				floatAvoidingPosition = geometry.Point[float32]{X: slot.x, Y: slot.y}
 				floatAvoidingWidth = slot.width

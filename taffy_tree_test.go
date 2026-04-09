@@ -74,10 +74,10 @@ var _ = Describe("TaffyTree", func() {
 			Expect(children[0]).To(Equal(child0))
 			Expect(children[1]).To(Equal(child1))
 
-			Expect(tree.Parent(child0)).NotTo(BeNil())
-			Expect(*tree.Parent(child0)).To(Equal(parent))
-			Expect(tree.Parent(child1)).NotTo(BeNil())
-			Expect(*tree.Parent(child1)).To(Equal(parent))
+			Expect(tree.Parent(child0).IsSome).To(BeTrue())
+			Expect(tree.Parent(child0).Value).To(Equal(parent))
+			Expect(tree.Parent(child1).IsSome).To(BeTrue())
+			Expect(tree.Parent(child1).Value).To(Equal(parent))
 		})
 	})
 
@@ -125,7 +125,7 @@ var _ = Describe("TaffyTree", func() {
 
 			Expect(tree.Children(node0)).To(BeEmpty())
 			Expect(tree.Children(node2)).To(BeEmpty())
-			Expect(tree.Parent(node2)).To(BeNil())
+			Expect(tree.Parent(node2).IsSome).To(BeFalse())
 		})
 
 		It("panics for invalid node", func() {
@@ -222,9 +222,9 @@ var _ = Describe("TaffyTree", func() {
 			tree.SetChildren(parent, []treepkg.NodeId{newChild0, newChild1})
 
 			Expect(tree.Children(parent)).To(HaveLen(2))
-			Expect(tree.Parent(oldChild)).To(BeNil())
-			Expect(*tree.Parent(newChild0)).To(Equal(parent))
-			Expect(*tree.Parent(newChild1)).To(Equal(parent))
+			Expect(tree.Parent(oldChild).IsSome).To(BeFalse())
+			Expect(tree.Parent(newChild0).Value).To(Equal(parent))
+			Expect(tree.Parent(newChild1).Value).To(Equal(parent))
 		})
 	})
 
@@ -238,7 +238,7 @@ var _ = Describe("TaffyTree", func() {
 			removed := tree.RemoveChild(parent, child)
 			Expect(removed).To(Equal(child))
 			Expect(tree.Children(parent)).To(BeEmpty())
-			Expect(tree.Parent(child)).To(BeNil())
+			Expect(tree.Parent(child).IsSome).To(BeFalse())
 			// child still exists in the tree
 			Expect(tree.TotalNodeCount()).To(Equal(2))
 		})
@@ -282,8 +282,8 @@ var _ = Describe("TaffyTree", func() {
 			old := tree.ReplaceChildAtIndex(parent, 0, newChild)
 			Expect(old).To(Equal(child0))
 			Expect(tree.Children(parent)[0]).To(Equal(newChild))
-			Expect(tree.Parent(child0)).To(BeNil())
-			Expect(*tree.Parent(newChild)).To(Equal(parent))
+			Expect(tree.Parent(child0).IsSome).To(BeFalse())
+			Expect(tree.Parent(newChild).Value).To(Equal(parent))
 		})
 	})
 
@@ -320,15 +320,15 @@ var _ = Describe("TaffyTree", func() {
 		It("returns nil for root nodes", func() {
 			tree := New()
 			node := tree.NewLeaf(style.Style{})
-			Expect(tree.Parent(node)).To(BeNil())
+			Expect(tree.Parent(node).IsSome).To(BeFalse())
 		})
 
 		It("returns parent for child nodes", func() {
 			tree := New()
 			child := tree.NewLeaf(style.Style{})
 			parent := tree.NewWithChildren(style.Style{}, []treepkg.NodeId{child})
-			Expect(tree.Parent(child)).NotTo(BeNil())
-			Expect(*tree.Parent(child)).To(Equal(parent))
+			Expect(tree.Parent(child).IsSome).To(BeTrue())
+			Expect(tree.Parent(child).Value).To(Equal(parent))
 		})
 	})
 

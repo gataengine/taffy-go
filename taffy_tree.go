@@ -62,7 +62,7 @@ type TaffyTree struct {
 	nodes        map[tree.NodeId]*nodeData
 	nodeContexts map[tree.NodeId]NodeContext
 	children     map[tree.NodeId][]tree.NodeId
-	parents      map[tree.NodeId]*tree.NodeId
+	parents      map[tree.NodeId]lib.Option[tree.NodeId]
 	config       taffyConfig
 	nextId       uint64
 }
@@ -78,7 +78,7 @@ func NewWithCapacity(capacity int) *TaffyTree {
 		nodes:        make(map[tree.NodeId]*nodeData, capacity),
 		nodeContexts: make(map[tree.NodeId]NodeContext, capacity),
 		children:     make(map[tree.NodeId][]tree.NodeId, capacity),
-		parents:      make(map[tree.NodeId]*tree.NodeId, capacity),
+		parents:      make(map[tree.NodeId]lib.Option[tree.NodeId], capacity),
 		config:       defaultTaffyConfig(),
 		nextId:       0,
 	}
@@ -114,7 +114,7 @@ func (t *TaffyTree) NewLeaf(s style.Style) tree.NodeId {
 	id := t.allocateId()
 	t.nodes[id] = newNodeData(s)
 	t.children[id] = []tree.NodeId{}
-	t.parents[id] = nil
+	t.parents[id] = lib.Option[tree.NodeId]{}
 	return id
 }
 
@@ -127,7 +127,7 @@ func (t *TaffyTree) NewLeafWithContext(s style.Style, context NodeContext) tree.
 	t.nodes[id] = data
 	t.nodeContexts[id] = context
 	t.children[id] = []tree.NodeId{}
-	t.parents[id] = nil
+	t.parents[id] = lib.Option[tree.NodeId]{}
 	return id
 }
 
@@ -140,11 +140,10 @@ func (t *TaffyTree) NewWithChildren(s style.Style, children []tree.NodeId) tree.
 	childrenCopy := make([]tree.NodeId, len(children))
 	copy(childrenCopy, children)
 	t.children[id] = childrenCopy
-	t.parents[id] = nil
+	t.parents[id] = lib.Option[tree.NodeId]{}
 
 	for _, child := range children {
-		childCopy := id
-		t.parents[child] = &childCopy
+		t.parents[child] = lib.Some(id)
 	}
 
 	return id
@@ -155,7 +154,7 @@ func (t *TaffyTree) Clear() {
 	t.nodes = make(map[tree.NodeId]*nodeData)
 	t.nodeContexts = make(map[tree.NodeId]NodeContext)
 	t.children = make(map[tree.NodeId][]tree.NodeId)
-	t.parents = make(map[tree.NodeId]*tree.NodeId)
+	t.parents = make(map[tree.NodeId]lib.Option[tree.NodeId])
 	t.nextId = 0
 }
 
@@ -166,8 +165,8 @@ func (t *TaffyTree) Remove(node tree.NodeId) tree.NodeId {
 	t.requireNode(node)
 
 	// Remove node from its parent's children list
-	if parentPtr := t.parents[node]; parentPtr != nil {
-		parent := *parentPtr
+	if parentOpt := t.parents[node]; parentOpt.IsSome {
+		parent := parentOpt.Value
 		if siblings, ok := t.children[parent]; ok {
 			filtered := siblings[:0]
 			for _, sibling := range siblings {
@@ -182,7 +181,7 @@ func (t *TaffyTree) Remove(node tree.NodeId) tree.NodeId {
 	// Clear parent references for this node's children
 	if nodeChildren, ok := t.children[node]; ok {
 		for _, child := range nodeChildren {
-			t.parents[child] = nil
+			t.parents[child] = lib.Option[tree.NodeId]{}
 		}
 	}
 
@@ -221,8 +220,7 @@ func (t *TaffyTree) GetNodeContext(node tree.NodeId) *NodeContext {
 func (t *TaffyTree) AddChild(parent, child tree.NodeId) {
 	t.requireNode(parent)
 	t.requireNode(child)
-	parentCopy := parent
-	t.parents[child] = &parentCopy
+	t.parents[child] = lib.Some(parent)
 	t.children[parent] = append(t.children[parent], child)
 	t.MarkDirty(parent)
 }
@@ -236,8 +234,7 @@ func (t *TaffyTree) InsertChildAtIndex(parent tree.NodeId, index int, child tree
 	if index > childCount {
 		panic(fmt.Sprintf("taffy: index (%d) should be <= child_count (%d) for parent node %v", index, childCount, parent))
 	}
-	parentCopy := parent
-	t.parents[child] = &parentCopy
+	t.parents[child] = lib.Some(parent)
 	children := t.children[parent]
 	children = append(children, 0)
 	copy(children[index+1:], children[index:])
@@ -253,19 +250,18 @@ func (t *TaffyTree) SetChildren(parent tree.NodeId, children []tree.NodeId) {
 
 	// Remove parent ref from old children
 	for _, child := range t.children[parent] {
-		t.parents[child] = nil
+		t.parents[child] = lib.Option[tree.NodeId]{}
 	}
 
 	// Assign new parent refs, removing children from their previous parents first
 	for _, child := range children {
-		if prevParentPtr := t.parents[child]; prevParentPtr != nil {
-			prevParent := *prevParentPtr
+		if prevParentOpt := t.parents[child]; prevParentOpt.IsSome {
+			prevParent := prevParentOpt.Value
 			if prevParent != parent {
 				t.removeChildFromParent(prevParent, child)
 			}
 		}
-		parentCopy := parent
-		t.parents[child] = &parentCopy
+		t.parents[child] = lib.Some(parent)
 	}
 
 	childrenCopy := make([]tree.NodeId, len(children))
@@ -320,7 +316,7 @@ func (t *TaffyTree) RemoveChildAtIndex(parent tree.NodeId, index int) tree.NodeI
 	}
 	child := children[index]
 	t.children[parent] = append(children[:index], children[index+1:]...)
-	t.parents[child] = nil
+	t.parents[child] = lib.Option[tree.NodeId]{}
 	t.MarkDirty(parent)
 	return child
 }
@@ -337,10 +333,9 @@ func (t *TaffyTree) ReplaceChildAtIndex(parent tree.NodeId, index int, newChild 
 		panic(fmt.Sprintf("taffy: index (%d) should be < child_count (%d) for parent node %v", index, childCount, parent))
 	}
 	oldChild := children[index]
-	parentCopy := parent
-	t.parents[newChild] = &parentCopy
+	t.parents[newChild] = lib.Some(parent)
 	t.children[parent][index] = newChild
-	t.parents[oldChild] = nil
+	t.parents[oldChild] = lib.Option[tree.NodeId]{}
 	t.MarkDirty(parent)
 	return oldChild
 }
@@ -362,9 +357,9 @@ func (t *TaffyTree) TotalNodeCount() int {
 	return len(t.nodes)
 }
 
-// Parent returns a pointer to the NodeId of the parent of the specified node, or nil if it has none.
+// Parent returns the parent of the specified node as an Option (None if it has no parent).
 // Panics if the node does not exist.
-func (t *TaffyTree) Parent(child tree.NodeId) *tree.NodeId {
+func (t *TaffyTree) Parent(child tree.NodeId) lib.Option[tree.NodeId] {
 	t.requireNode(child)
 	return t.parents[child]
 }
@@ -415,11 +410,11 @@ func (t *TaffyTree) MarkDirty(node tree.NodeId) {
 			// Already dirty - ancestors must also already be dirty
 			break
 		}
-		parentPtr := t.parents[current]
-		if parentPtr == nil {
+		parentOpt := t.parents[current]
+		if !parentOpt.IsSome {
 			break
 		}
-		current = *parentPtr
+		current = parentOpt.Value
 	}
 }
 

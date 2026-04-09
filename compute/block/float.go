@@ -6,14 +6,15 @@ import (
 	"math"
 
 	"taffy-go/geometry"
+	"taffy-go/lib"
 	"taffy-go/style"
 )
 
 // contentSlot is an empty "slot" that avoids floats, suitable for non-floated content
 // to be laid out into.
 type contentSlot struct {
-	// segmentID is the id of the segment that the slot starts in (nil means no segment).
-	segmentID *int
+	// segmentID is the id of the segment that the slot starts in (None means no segment).
+	segmentID lib.Option[int]
 	// x is the x position of the start of the slot.
 	x float32
 	// y is the y position of the start of the slot.
@@ -427,11 +428,10 @@ func (fc *floatContext) findContentSlot(
 ) contentSlot {
 	if !fc.hasActiveFloats(minY) {
 		return contentSlot{
-			segmentID: nil,
-			x:         containingBlockInsets[0],
-			y:         minY,
-			width:     fc.availableWidth - containingBlockInsets[0] - containingBlockInsets[1],
-			height:    float32(math.Inf(1)),
+			x:      containingBlockInsets[0],
+			y:      minY,
+			width:  fc.availableWidth - containingBlockInsets[0] - containingBlockInsets[1],
+			height: float32(math.Inf(1)),
 		}
 	}
 
@@ -460,9 +460,8 @@ func (fc *floatContext) findContentSlot(
 		seg := &fc.segments[startIdx]
 		insetLeft := geometry.F32Max(seg.insets[0], containingBlockInsets[0])
 		insetRight := geometry.F32Max(seg.insets[1], containingBlockInsets[1])
-		segID := startIdx
 		return contentSlot{
-			segmentID: &segID,
+			segmentID: lib.Some(startIdx),
 			x:         insetLeft,
 			y:         geometry.F32Max(seg.yStart, minY),
 			width:     fc.availableWidth - insetLeft - insetRight,
@@ -471,11 +470,10 @@ func (fc *floatContext) findContentSlot(
 	}
 
 	return contentSlot{
-		segmentID: nil,
-		x:         containingBlockInsets[0],
-		y:         minY,
-		width:     fc.availableWidth - containingBlockInsets[0] - containingBlockInsets[1],
-		height:    float32(math.Inf(1)),
+		x:      containingBlockInsets[0],
+		y:      minY,
+		width:  fc.availableWidth - containingBlockInsets[0] - containingBlockInsets[1],
+		height: float32(math.Inf(1)),
 	}
 }
 
