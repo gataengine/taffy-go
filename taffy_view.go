@@ -64,39 +64,47 @@ func (v *taffyView) measureFunc(nodeId tree.NodeId) func(geometry.Size[lib.Optio
 
 // ComputeChildLayout dispatches to the correct algorithm based on Display.
 func (v *taffyView) ComputeChildLayout(nodeId tree.NodeId, inputs tree.LayoutInput) tree.LayoutOutput {
+	// Inline cache check — avoids closure allocation from ComputeCachedLayout
+	if cached := v.CacheGet(nodeId, &inputs); cached != nil {
+		return *cached
+	}
+
 	node := v.taffy.nodes[nodeId]
 	hasChildren := len(v.taffy.children[nodeId]) > 0
+	st := &node.style
 
-	return compute.ComputeCachedLayout(v, nodeId, inputs, func(nodeId tree.NodeId, inputs tree.LayoutInput) tree.LayoutOutput {
-		st := &node.style
-		display := st.Display
-
-		if inputs.RunMode == tree.RunModePerformHiddenLayout {
-			return compute.ComputeHiddenLayout(v, nodeId)
-		}
-
-		switch display {
+	var result tree.LayoutOutput
+	if inputs.RunMode == tree.RunModePerformHiddenLayout {
+		result = compute.ComputeHiddenLayout(v, nodeId)
+	} else {
+		switch st.Display {
 		case style.DisplayNone:
-			return compute.ComputeHiddenLayout(v, nodeId)
+			result = compute.ComputeHiddenLayout(v, nodeId)
 		case style.DisplayFlex:
 			if hasChildren {
-				return flexbox.ComputeFlexboxLayout(v, nodeId, inputs)
+				result = flexbox.ComputeFlexboxLayout(v, nodeId, inputs)
+			} else {
+				result = compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
 			}
-			return compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
 		case style.DisplayGrid:
 			if hasChildren {
-				return grid.ComputeGridLayout(v, nodeId, inputs)
+				result = grid.ComputeGridLayout(v, nodeId, inputs)
+			} else {
+				result = compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
 			}
-			return compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
 		case style.DisplayBlock:
 			if hasChildren {
-				return block.ComputeBlockLayout(v, nodeId, inputs, nil)
+				result = block.ComputeBlockLayout(v, nodeId, inputs, nil)
+			} else {
+				result = compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
 			}
-			return compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
 		default:
-			return compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
+			result = compute.ComputeLeafLayout(inputs, v.GetCoreContainerStyle(nodeId), v.ResolveCalcValue, v.measureFunc(nodeId))
 		}
-	})
+	}
+
+	v.CacheStore(nodeId, &inputs, result)
+	return result
 }
 
 // --- CacheTree interface on *taffyView ---
@@ -184,25 +192,26 @@ func (v *taffyView) GetBlockChildStyle(childNodeId tree.NodeId) style.BlockItemS
 // ComputeBlockChildLayout dispatches to the correct algorithm for block children,
 // passing through the block context for children in the same BFC.
 func (v *taffyView) ComputeBlockChildLayout(nodeId tree.NodeId, inputs tree.LayoutInput, blockCtx any) tree.LayoutOutput {
+	// Inline cache check — avoids closure allocation from ComputeCachedLayout
+	if cached := v.CacheGet(nodeId, &inputs); cached != nil {
+		return *cached
+	}
+
 	node := v.taffy.nodes[nodeId]
 	hasChildren := len(v.taffy.children[nodeId]) > 0
+	st := &node.style
 
-	return compute.ComputeCachedLayout(v, nodeId, inputs, func(nodeId tree.NodeId, inputs tree.LayoutInput) tree.LayoutOutput {
-		st := &node.style
-		display := st.Display
+	var result tree.LayoutOutput
+	if inputs.RunMode == tree.RunModePerformHiddenLayout {
+		result = compute.ComputeHiddenLayout(v, nodeId)
+	} else if st.Display == style.DisplayBlock && hasChildren {
+		result = block.ComputeBlockLayout(v, nodeId, inputs, blockCtx)
+	} else {
+		result = v.ComputeChildLayout(nodeId, inputs)
+	}
 
-		if inputs.RunMode == tree.RunModePerformHiddenLayout {
-			return compute.ComputeHiddenLayout(v, nodeId)
-		}
-
-		// For block children in the same BFC, pass the block context through
-		if display == style.DisplayBlock && hasChildren {
-			return block.ComputeBlockLayout(v, nodeId, inputs, blockCtx)
-		}
-
-		// For non-block children, fall through to normal dispatch
-		return v.ComputeChildLayout(nodeId, inputs)
-	})
+	v.CacheStore(nodeId, &inputs, result)
+	return result
 }
 
 // Compile-time interface checks
