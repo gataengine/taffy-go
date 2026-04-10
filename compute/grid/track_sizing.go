@@ -5,7 +5,6 @@ package grid
 import (
 	"cmp"
 	"math"
-	"slices"
 
 	"taffy-go/geometry"
 	"taffy-go/lib"
@@ -313,7 +312,7 @@ func resolveItemBaselines(
 	innerNodeSize geometry.Size[lib.Option[float32]],
 ) {
 	otherAxis := axis.Other()
-	slices.SortStableFunc(items, func(a, b gridItem) int {
+	lib.SortStableByIndex(items, func(a, b *gridItem) int {
 		return cmp.Compare(int16(a.placement(otherAxis).Start), int16(b.placement(otherAxis).Start))
 	})
 
@@ -386,11 +385,9 @@ func resolveIntrinsicTrackSizes(
 	innerNodeSize geometry.Size[lib.Option[float32]],
 	getTrackSizeEstimate func(track *gridTrack, parentSize lib.Option[float32], tree tree.LayoutPartialTree) lib.Option[float32],
 ) {
-	// Sort items
+	// Sort items — use index-based sort to avoid copying ~350-byte gridItem structs
 	cmpFn := cmpByCrossFlexThenSpanThenStart(axis)
-	slices.SortStableFunc(items, func(a, b gridItem) int {
-		return cmpFn(&a, &b)
-	})
+	lib.SortStableByIndex(items, cmpFn)
 
 	axisInnerNodeSize := innerNodeSize.GetAbstract(axis)
 	var flexFactorSum float32
