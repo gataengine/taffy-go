@@ -38,7 +38,7 @@ type LayoutPartialTree interface {
 	// ResolveCalcValue resolves a calc value given a basis.
 	ResolveCalcValue(calcId uint64, basis float32) float32
 	// SetUnroundedLayout sets the node's unrounded layout.
-	SetUnroundedLayout(nodeId NodeId, layout *Layout)
+	SetUnroundedLayout(nodeId NodeId, layout Layout)
 	// ComputeChildLayout computes the specified node's size or full layout given constraints.
 	ComputeChildLayout(nodeId NodeId, inputs LayoutInput) LayoutOutput
 }
@@ -58,7 +58,7 @@ type CacheTree interface {
 type RoundTree interface {
 	TraverseTree
 	GetUnroundedLayout(nodeId NodeId) *Layout
-	SetFinalLayout(nodeId NodeId, layout *Layout)
+	SetFinalLayout(nodeId NodeId, layout Layout)
 }
 
 // PrintTree is the interface used by the printTree function which prints a debug representation.

@@ -538,7 +538,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 
 		// Position hidden child
 		if childCoreStyle.GetBoxGenerationMode() == style.BoxGenerationModeNone {
-			t.SetUnroundedLayout(child, &tree.Layout{Order: order})
+			t.SetUnroundedLayout(child, tree.Layout{Order: order})
 			tree.PerformChildLayout(t, child, geometry.SizeOptionNone, geometry.SizeOptionNone,
 				geometry.Size[style.AvailableSpace]{Width: style.AvailableSpaceMaxContentValue, Height: style.AvailableSpaceMaxContentValue}, tree.SizingModeInherentSize, geometry.LineFalseBool)
 			order++

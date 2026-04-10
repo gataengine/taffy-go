@@ -505,7 +505,7 @@ func calculateFlexItem(
 		}(),
 	}
 
-	t.SetUnroundedLayout(item.node, &tree.Layout{
+	t.SetUnroundedLayout(item.node, tree.Layout{
 		Order:         item.order,
 		Size:          size,
 		ContentSize:   contentSize,

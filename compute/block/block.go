@@ -556,7 +556,7 @@ func computeBlockInner(
 		childStyle := t.GetBlockChildStyle(child)
 		childCoreStyle := t.GetCoreContainerStyle(child)
 		if childCoreStyle.GetBoxGenerationMode() == style.BoxGenerationModeNone {
-			t.SetUnroundedLayout(child, &tree.Layout{Order: uint32(order)})
+			t.SetUnroundedLayout(child, tree.Layout{Order: uint32(order)})
 			t.ComputeChildLayout(child, tree.LayoutInput{
 				KnownDimensions:               geometry.SizeOptionNone,
 				ParentSize:                    geometry.SizeOptionNone,
@@ -855,7 +855,7 @@ func performFinalLayoutOnInFlowChildren(
 			location.Y += itemNonAutoMargin.Top
 			location.X += itemNonAutoMargin.Left
 
-			t.SetUnroundedLayout(item.nodeID, &tree.Layout{
+			t.SetUnroundedLayout(item.nodeID, tree.Layout{
 				Order:         item.order,
 				Size:          itemLayout.Size,
 				ContentSize:   itemLayout.ContentSize,
@@ -1096,7 +1096,7 @@ func performFinalLayoutOnInFlowChildren(
 			}
 		}
 
-		t.SetUnroundedLayout(item.nodeID, &tree.Layout{
+		t.SetUnroundedLayout(item.nodeID, tree.Layout{
 			Order:         item.order,
 			Size:          itemLayout.Size,
 			ContentSize:   itemLayout.ContentSize,
@@ -1446,7 +1446,7 @@ func performBlockAbsoluteLayout(
 			}(),
 		}
 
-		t.SetUnroundedLayout(item.nodeID, &tree.Layout{
+		t.SetUnroundedLayout(item.nodeID, tree.Layout{
 			Order:         item.order,
 			Size:          finalSize,
 			ContentSize:   layoutOutput.ContentSize,

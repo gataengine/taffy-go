@@ -84,7 +84,7 @@ func roundLayoutInner(t tree.RoundTree, nodeId tree.NodeId, cumulativeX, cumulat
 
 	roundContentSize(&layout, unrounded.ContentSize, cumulativeX, cumulativeY)
 
-	t.SetFinalLayout(nodeId, &layout)
+	t.SetFinalLayout(nodeId, layout)
 
 	childCount := t.ChildCount(nodeId)
 	for i := 0; i < childCount; i++ {
@@ -104,7 +104,7 @@ func roundContentSize(layout *tree.Layout, unroundedContentSize geometry.Size[fl
 func ComputeHiddenLayout(t LayoutAndCacheTree, node tree.NodeId) tree.LayoutOutput {
 	// Clear cache and set a zeroed layout for this node.
 	t.CacheClear(node)
-	t.SetUnroundedLayout(node, &tree.Layout{Order: 0})
+	t.SetUnroundedLayout(node, tree.Layout{Order: 0})
 
 	// Recursively apply hidden layout to all children.
 	childCount := t.ChildCount(node)

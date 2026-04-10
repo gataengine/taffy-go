@@ -44,8 +44,8 @@ func (v *taffyView) ResolveCalcValue(_ uint64, _ float32) float32 {
 	return 0.0
 }
 
-func (v *taffyView) SetUnroundedLayout(nodeId tree.NodeId, layout *tree.Layout) {
-	v.taffy.nodes.Get(nodeId).unroundedLayout = *layout
+func (v *taffyView) SetUnroundedLayout(nodeId tree.NodeId, layout tree.Layout) {
+	v.taffy.nodes.Get(nodeId).unroundedLayout = layout
 }
 
 // measureFunc returns a closure that calls the tree's measure function for the given node.
@@ -127,8 +127,8 @@ func (v *taffyView) GetUnroundedLayout(nodeId tree.NodeId) *tree.Layout {
 	return &v.taffy.nodes.Get(nodeId).unroundedLayout
 }
 
-func (v *taffyView) SetFinalLayout(nodeId tree.NodeId, layout *tree.Layout) {
-	v.taffy.nodes.Get(nodeId).finalLayout = *layout
+func (v *taffyView) SetFinalLayout(nodeId tree.NodeId, layout tree.Layout) {
+	v.taffy.nodes.Get(nodeId).finalLayout = layout
 }
 
 // --- PrintTree interface on *taffyView ---
@@ -360,7 +360,7 @@ func computeRootLayout(t *taffyView, root tree.NodeId, availableSpace geometry.S
 		}
 	}
 
-	t.SetUnroundedLayout(root, &tree.Layout{
+	t.SetUnroundedLayout(root, tree.Layout{
 		Order:         0,
 		Location:      geometry.Point[float32]{X: locationX, Y: 0.0},
 		Size:          output.Size,

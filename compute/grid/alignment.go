@@ -294,7 +294,7 @@ func alignAndPositionItem(
 		Bottom: yMargin.End,
 	}
 
-	t.SetUnroundedLayout(node, &tree.Layout{
+	t.SetUnroundedLayout(node, tree.Layout{
 		Order:         order,
 		Location:      geometry.Point[float32]{X: x, Y: y},
 		Size:          geometry.Size[float32]{Width: finalWidth, Height: finalHeight},

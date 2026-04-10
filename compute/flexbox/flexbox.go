@@ -649,7 +649,7 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 	for order := 0; order < childLen; order++ {
 		child := t.GetChildId(node, order)
 		if t.GetCoreContainerStyle(child).GetBoxGenerationMode() == style.BoxGenerationModeNone {
-			t.SetUnroundedLayout(child, &tree.Layout{Order: uint32(order)})
+			t.SetUnroundedLayout(child, tree.Layout{Order: uint32(order)})
 			tree.PerformChildLayout(
 				t, child,
 				geometry.SizeOptionNone,
@@ -1439,7 +1439,7 @@ func performAbsoluteLayoutOnAbsoluteChildren(
 			}(),
 		}
 
-		t.SetUnroundedLayout(child, &tree.Layout{
+		t.SetUnroundedLayout(child, tree.Layout{
 			Order:         uint32(order),
 			Size:          finalSizeF32,
 			ContentSize:   layoutOutput.ContentSize,
