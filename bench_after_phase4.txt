@@ -1,0 +1,57 @@
+goos: darwin
+goarch: arm64
+pkg: taffy-go
+cpu: Apple M1 Max
+BenchmarkFlexbox/HugeNested/10000-10   	      90	  14346365 ns/op	 5059377 B/op	   22883 allocs/op
+BenchmarkFlexbox/HugeNested/10000-10   	      72	  15601447 ns/op	 5059379 B/op	   22883 allocs/op
+BenchmarkFlexbox/HugeNested/10000-10   	      82	  12604578 ns/op	 5059376 B/op	   22883 allocs/op
+BenchmarkFlexbox/Wide/10000-10         	      68	  17786993 ns/op	 5999267 B/op	   35771 allocs/op
+BenchmarkFlexbox/Wide/10000-10         	      69	  19284653 ns/op	 5999264 B/op	   35771 allocs/op
+BenchmarkFlexbox/Wide/10000-10         	      68	  17942180 ns/op	 5999264 B/op	   35771 allocs/op
+BenchmarkFlexbox/DeepRandom/4000-10    	     195	   7309898 ns/op	 2379600 B/op	   14591 allocs/op
+BenchmarkFlexbox/DeepRandom/4000-10    	     196	   6558105 ns/op	 2379600 B/op	   14591 allocs/op
+BenchmarkFlexbox/DeepRandom/4000-10    	     195	   6069318 ns/op	 2379600 B/op	   14591 allocs/op
+BenchmarkFlexbox/DeepRandom/10000-10   	      69	  17955052 ns/op	 6420393 B/op	   35694 allocs/op
+BenchmarkFlexbox/DeepRandom/10000-10   	      61	  17400680 ns/op	 6420395 B/op	   35694 allocs/op
+BenchmarkFlexbox/DeepRandom/10000-10   	      66	  18092270 ns/op	 6420400 B/op	   35694 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10      	     100	  11415435 ns/op	 3435760 B/op	   20463 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10      	     100	  10198801 ns/op	 3435768 B/op	   20463 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10      	     120	  10046003 ns/op	 3435760 B/op	   20463 allocs/op
+BenchmarkFlexbox/DeepAuto/10000-10     	      42	  28694959 ns/op	 9039088 B/op	   49135 allocs/op
+BenchmarkFlexbox/DeepAuto/10000-10     	      43	  27291380 ns/op	 9039090 B/op	   49135 allocs/op
+BenchmarkFlexbox/DeepAuto/10000-10     	      48	  26508276 ns/op	 9039088 B/op	   49135 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10      	    1168	   1046102 ns/op	  326375 B/op	    1987 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10      	    1171	   1104823 ns/op	  326373 B/op	    1987 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10      	    1174	   1064826 ns/op	  326376 B/op	    1987 allocs/op
+BenchmarkGrid/Wide/31x31-10            	     484	   2200174 ns/op	 1293504 B/op	     999 allocs/op
+BenchmarkGrid/Wide/31x31-10            	     552	   2141730 ns/op	 1290529 B/op	     999 allocs/op
+BenchmarkGrid/Wide/31x31-10            	     574	   2253868 ns/op	 1285550 B/op	     999 allocs/op
+BenchmarkGrid/Wide/100x100-10          	      31	  34916199 ns/op	26167498 B/op	   10070 allocs/op
+BenchmarkGrid/Wide/100x100-10          	      44	  34163330 ns/op	26167181 B/op	   10070 allocs/op
+BenchmarkGrid/Wide/100x100-10          	      44	  36110002 ns/op	26166988 B/op	   10070 allocs/op
+BenchmarkGrid/Deep/2x2_levels5-10      	     172	   6834731 ns/op	  771583 B/op	   10348 allocs/op
+BenchmarkGrid/Deep/2x2_levels5-10      	     175	   6851462 ns/op	  771832 B/op	   10348 allocs/op
+BenchmarkGrid/Deep/2x2_levels5-10      	     176	   6810247 ns/op	  771754 B/op	   10348 allocs/op
+BenchmarkGrid/Deep/3x3_levels4-10      	      30	  52731858 ns/op	 8089349 B/op	   50321 allocs/op
+BenchmarkGrid/Deep/3x3_levels4-10      	      31	  38748026 ns/op	 8085868 B/op	   50314 allocs/op
+BenchmarkGrid/Deep/3x3_levels4-10      	      31	  41978391 ns/op	 8085874 B/op	   50314 allocs/op
+BenchmarkGrid/Deep/2x2_levels7-10      	       9	 117425366 ns/op	12698198 B/op	  173153 allocs/op
+BenchmarkGrid/Deep/2x2_levels7-10      	       9	 119716583 ns/op	12698414 B/op	  173154 allocs/op
+BenchmarkGrid/Deep/2x2_levels7-10      	       9	 119586514 ns/op	12700191 B/op	  173158 allocs/op
+BenchmarkGrid/SuperDeep/100-10         	    1846	    699455 ns/op	   72398 B/op	    1476 allocs/op
+BenchmarkGrid/SuperDeep/100-10         	    1945	    667913 ns/op	   72346 B/op	    1475 allocs/op
+BenchmarkGrid/SuperDeep/100-10         	    1972	    629383 ns/op	   72341 B/op	    1475 allocs/op
+BenchmarkGrid/SuperDeep/1000-10        	     171	   6611726 ns/op	  746094 B/op	   14697 allocs/op
+BenchmarkGrid/SuperDeep/1000-10        	     211	   5680694 ns/op	  749028 B/op	   14707 allocs/op
+BenchmarkGrid/SuperDeep/1000-10        	     192	   6032296 ns/op	  754390 B/op	   14733 allocs/op
+BenchmarkTreeCreation/1000-10          	    1314	   1077424 ns/op	 5640925 B/op	     327 allocs/op
+BenchmarkTreeCreation/1000-10          	    1165	   1006792 ns/op	 5640927 B/op	     327 allocs/op
+BenchmarkTreeCreation/1000-10          	    1345	   1101513 ns/op	 5640928 B/op	     327 allocs/op
+BenchmarkTreeCreation/10000-10         	      84	  11945463 ns/op	85206932 B/op	    2949 allocs/op
+BenchmarkTreeCreation/10000-10         	     100	  11819605 ns/op	85206913 B/op	    2949 allocs/op
+BenchmarkTreeCreation/10000-10         	     100	  11216445 ns/op	85206912 B/op	    2949 allocs/op
+BenchmarkTreeCreation/100000-10        	      10	 108284033 ns/op	980352224 B/op	   28825 allocs/op
+BenchmarkTreeCreation/100000-10        	      13	  87174327 ns/op	980352212 B/op	   28825 allocs/op
+BenchmarkTreeCreation/100000-10        	      13	  81818154 ns/op	980352205 B/op	   28825 allocs/op
+PASS
+ok  	taffy-go	85.037s
