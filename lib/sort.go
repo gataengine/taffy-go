@@ -18,11 +18,21 @@ func SortStableByIndex[S ~[]E, E any](items S, cmp func(a, b *E) int) {
 	slices.SortStableFunc(indices, func(i, j int) int {
 		return cmp(&items[i], &items[j])
 	})
+	// Apply the permutation in-place using cycle-chase.
+	// indices[i] means "position i should get the element from original position indices[i]".
 	for i := range indices {
-		for indices[i] != i {
-			j := indices[i]
-			items[i], items[j] = items[j], items[i]
-			indices[i], indices[j] = indices[j], indices[i]
+		if indices[i] == i {
+			continue
 		}
+		j := i
+		tmp := items[j]
+		for indices[j] != i {
+			items[j] = items[indices[j]]
+			next := indices[j]
+			indices[j] = j
+			j = next
+		}
+		items[j] = tmp
+		indices[j] = j
 	}
 }
