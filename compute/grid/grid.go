@@ -28,6 +28,10 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		return t.ResolveCalcValue(id, basis)
 	}
 
+	scratch := gridScratchPool.Get().(*gridScratch)
+	scratch.reset()
+	defer gridScratchPool.Put(scratch)
+
 	// 1. Compute "available grid space"
 	aspectRatio := coreStyle.GetAspectRatio()
 	padding := style.ResolveRectLPWidth(coreStyle.GetPadding(), parentSize.Width, calc)
@@ -173,17 +177,18 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	nameResolver.setExplicitRowCount(explicitRowCount)
 
 	// 3. Implicit Grid: Estimate Track Counts
-	childStyleSlice := make([]style.GridItemStyle, 0, t.ChildCount(node))
+	childStyleSlice := scratch.childStyles
 	for _, childNode := range t.ChildIds(node) {
 		childStyleSlice = append(childStyleSlice, t.GetGridChildStyle(childNode))
 	}
+	scratch.childStyles = childStyleSlice
 	estColCounts, estRowCounts := computeGridSizeEstimate(explicitColCount, explicitRowCount, direction, childStyleSlice)
 
 	// 4. Grid Item Placement
-	items := make([]gridItem, 0, t.ChildCount(node))
+	items := scratch.items
 	cellMatrix := newCellOccupancyMatrix(estColCounts, estRowCounts)
 
-	inFlowChildren := make([]gridPlacementChild, 0, t.ChildCount(node))
+	inFlowChildren := scratch.inFlowChildren
 	for index, childNode := range t.ChildIds(node) {
 		childCoreStyle := t.GetCoreContainerStyle(childNode)
 		childGridStyle := t.GetGridChildStyle(childNode)
@@ -206,8 +211,8 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	finalRowCounts := *cellMatrix.trackCounts(geometry.AbsoluteAxisVertical)
 
 	// 5. Initialize Tracks
-	var columns []gridTrack
-	var rows []gridTrack
+	columns := scratch.columns
+	rows := scratch.rows
 	columnTrackCountsForInit := finalColCounts
 	if direction.IsRTL() && finalColCounts.Explicit <= 1 {
 		columnTrackCountsForInit.NegativeImplicit = finalColCounts.PositiveImplicit
@@ -330,6 +335,9 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	}
 
 	if runMode == tree.RunModeComputeSize {
+		scratch.items = items
+		scratch.columns = columns
+		scratch.rows = rows
 		return tree.LayoutOutputFromOuterSize(containerBorderBox)
 	}
 
@@ -657,6 +665,9 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 
 	// If there are no items, return just the container size
 	if len(items) == 0 {
+		scratch.items = items
+		scratch.columns = columns
+		scratch.rows = rows
 		return tree.LayoutOutputFromOuterSize(containerBorderBox)
 	}
 
@@ -697,6 +708,9 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 
 	gridContainerBaseline := baselineItem.yPosition + baselineItem.baseline.UnwrapOr(baselineItem.height)
 
+	scratch.items = items
+	scratch.columns = columns
+	scratch.rows = rows
 	return tree.LayoutOutputFromSizesAndBaselines(
 		containerBorderBox,
 		itemContentSizeContribution,
