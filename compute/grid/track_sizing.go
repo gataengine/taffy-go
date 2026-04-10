@@ -3,11 +3,12 @@
 package grid
 
 import (
-	"taffy-go/lib"
+	"cmp"
 	"math"
-	"sort"
+	"slices"
 
 	"taffy-go/geometry"
+	"taffy-go/lib"
 	"taffy-go/style"
 	"taffy-go/tree"
 )
@@ -315,8 +316,8 @@ func resolveItemBaselines(
 	innerNodeSize geometry.Size[lib.Option[float32]],
 ) {
 	otherAxis := axis.Other()
-	sort.SliceStable(items, func(i, j int) bool {
-		return int16(items[i].placement(otherAxis).Start) < int16(items[j].placement(otherAxis).Start)
+	slices.SortStableFunc(items, func(a, b gridItem) int {
+		return cmp.Compare(int16(a.placement(otherAxis).Start), int16(b.placement(otherAxis).Start))
 	})
 
 	remaining := items
@@ -389,9 +390,9 @@ func resolveIntrinsicTrackSizes(
 	getTrackSizeEstimate func(track *gridTrack, parentSize lib.Option[float32], tree tree.LayoutPartialTree) lib.Option[float32],
 ) {
 	// Sort items
-	cmp := cmpByCrossFlexThenSpanThenStart(axis)
-	sort.SliceStable(items, func(i, j int) bool {
-		return cmp(&items[i], &items[j]) < 0
+	cmpFn := cmpByCrossFlexThenSpanThenStart(axis)
+	slices.SortStableFunc(items, func(a, b gridItem) int {
+		return cmpFn(&a, &b)
 	})
 
 	axisInnerNodeSize := innerNodeSize.GetAbstract(axis)
