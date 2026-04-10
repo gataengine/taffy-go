@@ -23,8 +23,10 @@ const (
 // of each grid cell during auto-placement. It also keeps tabs on how many tracks there are
 // and which tracks are implicit and which are explicit.
 type cellOccupancyMatrix struct {
-	// inner is the 2D grid of occupancy states. Stored as [row][col].
-	inner [][]cellOccupancyState
+	// inner is the flat grid of occupancy states stored in row-major order.
+	inner []cellOccupancyState
+	// colCount is the number of columns (stride for row-major indexing).
+	colCount int
 	// columns is the counts of implicit and explicit columns.
 	columns TrackCounts
 	// rows is the counts of implicit and explicit rows.
@@ -35,28 +37,25 @@ type cellOccupancyMatrix struct {
 func newCellOccupancyMatrix(columns, rows TrackCounts) cellOccupancyMatrix {
 	rowCount := rows.Len()
 	colCount := columns.Len()
-	inner := make([][]cellOccupancyState, rowCount)
-	for i := range inner {
-		inner[i] = make([]cellOccupancyState, colCount)
-	}
 	return cellOccupancyMatrix{
-		inner:   inner,
-		columns: columns,
-		rows:    rows,
+		inner:    make([]cellOccupancyState, rowCount*colCount),
+		colCount: colCount,
+		columns:  columns,
+		rows:     rows,
 	}
 }
 
 // matrixRows returns the number of rows in the inner matrix.
 func (m *cellOccupancyMatrix) matrixRows() int {
-	return len(m.inner)
+	if m.colCount == 0 {
+		return 0
+	}
+	return len(m.inner) / m.colCount
 }
 
 // matrixCols returns the number of columns in the inner matrix.
 func (m *cellOccupancyMatrix) matrixCols() int {
-	if len(m.inner) == 0 {
-		return 0
-	}
-	return len(m.inner[0])
+	return m.colCount
 }
 
 // isAreaInRange determines whether the specified area fits within the tracks
@@ -87,38 +86,22 @@ func (m *cellOccupancyMatrix) expandToFitRange(rowStart, rowEnd, colStart, colEn
 	reqPositiveCols := max16(0, colEnd-int16(m.columns.Len()))
 
 	oldRowCount := m.matrixRows()
-	oldColCount := m.matrixCols()
+	oldColCount := m.colCount
 	newRowCount := oldRowCount + int(reqNegativeRows) + int(reqPositiveRows)
 	newColCount := oldColCount + int(reqNegativeCols) + int(reqPositiveCols)
 
-	newInner := make([][]cellOccupancyState, newRowCount)
+	newInner := make([]cellOccupancyState, newRowCount*newColCount)
 
-	rowIdx := 0
-	// New negative rows
-	for i := 0; i < int(reqNegativeRows); i++ {
-		newInner[rowIdx] = make([]cellOccupancyState, newColCount)
-		rowIdx++
-	}
-
-	// Existing rows
 	for r := 0; r < oldRowCount; r++ {
-		row := make([]cellOccupancyState, newColCount)
-		// Copy existing columns, offset by reqNegativeCols
 		for c := 0; c < oldColCount; c++ {
-			row[int(reqNegativeCols)+c] = m.inner[r][c]
+			newRow := r + int(reqNegativeRows)
+			newCol := c + int(reqNegativeCols)
+			newInner[newRow*newColCount+newCol] = m.inner[r*oldColCount+c]
 		}
-		newInner[rowIdx] = row
-		rowIdx++
 	}
 
-	// New positive rows
-	for i := 0; i < int(reqPositiveRows); i++ {
-		newInner[rowIdx] = make([]cellOccupancyState, newColCount)
-		rowIdx++
-	}
-
-	// Update self with new data
 	m.inner = newInner
+	m.colCount = newColCount
 	m.rows.NegativeImplicit += uint16(reqNegativeRows)
 	m.rows.PositiveImplicit += uint16(reqPositiveRows)
 	m.columns.NegativeImplicit += uint16(reqNegativeCols)
@@ -156,7 +139,7 @@ func (m *cellOccupancyMatrix) markAreaAs(
 
 	for x := rowStart; x < rowEnd; x++ {
 		for y := colStart; y < colEnd; y++ {
-			m.inner[int(x)][int(y)] = value
+			m.inner[int(x)*m.colCount+int(y)] = value
 		}
 	}
 }
@@ -199,7 +182,7 @@ func (m *cellOccupancyMatrix) trackAreaIsUnoccupied(
 			if int(x) < 0 || int(x) >= rows || int(y) < 0 || int(y) >= cols {
 				continue // Out of bounds cells are considered unoccupied
 			}
-			if m.inner[int(x)][int(y)] != cellUnoccupied {
+			if m.inner[int(x)*m.colCount+int(y)] != cellUnoccupied {
 				return false
 			}
 		}
@@ -212,8 +195,9 @@ func (m *cellOccupancyMatrix) rowIsOccupied(rowIndex int) bool {
 	if rowIndex >= m.matrixRows() {
 		return false
 	}
-	for _, cell := range m.inner[rowIndex] {
-		if cell != cellUnoccupied {
+	base := rowIndex * m.colCount
+	for c := 0; c < m.colCount; c++ {
+		if m.inner[base+c] != cellUnoccupied {
 			return true
 		}
 	}
@@ -225,8 +209,9 @@ func (m *cellOccupancyMatrix) columnIsOccupied(columnIndex int) bool {
 	if columnIndex >= m.matrixCols() {
 		return false
 	}
-	for _, row := range m.inner {
-		if row[columnIndex] != cellUnoccupied {
+	rows := m.matrixRows()
+	for r := 0; r < rows; r++ {
+		if m.inner[r*m.colCount+columnIndex] != cellUnoccupied {
 			return true
 		}
 	}
@@ -261,20 +246,22 @@ func (m *cellOccupancyMatrix) lastOfType(
 		if trackComputedIndex < 0 || int(trackComputedIndex) >= m.matrixRows() {
 			return 0, false
 		}
-		row := m.inner[int(trackComputedIndex)]
-		for i := len(row) - 1; i >= 0; i-- {
-			if row[i] == kind {
+		rowBase := int(trackComputedIndex) * m.colCount
+		for i := m.colCount - 1; i >= 0; i-- {
+			if m.inner[rowBase+i] == kind {
 				foundIndex = i
 				found = true
 				break
 			}
 		}
 	case geometry.AbsoluteAxisVertical:
-		if trackComputedIndex < 0 || int(trackComputedIndex) >= m.matrixCols() {
+		col := int(trackComputedIndex)
+		if col < 0 || col >= m.matrixCols() {
 			return 0, false
 		}
-		for i := len(m.inner) - 1; i >= 0; i-- {
-			if m.inner[i][int(trackComputedIndex)] == kind {
+		rows := m.matrixRows()
+		for i := rows - 1; i >= 0; i-- {
+			if m.inner[i*m.colCount+col] == kind {
 				foundIndex = i
 				found = true
 				break
@@ -306,20 +293,22 @@ func (m *cellOccupancyMatrix) firstOfType(
 		if trackComputedIndex < 0 || int(trackComputedIndex) >= m.matrixRows() {
 			return 0, false
 		}
-		row := m.inner[int(trackComputedIndex)]
-		for i := 0; i < len(row); i++ {
-			if row[i] == kind {
+		rowBase := int(trackComputedIndex) * m.colCount
+		for i := 0; i < m.colCount; i++ {
+			if m.inner[rowBase+i] == kind {
 				foundIndex = i
 				found = true
 				break
 			}
 		}
 	case geometry.AbsoluteAxisVertical:
-		if trackComputedIndex < 0 || int(trackComputedIndex) >= m.matrixCols() {
+		col := int(trackComputedIndex)
+		if col < 0 || col >= m.matrixCols() {
 			return 0, false
 		}
-		for i := 0; i < len(m.inner); i++ {
-			if m.inner[i][int(trackComputedIndex)] == kind {
+		rows := m.matrixRows()
+		for i := 0; i < rows; i++ {
+			if m.inner[i*m.colCount+col] == kind {
 				foundIndex = i
 				found = true
 				break
