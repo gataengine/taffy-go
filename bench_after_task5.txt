@@ -1,0 +1,23 @@
+goos: darwin
+goarch: arm64
+pkg: taffy-go
+cpu: Apple M1 Max
+BenchmarkFlexbox/HugeNested/10000-10   	      74	  16868113 ns/op	 6808609 B/op	   41104 allocs/op
+BenchmarkFlexbox/Wide/10000-10         	      50	  21378545 ns/op	 7919955 B/op	   55778 allocs/op
+BenchmarkFlexbox/DeepRandom/4000-10    	     145	   8117933 ns/op	 2969148 B/op	   20732 allocs/op
+BenchmarkFlexbox/DeepRandom/10000-10   	      48	  21727608 ns/op	 7992982 B/op	   52075 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10      	      97	  12036177 ns/op	 4025317 B/op	   26604 allocs/op
+BenchmarkFlexbox/DeepAuto/10000-10     	      33	  34605818 ns/op	10611684 B/op	   65516 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10      	    1156	   1197347 ns/op	  384067 B/op	    2588 allocs/op
+BenchmarkGrid/Wide/31x31-10            	     338	   3553584 ns/op	 1176819 B/op	    2950 allocs/op
+BenchmarkGrid/Wide/100x100-10          	      21	  50008917 ns/op	20267685 B/op	   30159 allocs/op
+BenchmarkGrid/Deep/2x2_levels5-10      	     148	   8021818 ns/op	 1233753 B/op	   21730 allocs/op
+BenchmarkGrid/Deep/3x3_levels4-10      	      22	  55546528 ns/op	 9747012 B/op	   82012 allocs/op
+BenchmarkGrid/Deep/2x2_levels7-10      	       7	 155294291 ns/op	20480600 B/op	  363959 allocs/op
+BenchmarkGrid/SuperDeep/100-10         	    1870	    670386 ns/op	   97864 B/op	    2536 allocs/op
+BenchmarkGrid/SuperDeep/1000-10        	     180	   6624087 ns/op	  994128 B/op	   25367 allocs/op
+BenchmarkTreeCreation/1000-10          	    1562	    710632 ns/op	 2153054 B/op	    1350 allocs/op
+BenchmarkTreeCreation/10000-10         	     195	   6270504 ns/op	20867116 B/op	   13121 allocs/op
+BenchmarkTreeCreation/100000-10        	      18	  62893315 ns/op	203388472 B/op	  130312 allocs/op
+PASS
+ok  	taffy-go	23.460s
