@@ -65,8 +65,8 @@ func (v *taffyView) measureFunc(nodeId tree.NodeId) func(geometry.Size[lib.Optio
 // ComputeChildLayout dispatches to the correct algorithm based on Display.
 func (v *taffyView) ComputeChildLayout(nodeId tree.NodeId, inputs tree.LayoutInput) tree.LayoutOutput {
 	// Inline cache check — avoids closure allocation from ComputeCachedLayout
-	if cached := v.CacheGet(nodeId, &inputs); cached != nil {
-		return *cached
+	if cached, ok := v.CacheGet(nodeId, &inputs); ok {
+		return cached
 	}
 
 	node := v.taffy.nodes[nodeId]
@@ -109,7 +109,7 @@ func (v *taffyView) ComputeChildLayout(nodeId tree.NodeId, inputs tree.LayoutInp
 
 // --- CacheTree interface on *taffyView ---
 
-func (v *taffyView) CacheGet(nodeId tree.NodeId, input *tree.LayoutInput) *tree.LayoutOutput {
+func (v *taffyView) CacheGet(nodeId tree.NodeId, input *tree.LayoutInput) (tree.LayoutOutput, bool) {
 	return v.taffy.nodes[nodeId].cache.Get(input)
 }
 
@@ -193,8 +193,8 @@ func (v *taffyView) GetBlockChildStyle(childNodeId tree.NodeId) style.BlockItemS
 // passing through the block context for children in the same BFC.
 func (v *taffyView) ComputeBlockChildLayout(nodeId tree.NodeId, inputs tree.LayoutInput, blockCtx any) tree.LayoutOutput {
 	// Inline cache check — avoids closure allocation from ComputeCachedLayout
-	if cached := v.CacheGet(nodeId, &inputs); cached != nil {
-		return *cached
+	if cached, ok := v.CacheGet(nodeId, &inputs); ok {
+		return cached
 	}
 
 	node := v.taffy.nodes[nodeId]

@@ -103,16 +103,16 @@ func computeCacheSlot(knownDimensions geometry.Size[lib.Option[float32]], availa
 	}
 }
 
-// get tries to retrieve a cached result from the cache.
-// Returns nil if there is no matching cache entry.
-func (c *Cache) Get(input *LayoutInput) *LayoutOutput {
+// Get tries to retrieve a cached result from the cache.
+// Returns the cached result and true if found, or a zero value and false otherwise.
+func (c *Cache) Get(input *LayoutInput) (LayoutOutput, bool) {
 	knownDimensions := input.KnownDimensions
 	availableSpace := input.AvailableSpace
 
 	switch input.RunMode {
 	case RunModePerformLayout:
 		if !c.hasFinalLayout {
-			return nil
+			return LayoutOutput{}, false
 		}
 		entry := &c.finalLayoutEntry
 		cachedSize := entry.content.Size
@@ -127,9 +127,9 @@ func (c *Cache) Get(input *LayoutInput) *LayoutOutput {
 			entry.availableSpace.Height.IsRoughlyEqual(availableSpace.Height)
 
 		if widthMatch && heightMatch && widthSpaceMatch && heightSpaceMatch {
-			return &entry.content
+			return entry.content, true
 		}
-		return nil
+		return LayoutOutput{}, false
 
 	case RunModeComputeSize:
 		for i, valid := range c.measureValid {
@@ -149,17 +149,16 @@ func (c *Cache) Get(input *LayoutInput) *LayoutOutput {
 				entry.availableSpace.Height.IsRoughlyEqual(availableSpace.Height)
 
 			if widthMatch && heightMatch && widthSpaceMatch && heightSpaceMatch {
-				result := LayoutOutputFromOuterSize(cachedSize)
-				return &result
+				return LayoutOutputFromOuterSize(cachedSize), true
 			}
 		}
-		return nil
+		return LayoutOutput{}, false
 
 	case RunModePerformHiddenLayout:
-		return nil
+		return LayoutOutput{}, false
 	}
 
-	return nil
+	return LayoutOutput{}, false
 }
 
 // store saves a computed layout output in the cache.

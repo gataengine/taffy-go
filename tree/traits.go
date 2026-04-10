@@ -46,7 +46,7 @@ type LayoutPartialTree interface {
 // CacheTree is the interface used by the computeCachedLayout function to allow
 // cached layout results to be stored and retrieved.
 type CacheTree interface {
-	CacheGet(nodeId NodeId, input *LayoutInput) *LayoutOutput
+	CacheGet(nodeId NodeId, input *LayoutInput) (LayoutOutput, bool)
 	CacheStore(nodeId NodeId, input *LayoutInput, output LayoutOutput)
 	CacheClear(nodeId NodeId)
 }

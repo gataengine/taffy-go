@@ -28,8 +28,8 @@ func ComputeCachedLayout(
 	computeUncached func(tree.NodeId, tree.LayoutInput) tree.LayoutOutput,
 ) tree.LayoutOutput {
 	// Check for a cached result.
-	if cached := t.CacheGet(node, &inputs); cached != nil {
-		return *cached
+	if cached, ok := t.CacheGet(node, &inputs); ok {
+		return cached
 	}
 
 	// Compute the layout and store it in the cache.
