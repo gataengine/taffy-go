@@ -27,7 +27,7 @@ func newItemBatcher(axis geometry.AbstractAxis) itemBatcher {
 
 // next returns the next batch of items and whether they are flex items.
 // Returns nil, false when iteration is complete.
-func (b *itemBatcher) next(items []gridItem) (batch []int, isFlex bool) {
+func (b *itemBatcher) next(items []gridItem) (batch []gridItem, isFlex bool) {
 	if b.currentIsFlex || b.indexOffset >= len(items) {
 		return nil, false
 	}
@@ -49,13 +49,10 @@ func (b *itemBatcher) next(items []gridItem) (batch []int, isFlex bool) {
 		}
 	}
 
-	indices := make([]int, 0, nextIndexOffset-b.indexOffset)
-	for i := b.indexOffset; i < nextIndexOffset; i++ {
-		indices = append(indices, i)
-	}
+	batch = items[b.indexOffset:nextIndexOffset]
 	isFlex = b.currentIsFlex
 	b.indexOffset = nextIndexOffset
-	return indices, isFlex
+	return batch, isFlex
 }
 
 // intrinsicContributionType indicates whether it is a minimum or maximum size's space being distributed.
@@ -406,17 +403,17 @@ func resolveIntrinsicTrackSizes(
 
 	batcher := newItemBatcher(axis)
 	for {
-		batchIndices, isFlex := batcher.next(items)
-		if batchIndices == nil {
+		batch, isFlex := batcher.next(items)
+		if len(batch) == 0 {
 			break
 		}
 
-		batchSpan := items[batchIndices[0]].span(axis)
+		batchSpan := batch[0].span(axis)
 
 		// Step 2: size tracks to fit non-spanning items
 		if !isFlex && batchSpan == 1 {
-			for _, idx := range batchIndices {
-				item := &items[idx]
+			for i := range batch {
+				item := &batch[i]
 				trackIndex := int(item.placementIndexes(axis).Start) + 1
 
 				// Compute available space and margins for this item
@@ -506,8 +503,8 @@ func resolveIntrinsicTrackSizes(
 		useFlexFactorForDistribution := isFlex && flexFactorSum != 0.0
 
 		// 1. For intrinsic minimums
-		for _, idx := range batchIndices {
-			item := &items[idx]
+		for i := range batch {
+			item := &batch[i]
 			if !item.crossesIntrinsicTrack(axis) {
 				continue
 			}
@@ -553,8 +550,8 @@ func resolveIntrinsicTrackSizes(
 
 		// 2. For content-based minimums
 		hasMinOrMaxContentMinTSF := func(t *gridTrack) bool { return t.minTrackSizingFunction.IsMinOrMaxContent() }
-		for _, idx := range batchIndices {
-			item := &items[idx]
+		for i := range batch {
+			item := &batch[i]
 			availSpace := itemAvailableSpaceCached(item, axis, otherAxisTracks, innerNodeSize, getTrackSizeEstimate, t)
 			marginAxisSums := item.marginsAxisSumsWithBaselineShims(innerNodeSize.Width, t)
 			space := itemMinContentContributionCached(item, axis, t, availSpace, innerNodeSize) + marginAxisSums.GetAbstract(axis)
@@ -579,8 +576,8 @@ func resolveIntrinsicTrackSizes(
 			}
 			hasMaxContentMinTSF := func(t *gridTrack) bool { return t.minTrackSizingFunction.IsMaxContent() }
 
-			for _, idx := range batchIndices {
-				item := &items[idx]
+			for i := range batch {
+				item := &batch[i]
 				availSpace := itemAvailableSpaceCached(item, axis, otherAxisTracks, innerNodeSize, getTrackSizeEstimate, t)
 				marginAxisSums := item.marginsAxisSumsWithBaselineShims(innerNodeSize.Width, t)
 				marginInAxis := marginAxisSums.GetAbstract(axis)
@@ -614,8 +611,8 @@ func resolveIntrinsicTrackSizes(
 
 		// In all cases: max-content base size
 		hasMaxContentMinTSF2 := func(t *gridTrack) bool { return t.minTrackSizingFunction.IsMaxContent() }
-		for _, idx := range batchIndices {
-			item := &items[idx]
+		for i := range batch {
+			item := &batch[i]
 			availSpace := itemAvailableSpaceCached(item, axis, otherAxisTracks, innerNodeSize, getTrackSizeEstimate, t)
 			marginAxisSums := item.marginsAxisSumsWithBaselineShims(innerNodeSize.Width, t)
 			space := itemMaxContentContributionCached(item, axis, t, availSpace, innerNodeSize) + marginAxisSums.GetAbstract(axis)
@@ -640,8 +637,8 @@ func resolveIntrinsicTrackSizes(
 			hasIntrinsicMaxTSF := func(t *gridTrack) bool {
 				return !t.maxTrackSizingFunction.HasDefiniteValue(axisInnerNodeSize)
 			}
-			for _, idx := range batchIndices {
-				item := &items[idx]
+			for i := range batch {
+				item := &batch[i]
 				availSpace := itemAvailableSpaceCached(item, axis, otherAxisTracks, innerNodeSize, getTrackSizeEstimate, t)
 				marginAxisSums := item.marginsAxisSumsWithBaselineShims(innerNodeSize.Width, t)
 				space := itemMinContentContributionCached(item, axis, t, availSpace, innerNodeSize) + marginAxisSums.GetAbstract(axis)
@@ -658,8 +655,8 @@ func resolveIntrinsicTrackSizes(
 				return t.maxTrackSizingFunction.IsMaxContentAlike() ||
 					(t.maxTrackSizingFunction.UsesPercentage() && !axisInnerNodeSize.IsSome)
 			}
-			for _, idx := range batchIndices {
-				item := &items[idx]
+			for i := range batch {
+				item := &batch[i]
 				availSpace := itemAvailableSpaceCached(item, axis, otherAxisTracks, innerNodeSize, getTrackSizeEstimate, t)
 				marginAxisSums := item.marginsAxisSumsWithBaselineShims(innerNodeSize.Width, t)
 				space := itemMaxContentContributionCached(item, axis, t, availSpace, innerNodeSize) + marginAxisSums.GetAbstract(axis)
