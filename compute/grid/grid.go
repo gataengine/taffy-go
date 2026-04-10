@@ -3,10 +3,11 @@
 package grid
 
 import (
-	"taffy-go/lib"
-	"sort"
+	"cmp"
+	"slices"
 
 	"taffy-go/geometry"
+	"taffy-go/lib"
 	"taffy-go/style"
 	"taffy-go/tree"
 )
@@ -492,8 +493,8 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	itemContentSizeContribution := geometry.SizeZeroF32
 
 	// Sort items back into original order
-	sort.SliceStable(items, func(i, j int) bool {
-		return items[i].sourceOrder < items[j].sourceOrder
+	slices.SortStableFunc(items, func(a, b gridItem) int {
+		return cmp.Compare(a.sourceOrder, b.sourceOrder)
 	})
 
 	containerAlignmentStyles := inBothAbsAxis[lib.Option[style.AlignItems]]{
@@ -660,8 +661,8 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 	}
 
 	// Determine grid container baseline
-	sort.SliceStable(items, func(i, j int) bool {
-		return items[i].rowIndexes.Start < items[j].rowIndexes.Start
+	slices.SortStableFunc(items, func(a, b gridItem) int {
+		return cmp.Compare(a.rowIndexes.Start, b.rowIndexes.Start)
 	})
 
 	firstRow := items[0].rowIndexes.Start
