@@ -2,14 +2,9 @@
 // This file is a port of tree/node.rs from the Taffy Rust layout engine.
 package tree
 
+import "taffy-go/lib"
+
 // NodeId is a type representing the id of a single node in a tree of nodes.
-// Internally it is a wrapper around a uint64.
-type NodeId uint64
-
-// invalidNodeId is a sentinel value representing an invalid/unset node id.
-const invalidNodeId NodeId = ^NodeId(0)
-
-// NewNodeId creates a new NodeId from a uint64 value.
-func NewNodeId(val uint64) NodeId {
-	return NodeId(val)
-}
+// It is a type alias for lib.SlotMapKey, providing O(1) array-indexed lookup
+// with generational safety.
+type NodeId = lib.SlotMapKey

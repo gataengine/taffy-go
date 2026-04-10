@@ -23,21 +23,21 @@ type taffyView struct {
 // --- TraversePartialTree / TraverseTree interface on *taffyView ---
 
 func (v *taffyView) ChildIds(parent tree.NodeId) []tree.NodeId {
-	return v.taffy.children[parent]
+	return *v.taffy.children.Get(parent)
 }
 
 func (v *taffyView) ChildCount(parent tree.NodeId) int {
-	return len(v.taffy.children[parent])
+	return len(*v.taffy.children.Get(parent))
 }
 
 func (v *taffyView) GetChildId(parent tree.NodeId, index int) tree.NodeId {
-	return v.taffy.children[parent][index]
+	return (*v.taffy.children.Get(parent))[index]
 }
 
 // --- LayoutPartialTree interface on *taffyView ---
 
 func (v *taffyView) GetCoreContainerStyle(nodeId tree.NodeId) style.CoreStyle {
-	return &v.taffy.nodes[nodeId].style
+	return &v.taffy.nodes.Get(nodeId).style
 }
 
 func (v *taffyView) ResolveCalcValue(_ uint64, _ float32) float32 {
@@ -45,15 +45,15 @@ func (v *taffyView) ResolveCalcValue(_ uint64, _ float32) float32 {
 }
 
 func (v *taffyView) SetUnroundedLayout(nodeId tree.NodeId, layout *tree.Layout) {
-	v.taffy.nodes[nodeId].unroundedLayout = *layout
+	v.taffy.nodes.Get(nodeId).unroundedLayout = *layout
 }
 
 // measureFunc returns a closure that calls the tree's measure function for the given node.
 func (v *taffyView) measureFunc(nodeId tree.NodeId) func(geometry.Size[lib.Option[float32]], geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
 	return func(knownDimensions geometry.Size[lib.Option[float32]], availableSpace geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
-		ctx := v.taffy.nodeContexts[nodeId]
+		ctx := *v.taffy.nodeContexts.Get(nodeId)
 		if v.measureFunction != nil {
-			return v.measureFunction(knownDimensions, availableSpace, nodeId, &ctx, &v.taffy.nodes[nodeId].style)
+			return v.measureFunction(knownDimensions, availableSpace, nodeId, &ctx, &v.taffy.nodes.Get(nodeId).style)
 		}
 		if ctx != nil {
 			return ctx(knownDimensions, geometry.SizeOptionNone, availableSpace, tree.SizingModeInherentSize)
@@ -69,8 +69,8 @@ func (v *taffyView) ComputeChildLayout(nodeId tree.NodeId, inputs tree.LayoutInp
 		return cached
 	}
 
-	node := v.taffy.nodes[nodeId]
-	hasChildren := len(v.taffy.children[nodeId]) > 0
+	node := v.taffy.nodes.Get(nodeId)
+	hasChildren := len(*v.taffy.children.Get(nodeId)) > 0
 	st := &node.style
 
 	var result tree.LayoutOutput
@@ -110,31 +110,31 @@ func (v *taffyView) ComputeChildLayout(nodeId tree.NodeId, inputs tree.LayoutInp
 // --- CacheTree interface on *taffyView ---
 
 func (v *taffyView) CacheGet(nodeId tree.NodeId, input *tree.LayoutInput) (tree.LayoutOutput, bool) {
-	return v.taffy.nodes[nodeId].cache.Get(input)
+	return v.taffy.nodes.Get(nodeId).cache.Get(input)
 }
 
 func (v *taffyView) CacheStore(nodeId tree.NodeId, input *tree.LayoutInput, output tree.LayoutOutput) {
-	v.taffy.nodes[nodeId].cache.Store(input, output)
+	v.taffy.nodes.Get(nodeId).cache.Store(input, output)
 }
 
 func (v *taffyView) CacheClear(nodeId tree.NodeId) {
-	v.taffy.nodes[nodeId].cache.Clear()
+	v.taffy.nodes.Get(nodeId).cache.Clear()
 }
 
 // --- RoundTree interface on *taffyView ---
 
 func (v *taffyView) GetUnroundedLayout(nodeId tree.NodeId) *tree.Layout {
-	return &v.taffy.nodes[nodeId].unroundedLayout
+	return &v.taffy.nodes.Get(nodeId).unroundedLayout
 }
 
 func (v *taffyView) SetFinalLayout(nodeId tree.NodeId, layout *tree.Layout) {
-	v.taffy.nodes[nodeId].finalLayout = *layout
+	v.taffy.nodes.Get(nodeId).finalLayout = *layout
 }
 
 // --- PrintTree interface on *taffyView ---
 
 func (v *taffyView) GetDebugLabel(nodeId tree.NodeId) string {
-	node := v.taffy.nodes[nodeId]
+	node := v.taffy.nodes.Get(nodeId)
 	numChildren := v.ChildCount(nodeId)
 	switch {
 	case node.style.Display == style.DisplayNone:
@@ -156,37 +156,37 @@ func (v *taffyView) GetDebugLabel(nodeId tree.NodeId) string {
 }
 
 func (v *taffyView) GetFinalLayout(nodeId tree.NodeId) *tree.Layout {
-	return &v.taffy.nodes[nodeId].finalLayout
+	return &v.taffy.nodes.Get(nodeId).finalLayout
 }
 
 // --- LayoutFlexboxContainer interface on *taffyView ---
 
 func (v *taffyView) GetFlexboxContainerStyle(nodeId tree.NodeId) style.FlexboxContainerStyle {
-	return &v.taffy.nodes[nodeId].style
+	return &v.taffy.nodes.Get(nodeId).style
 }
 
 func (v *taffyView) GetFlexboxChildStyle(childNodeId tree.NodeId) style.FlexboxItemStyle {
-	return &v.taffy.nodes[childNodeId].style
+	return &v.taffy.nodes.Get(childNodeId).style
 }
 
 // --- LayoutGridContainer interface on *taffyView ---
 
 func (v *taffyView) GetGridContainerStyle(nodeId tree.NodeId) style.GridContainerStyle {
-	return &v.taffy.nodes[nodeId].style
+	return &v.taffy.nodes.Get(nodeId).style
 }
 
 func (v *taffyView) GetGridChildStyle(childNodeId tree.NodeId) style.GridItemStyle {
-	return &v.taffy.nodes[childNodeId].style
+	return &v.taffy.nodes.Get(childNodeId).style
 }
 
 // --- LayoutBlockContainer interface on *taffyView ---
 
 func (v *taffyView) GetBlockContainerStyle(nodeId tree.NodeId) style.BlockContainerStyle {
-	return &v.taffy.nodes[nodeId].style
+	return &v.taffy.nodes.Get(nodeId).style
 }
 
 func (v *taffyView) GetBlockChildStyle(childNodeId tree.NodeId) style.BlockItemStyle {
-	return &v.taffy.nodes[childNodeId].style
+	return &v.taffy.nodes.Get(childNodeId).style
 }
 
 // ComputeBlockChildLayout dispatches to the correct algorithm for block children,
@@ -197,8 +197,8 @@ func (v *taffyView) ComputeBlockChildLayout(nodeId tree.NodeId, inputs tree.Layo
 		return cached
 	}
 
-	node := v.taffy.nodes[nodeId]
-	hasChildren := len(v.taffy.children[nodeId]) > 0
+	node := v.taffy.nodes.Get(nodeId)
+	hasChildren := len(*v.taffy.children.Get(nodeId)) > 0
 	st := &node.style
 
 	var result tree.LayoutOutput

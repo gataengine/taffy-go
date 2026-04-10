@@ -130,7 +130,7 @@ var _ = Describe("TaffyTree", func() {
 
 		It("panics for invalid node", func() {
 			tree := New()
-			Expect(func() { tree.Remove(treepkg.NodeId(999)) }).To(Panic())
+			Expect(func() { tree.Remove(treepkg.NodeId{Index: 999, Generation: 0}) }).To(Panic())
 		})
 	})
 
@@ -402,7 +402,7 @@ var _ = Describe("TaffyTree", func() {
 
 		It("panics for invalid node", func() {
 			tree := New()
-			Expect(func() { tree.MarkDirty(treepkg.NodeId(999)) }).To(Panic())
+			Expect(func() { tree.MarkDirty(treepkg.NodeId{Index: 999, Generation: 0}) }).To(Panic())
 		})
 	})
 
