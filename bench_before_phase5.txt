@@ -1,0 +1,33 @@
+goos: darwin
+goarch: arm64
+pkg: taffy-go
+cpu: Apple M1 Max
+BenchmarkFlexbox/SuperDeep/100-10     	    1195	   1006734 ns/op	  326375 B/op	    1987 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10     	    1266	   1001972 ns/op	  326376 B/op	    1987 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10     	    1196	    991848 ns/op	  326374 B/op	    1987 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10     	    1036	   1284109 ns/op	  326375 B/op	    1987 allocs/op
+BenchmarkFlexbox/SuperDeep/100-10     	    1140	   1016765 ns/op	  326375 B/op	    1987 allocs/op
+PASS
+ok  	taffy-go	8.586s
+goos: darwin
+goarch: arm64
+pkg: taffy-go
+cpu: Apple M1 Max
+BenchmarkFlexbox/DeepAuto/4000-10    	     127	   9349373 ns/op	 3435762 B/op	   20463 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10    	     121	   9841081 ns/op	 3435770 B/op	   20463 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10    	     134	   9014308 ns/op	 3435760 B/op	   20463 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10    	     126	   9365435 ns/op	 3435760 B/op	   20463 allocs/op
+BenchmarkFlexbox/DeepAuto/4000-10    	     122	   9664431 ns/op	 3435760 B/op	   20463 allocs/op
+PASS
+ok  	taffy-go	7.955s
+goos: darwin
+goarch: arm64
+pkg: taffy-go
+cpu: Apple M1 Max
+BenchmarkFlexbox/HugeNested/10000-10   	      87	  11511803 ns/op	 5059377 B/op	   22883 allocs/op
+BenchmarkFlexbox/HugeNested/10000-10   	     100	  11232231 ns/op	 5059379 B/op	   22883 allocs/op
+BenchmarkFlexbox/HugeNested/10000-10   	     100	  11249560 ns/op	 5059376 B/op	   22883 allocs/op
+BenchmarkFlexbox/HugeNested/10000-10   	     100	  11389529 ns/op	 5059376 B/op	   22883 allocs/op
+BenchmarkFlexbox/HugeNested/10000-10   	     100	  11060692 ns/op	 5059376 B/op	   22883 allocs/op
+PASS
+ok  	taffy-go	10.751s
