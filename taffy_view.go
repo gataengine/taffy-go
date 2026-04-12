@@ -51,12 +51,12 @@ func (v *taffyView) SetUnroundedLayout(nodeId tree.NodeId, layout tree.Layout) {
 // measureFunc returns a closure that calls the tree's measure function for the given node.
 func (v *taffyView) measureFunc(nodeId tree.NodeId) func(geometry.Size[lib.Option[float32]], geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
 	return func(knownDimensions geometry.Size[lib.Option[float32]], availableSpace geometry.Size[style.AvailableSpace]) geometry.Size[float32] {
-		ctx := *v.taffy.nodeContexts.Get(nodeId)
+		ctxPtr := v.taffy.nodeContexts.Get(nodeId)
 		if v.measureFunction != nil {
-			return v.measureFunction(knownDimensions, availableSpace, nodeId, &ctx, &v.taffy.nodes.Get(nodeId).style)
+			return v.measureFunction(knownDimensions, availableSpace, nodeId, ctxPtr, &v.taffy.nodes.Get(nodeId).style)
 		}
-		if ctx != nil {
-			return ctx(knownDimensions, geometry.SizeOptionNone, availableSpace, tree.SizingModeInherentSize)
+		if *ctxPtr != nil {
+			return (*ctxPtr)(knownDimensions, geometry.SizeOptionNone, availableSpace, tree.SizingModeInherentSize)
 		}
 		return geometry.SizeZeroF32
 	}
