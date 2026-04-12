@@ -60,7 +60,7 @@ func generateAnonymousFlexItems(
 ) []flexItem {
 	calc := t.ResolveCalcValue
 	childIds := t.ChildIds(node)
-	items := make([]flexItem, 0, len(childIds))
+	items := getFlexItems(len(childIds))
 
 	for index, child := range childIds {
 		childStyle := t.GetFlexboxChildStyle(child)
