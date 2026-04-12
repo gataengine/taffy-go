@@ -632,6 +632,7 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 	totalLineCrossSize := determineContainerCrossSize(flexLines, knownDimensions, &constants)
 
 	if runMode == tree.RunModeComputeSize {
+		putFlexLines(flexLines)
 		putFlexItems(flexItems)
 		return tree.LayoutOutputFromOuterSize(constants.containerSize)
 	}
@@ -689,6 +690,7 @@ func computePreliminary(t tree.LayoutFlexboxContainer, node tree.NodeId, inputs 
 		geometry.SizeF32Max(inflowContentSize, absoluteContentSize),
 		geometry.Point[lib.Option[float32]]{X: lib.None[float32](), Y: firstVerticalBaseline},
 	)
+	putFlexLines(flexLines)
 	putFlexItems(flexItems)
 	return result
 }

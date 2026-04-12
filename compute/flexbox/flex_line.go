@@ -23,7 +23,7 @@ func collectFlexLines(
 	flexItems []flexItem,
 ) []flexLine {
 	if !constants.isWrap {
-		lines := make([]flexLine, 0, 1)
+		lines := getFlexLines(1)
 		lines = append(lines, flexLine{items: flexItems, crossSize: 0.0, offsetCross: 0.0})
 		return lines
 	}
@@ -41,13 +41,13 @@ func collectFlexLines(
 	switch mainAxisAvailableSpace.Tag {
 	case style.AvailableSpaceMaxContent:
 		// Items will never wrap.
-		lines := make([]flexLine, 0, 1)
+		lines := getFlexLines(1)
 		lines = append(lines, flexLine{items: flexItems, crossSize: 0.0, offsetCross: 0.0})
 		return lines
 
 	case style.AvailableSpaceMinContent:
 		// Each item in its own line.
-		lines := make([]flexLine, 0, len(flexItems))
+		lines := getFlexLines(len(flexItems))
 		for i := range flexItems {
 			lines = append(lines, flexLine{
 				items:     flexItems[i : i+1],
@@ -58,7 +58,7 @@ func collectFlexLines(
 
 	default: // Definite
 		mainAvail := mainAxisAvailableSpace.Value
-		lines := make([]flexLine, 0, 1)
+		lines := getFlexLines(1)
 		mainAxisGap := sizeMain(constants.gap, constants.dir)
 		remaining := flexItems
 
