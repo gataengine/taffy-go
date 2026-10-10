@@ -3,7 +3,7 @@ package taffy
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/style"
 )
 
 var _ = Describe("FlexDirection", func() {

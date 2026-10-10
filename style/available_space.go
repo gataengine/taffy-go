@@ -3,10 +3,10 @@
 package style
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	"math"
 
-	"taffy-go/geometry"
+	"github.com/gataengine/taffy-go/geometry"
 )
 
 // AvailableSpaceTag identifies the variant of an AvailableSpace value.

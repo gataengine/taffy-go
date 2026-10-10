@@ -1,10 +1,10 @@
 package flexbox
 
 import (
-	"taffy-go/geometry"
-	"taffy-go/lib"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // flexItem holds intermediate results for a single flex item.

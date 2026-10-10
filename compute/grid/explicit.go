@@ -3,11 +3,11 @@
 package grid
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	"math"
 
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // autoRepeatStrategy controls how auto-repeat tracks are sized.

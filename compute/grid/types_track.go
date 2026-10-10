@@ -3,10 +3,10 @@
 package grid
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	"math"
 
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // gridTrackKind indicates whether a GridTrack represents an actual track or a gutter.

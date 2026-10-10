@@ -5,8 +5,8 @@
 package grid
 
 import (
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // TrackCounts stores the number of tracks in a given dimension,

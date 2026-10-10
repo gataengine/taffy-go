@@ -5,8 +5,8 @@ package grid
 import (
 	"fmt"
 
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // namedLineResolver takes grid line names and area names as input and can then be used

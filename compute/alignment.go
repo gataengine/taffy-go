@@ -3,7 +3,7 @@
 // This file is a port of compute/common/alignment.rs from the Taffy Rust layout engine.
 package compute
 
-import "taffy-go/style"
+import "github.com/gataengine/taffy-go/style"
 
 // ApplyAlignmentFallback implements CSS alignment fallback behaviour.
 //

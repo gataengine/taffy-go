@@ -3,9 +3,9 @@
 package tree
 
 import (
-	"taffy-go/lib"
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // TraversePartialTree is Taffy's abstraction for downward tree traversal.

@@ -3,8 +3,8 @@
 package style
 
 import (
-	"taffy-go/geometry"
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
 )
 
 // FlexDirection controls the direction of the flexbox layout main axis.

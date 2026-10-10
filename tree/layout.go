@@ -3,9 +3,9 @@
 package tree
 
 import (
-	"taffy-go/lib"
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // RunMode indicates whether we are performing a full layout, or merely need to size a node.

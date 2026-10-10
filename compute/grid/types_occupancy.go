@@ -3,8 +3,8 @@
 package grid
 
 import (
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // cellOccupancyState represents the occupancy state of a single grid cell.

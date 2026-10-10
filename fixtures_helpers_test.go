@@ -1,7 +1,7 @@
 package taffy
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	"bytes"
 	"encoding/xml"
 	"fmt"
@@ -11,9 +11,9 @@ import (
 	"strings"
 
 	. "github.com/onsi/gomega"
-	"taffy-go/geometry"
-	"taffy-go/style"
-	treepkg "taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
+	treepkg "github.com/gataengine/taffy-go/tree"
 )
 
 // ---------------------------------------------------------------------------

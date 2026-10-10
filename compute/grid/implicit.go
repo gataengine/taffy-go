@@ -3,8 +3,8 @@
 package grid
 
 import (
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // computeGridSizeEstimate estimates the number of rows and columns in the grid.

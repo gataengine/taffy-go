@@ -3,10 +3,10 @@
 package compute
 
 import (
-	"taffy-go/lib"
-	"taffy-go/geometry"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // ComputeLeafLayout computes the layout for a leaf node (a node with no children).

@@ -1,12 +1,12 @@
 package taffy
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"taffy-go/geometry"
-	"taffy-go/style"
-	treepkg "taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
+	treepkg "github.com/gataengine/taffy-go/tree"
 )
 
 var _ = Describe("TaffyTree", func() {

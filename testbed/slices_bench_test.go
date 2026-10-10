@@ -9,7 +9,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 )
 
 // largeStruct mimics gridItem (~350 bytes) with the same field layout that matters for sorting.

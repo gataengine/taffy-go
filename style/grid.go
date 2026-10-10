@@ -3,10 +3,10 @@
 package style
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	"math"
 
-	"taffy-go/geometry"
+	"github.com/gataengine/taffy-go/geometry"
 )
 
 // CalcResolver is a function that resolves a calc() expression given a calc ID and a basis value.

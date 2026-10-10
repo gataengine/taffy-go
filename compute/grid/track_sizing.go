@@ -6,10 +6,10 @@ import (
 	"cmp"
 	"math"
 
-	"taffy-go/geometry"
-	"taffy-go/lib"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // itemBatcher batches items by span size for track sizing.

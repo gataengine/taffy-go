@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // PrintTreeFn prints a debug representation of the computed layout for a tree of nodes,

@@ -2,7 +2,7 @@
 // This file is a port of geometry.rs from the Taffy Rust layout engine.
 package geometry
 
-import "taffy-go/lib"
+import "github.com/gataengine/taffy-go/lib"
 
 // AbsoluteAxis represents the simple absolute horizontal and vertical axis.
 type AbsoluteAxis int

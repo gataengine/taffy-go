@@ -3,7 +3,7 @@
 package style
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	"math"
 
 )

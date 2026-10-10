@@ -1,10 +1,10 @@
 package taffy
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"taffy-go/geometry"
+	"github.com/gataengine/taffy-go/geometry"
 )
 
 var _ = Describe("Option", func() {

@@ -1,4 +1,4 @@
-module taffy-go
+module github.com/gataengine/taffy-go
 
 go 1.25.0
 

@@ -3,8 +3,8 @@
 package compute
 
 import (
-	"taffy-go/geometry"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // LayoutAndCacheTree is a combined interface required by ComputeHiddenLayout.

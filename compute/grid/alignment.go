@@ -3,11 +3,11 @@
 package grid
 
 import (
-	"taffy-go/lib"
-	"taffy-go/compute"
-	"taffy-go/geometry"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/compute"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // alignGridTracks aligns the grid tracks within the grid container according to

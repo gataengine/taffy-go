@@ -5,9 +5,9 @@ import (
 	"math/rand/v2"
 	"testing"
 
-	"taffy-go/geometry"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 func BenchmarkFlexbox(b *testing.B) {

@@ -6,10 +6,10 @@ import (
 	"cmp"
 	"slices"
 
-	"taffy-go/geometry"
-	"taffy-go/lib"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // ComputeGridLayout is the main entry point for CSS Grid layout.

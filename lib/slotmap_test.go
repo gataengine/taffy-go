@@ -3,7 +3,7 @@ package lib_test
 import (
 	"testing"
 
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 )
 
 func TestSlotMap_InsertAndGet(t *testing.T) {

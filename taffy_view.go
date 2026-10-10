@@ -3,14 +3,14 @@
 package taffy
 
 import (
-	"taffy-go/lib"
-	"taffy-go/compute"
-	"taffy-go/compute/block"
-	"taffy-go/compute/flexbox"
-	"taffy-go/compute/grid"
-	"taffy-go/geometry"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/compute"
+	"github.com/gataengine/taffy-go/compute/block"
+	"github.com/gataengine/taffy-go/compute/flexbox"
+	"github.com/gataengine/taffy-go/compute/grid"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // taffyView is an unexported wrapper combining TaffyTree with a measure function.

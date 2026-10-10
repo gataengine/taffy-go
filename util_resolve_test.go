@@ -2,11 +2,11 @@
 package taffy
 
 import (
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"taffy-go/geometry"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // noopCalc is a style.CalcResolver that always returns 42.42, matching the Rust test harness.

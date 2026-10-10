@@ -5,9 +5,9 @@ package block
 import (
 	"math"
 
-	"taffy-go/geometry"
-	"taffy-go/lib"
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // contentSlot is an empty "slot" that avoids floats, suitable for non-floated content

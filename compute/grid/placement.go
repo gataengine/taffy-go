@@ -3,9 +3,9 @@
 package grid
 
 import (
-	"taffy-go/geometry"
-	"taffy-go/style"
-	"taffy-go/tree"
+	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/style"
+	"github.com/gataengine/taffy-go/tree"
 )
 
 // axisIsReversed returns whether placement/search should run in reverse for this axis.

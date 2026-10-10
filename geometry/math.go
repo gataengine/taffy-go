@@ -2,7 +2,7 @@
 // This file is a port of util/math.rs from the Taffy Rust layout engine.
 package geometry
 
-import "taffy-go/lib"
+import "github.com/gataengine/taffy-go/lib"
 
 // ---------------------------------------------------------------------------
 // lib.Option[float32] with lib.Option[float32] rhs

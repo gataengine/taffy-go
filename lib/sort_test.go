@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	"taffy-go/lib"
+	"github.com/gataengine/taffy-go/lib"
 )
 
 func TestSortStableByIndex_Correctness(t *testing.T) {

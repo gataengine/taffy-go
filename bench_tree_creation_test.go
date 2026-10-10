@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/style"
 )
 
 func BenchmarkTreeCreation(b *testing.B) {

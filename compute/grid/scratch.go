@@ -3,7 +3,7 @@ package grid
 import (
 	"sync"
 
-	"taffy-go/style"
+	"github.com/gataengine/taffy-go/style"
 )
 
 // gridScratch holds reusable slice buffers for ComputeGridLayout.
