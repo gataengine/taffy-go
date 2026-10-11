@@ -1,5 +1,7 @@
 # Flexbox Value-Type Conversion + File Split — Implementation Plan
 
+> **Status (audit 2026-10-11): Implemented.** Checkboxes below were never ticked.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Eliminate per-item and per-line heap allocations in the flexbox layout algorithm by converting `flexItem` and `flexLine` from pointer types to value types, preceded by a file split for reviewability.

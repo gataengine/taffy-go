@@ -1,5 +1,7 @@
 # Performance Phase 1: Allocation Reduction — Implementation Plan
 
+> **Status (audit 2026-10-11): Implemented.** Checkboxes below were never ticked.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Eliminate heap allocations in hot layout paths to reduce Go/Rust performance gap from 2.1-4.7x toward ~1.5-2x.

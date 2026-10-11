@@ -1,5 +1,7 @@
 # Performance Phase 5: Allocation Micro-Optimizations
 
+> **Status (audit 2026-10-11): Implemented.**
+
 ## Context
 
 After 4 optimization phases, Go/Rust layout ratios are 1.6-3.0x. The GOGC=off test proves the remaining gap on deep benchmarks (~3x) is mostly inherent Go runtime overhead (interface dispatch, bounds checks, struct copying). However, fresh profiling reveals three allocation sites that account for 87% of all allocations in the worst benchmark (FlexboxSuperDeep/100) and can be eliminated cheaply.

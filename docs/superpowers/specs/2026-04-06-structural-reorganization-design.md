@@ -1,5 +1,7 @@
 # Taffy3-Go Structural Reorganization
 
+> **Status (audit 2026-10-11): Implemented.**
+
 ## Goal
 
 Reorganize the flat single-package `taffy` codebase into sub-packages with clear boundaries, and make the "trait" interfaces public so users can implement custom tree backends.

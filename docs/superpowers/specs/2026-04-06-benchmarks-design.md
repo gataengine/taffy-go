@@ -1,5 +1,7 @@
 # Benchmark Suite Design
 
+> **Status (audit 2026-10-11): Implemented.**
+
 **Date:** 2026-04-06
 **Status:** Approved
 

@@ -15,10 +15,10 @@ A Go port of the [Taffy](https://github.com/DioxusLabs/taffy) layout engine. Taf
 ## Installation
 
 ```bash
-go get taffy-go
+go get github.com/gataengine/taffy-go
 ```
 
-Requires Go 1.25 or later.
+Requires Go 1.27.1 or later.
 
 ## Package Structure
 
@@ -43,10 +43,10 @@ package main
 
 import (
     "fmt"
-    taffy "taffy-go"
-    "taffy-go/geometry"
-    "taffy-go/style"
-    "taffy-go/tree"
+    taffy "github.com/gataengine/taffy-go"
+    "github.com/gataengine/taffy-go/geometry"
+    "github.com/gataengine/taffy-go/style"
+    "github.com/gataengine/taffy-go/tree"
 )
 
 func main() {
@@ -102,10 +102,10 @@ func main() {
 
 ```go
 import (
-    taffy "taffy-go"
-    "taffy-go/geometry"
-    "taffy-go/style"
-    "taffy-go/tree"
+    taffy "github.com/gataengine/taffy-go"
+    "github.com/gataengine/taffy-go/geometry"
+    "github.com/gataengine/taffy-go/style"
+    "github.com/gataengine/taffy-go/tree"
 )
 
 t := taffy.New()
@@ -144,10 +144,10 @@ t.ComputeLayout(root, geometry.Size[style.AvailableSpace]{
 
 ```go
 import (
-    taffy "taffy-go"
-    "taffy-go/geometry"
-    "taffy-go/style"
-    "taffy-go/tree"
+    taffy "github.com/gataengine/taffy-go"
+    "github.com/gataengine/taffy-go/geometry"
+    "github.com/gataengine/taffy-go/style"
+    "github.com/gataengine/taffy-go/tree"
 )
 
 t := taffy.New()
@@ -186,10 +186,10 @@ For leaf nodes with content (e.g., text), provide a measure function:
 
 ```go
 import (
-    taffy "taffy-go"
-    "taffy-go/geometry"
-    "taffy-go/style"
-    "taffy-go/tree"
+    taffy "github.com/gataengine/taffy-go"
+    "github.com/gataengine/taffy-go/geometry"
+    "github.com/gataengine/taffy-go/style"
+    "github.com/gataengine/taffy-go/tree"
 )
 
 t := taffy.New()
@@ -219,11 +219,11 @@ For advanced use cases, implement the trait interfaces from the `tree` package t
 
 ```go
 import (
-    "taffy-go/tree"
-    "taffy-go/style"
-    "taffy-go/compute/flexbox"
-    "taffy-go/compute/grid"
-    "taffy-go/compute/block"
+    "github.com/gataengine/taffy-go/tree"
+    "github.com/gataengine/taffy-go/style"
+    "github.com/gataengine/taffy-go/compute/flexbox"
+    "github.com/gataengine/taffy-go/compute/grid"
+    "github.com/gataengine/taffy-go/compute/block"
 )
 
 // Implement the interfaces your layout modes require:

@@ -1,5 +1,7 @@
 # Performance Phase 4: SlotMap, Sort, and Surgical Optimizations
 
+> **Status (audit 2026-10-11): Implemented.**
+
 ## Context
 
 Phases 1-3 reduced allocations and improved flexbox/grid performance significantly:

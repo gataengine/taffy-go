@@ -1,5 +1,7 @@
 # Benchmark Comparison: Go vs Rust (taffy-go vs taffy v0.9.2)
 
+> Historical: this is the 2026-04-07 baseline, taken before performance phases 1–5. For later results see `bench_baseline_phase1.txt`, `bench_after_task5.txt`, `bench_after_flexbox_valuetypes.txt`, `bench_after_phase4.txt`, `bench_before_phase5.txt` and `bench_after_phase5.txt` in this directory.
+
 **Date:** 2026-04-07
 **Machine:** Darwin, 10 cores
 **Go version:** 1.25.0

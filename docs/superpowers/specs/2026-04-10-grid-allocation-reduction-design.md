@@ -1,5 +1,7 @@
 # Phase 3: Grid Allocation Reduction
 
+> **Status (audit 2026-10-11): Implemented.**
+
 ## Goal
 
 Reduce grid layout allocations by ~53% (targeting ~357 MB of the 670 MB total in the grid deep benchmark) through three independent changes: replacing reflection-based sorting, pooling scratch slices, and eliminating cache heap escapes.

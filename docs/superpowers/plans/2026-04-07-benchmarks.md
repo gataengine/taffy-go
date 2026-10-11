@@ -1,5 +1,7 @@
 # Benchmark Suite Implementation Plan
 
+> **Status (audit 2026-10-11): Implemented.** Checkboxes below were never ticked.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add Go benchmarks that mirror the Rust Taffy benchmark suite for direct performance comparison.

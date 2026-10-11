@@ -1,5 +1,7 @@
 # Taffy Go Port — Design Spec
 
+> **Status (audit 2026-10-11): Implemented.**
+
 ## Overview
 
 Port the [Taffy](https://github.com/DioxusLabs/taffy) Rust layout engine (v0.9.2) to Go with full feature parity across all four layout algorithms. The port follows a file-by-file, bottom-up approach.
