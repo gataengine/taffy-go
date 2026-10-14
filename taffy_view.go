@@ -3,12 +3,12 @@
 package taffy
 
 import (
-	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/compute"
 	"github.com/gataengine/taffy-go/compute/block"
 	"github.com/gataengine/taffy-go/compute/flexbox"
 	"github.com/gataengine/taffy-go/compute/grid"
 	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/style"
 	"github.com/gataengine/taffy-go/tree"
 )

@@ -316,7 +316,7 @@ func ComputeGridLayout(t tree.LayoutGridContainer, node tree.NodeId, inputs tree
 		Height: geometry.F32Max(
 			geometry.SizeMaybeClamp(
 				geometry.Size[lib.Option[float32]]{
-					Width:  lib.None[float32](),
+					Width: lib.None[float32](),
 					Height: func() lib.Option[float32] {
 						if resolvedStyleSize.Height.IsSome {
 							return resolvedStyleSize.Height

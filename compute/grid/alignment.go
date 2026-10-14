@@ -3,9 +3,9 @@
 package grid
 
 import (
-	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/compute"
 	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/style"
 	"github.com/gataengine/taffy-go/tree"
 )

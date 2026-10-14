@@ -3,8 +3,8 @@
 package tree
 
 import (
-	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/style"
 )
 

@@ -20,7 +20,7 @@ type fixedStyleGen struct {
 	style style.Style
 }
 
-func (f fixedStyleGen) leafStyle(_ *rand.Rand) style.Style     { return f.style }
+func (f fixedStyleGen) leafStyle(_ *rand.Rand) style.Style      { return f.style }
 func (f fixedStyleGen) containerStyle(_ *rand.Rand) style.Style { return f.style }
 
 // randomDimension returns a random Dimension: 20% auto, 60% length(0-500), 20% percent(0-1).

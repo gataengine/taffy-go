@@ -3,8 +3,8 @@
 package grid
 
 import (
-	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/geometry"
+	"github.com/gataengine/taffy-go/lib"
 	"github.com/gataengine/taffy-go/style"
 	"github.com/gataengine/taffy-go/tree"
 )
@@ -96,36 +96,36 @@ func newGridItemWithPlacementStyleAndOrder(
 	justifySelf := childStyle.GetJustifySelf().UnwrapOr(parentJustifyItems)
 
 	return gridItem{
-		node:                   node,
-		sourceOrder:            sourceOrder,
-		row:                    rowSpan,
-		column:                 colSpan,
-		isCompressibleReplaced: coreStyle.GetIsCompressibleReplaced(),
-		overflow:               coreStyle.GetOverflow(),
-		boxSizingStyle:         coreStyle.GetBoxSizing(),
-		size:                   coreStyle.GetSize(),
-		minSize:                coreStyle.GetMinSize(),
-		maxSize:                coreStyle.GetMaxSize(),
-		aspectRatio:            coreStyle.GetAspectRatio(),
-		paddingStyle:           coreStyle.GetPadding(),
-		borderStyle:            coreStyle.GetBorder(),
-		marginStyle:            coreStyle.GetMargin(),
-		alignSelf:              alignSelf,
-		justifySelf:            justifySelf,
-		baseline:               lib.None[float32](),
-		baselineShim:           0.0,
-		rowIndexes:             geometry.Line[uint16]{Start: 0, End: 0},
-		columnIndexes:          geometry.Line[uint16]{Start: 0, End: 0},
-		crossesFlexibleRow:     false,
-		crossesFlexibleColumn:  false,
-		crossesIntrinsicRow:    false,
-		crossesIntrinsicColumn: false,
-		availableSpaceCache:    lib.Option[geometry.Size[lib.Option[float32]]]{},
+		node:                        node,
+		sourceOrder:                 sourceOrder,
+		row:                         rowSpan,
+		column:                      colSpan,
+		isCompressibleReplaced:      coreStyle.GetIsCompressibleReplaced(),
+		overflow:                    coreStyle.GetOverflow(),
+		boxSizingStyle:              coreStyle.GetBoxSizing(),
+		size:                        coreStyle.GetSize(),
+		minSize:                     coreStyle.GetMinSize(),
+		maxSize:                     coreStyle.GetMaxSize(),
+		aspectRatio:                 coreStyle.GetAspectRatio(),
+		paddingStyle:                coreStyle.GetPadding(),
+		borderStyle:                 coreStyle.GetBorder(),
+		marginStyle:                 coreStyle.GetMargin(),
+		alignSelf:                   alignSelf,
+		justifySelf:                 justifySelf,
+		baseline:                    lib.None[float32](),
+		baselineShim:                0.0,
+		rowIndexes:                  geometry.Line[uint16]{Start: 0, End: 0},
+		columnIndexes:               geometry.Line[uint16]{Start: 0, End: 0},
+		crossesFlexibleRow:          false,
+		crossesFlexibleColumn:       false,
+		crossesIntrinsicRow:         false,
+		crossesIntrinsicColumn:      false,
+		availableSpaceCache:         lib.Option[geometry.Size[lib.Option[float32]]]{},
 		minContentContributionCache: geometry.SizeOptionNone,
 		maxContentContributionCache: geometry.SizeOptionNone,
 		minimumContributionCache:    geometry.SizeOptionNone,
-		yPosition: 0.0,
-		height:    0.0,
+		yPosition:                   0.0,
+		height:                      0.0,
 	}
 }
 

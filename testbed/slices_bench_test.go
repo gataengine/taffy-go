@@ -14,15 +14,15 @@ import (
 
 // largeStruct mimics gridItem (~350 bytes) with the same field layout that matters for sorting.
 type largeStruct struct {
-	node       uint64
-	source     uint16
-	rowStart   uint16
-	rowEnd     uint16
-	colStart   uint16
-	colEnd     uint16
-	crossFlex  bool
-	_pad       [3]byte
-	filler     [320]byte // pad to realistic gridItem size
+	node      uint64
+	source    uint16
+	rowStart  uint16
+	rowEnd    uint16
+	colStart  uint16
+	colEnd    uint16
+	crossFlex bool
+	_pad      [3]byte
+	filler    [320]byte // pad to realistic gridItem size
 }
 
 func init() {

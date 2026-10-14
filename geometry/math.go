@@ -178,16 +178,20 @@ func SizeMaybeClamp(val, min_, max_ Size[lib.Option[float32]]) Size[lib.Option[f
 // Package-internal aliases (unexported) for use within this package.
 // ---------------------------------------------------------------------------
 
-func maybeMinOption(a, b lib.Option[float32]) lib.Option[float32]        { return MaybeMinOption(a, b) }
-func maybeMaxOption(a, b lib.Option[float32]) lib.Option[float32]        { return MaybeMaxOption(a, b) }
-func maybeAddOption(a, b lib.Option[float32]) lib.Option[float32]        { return MaybeAddOption(a, b) }
-func maybeSubOption(a, b lib.Option[float32]) lib.Option[float32]        { return MaybeSubOption(a, b) }
-func maybeClampOption(v, mn, mx lib.Option[float32]) lib.Option[float32] { return MaybeClampOption(v, mn, mx) }
-func maybeMinF32(a float32, b lib.Option[float32]) float32           { return MaybeMinF32(a, b) }
-func maybeMaxF32(a float32, b lib.Option[float32]) float32           { return MaybeMaxF32(a, b) }
-func maybeAddF32(a float32, b lib.Option[float32]) float32           { return MaybeAddF32(a, b) }
-func maybeSubF32(a float32, b lib.Option[float32]) float32           { return MaybeSubF32(a, b) }
-func maybeClampF32(val float32, mn, mx lib.Option[float32]) float32  { return MaybeClampF32(val, mn, mx) }
+func maybeMinOption(a, b lib.Option[float32]) lib.Option[float32] { return MaybeMinOption(a, b) }
+func maybeMaxOption(a, b lib.Option[float32]) lib.Option[float32] { return MaybeMaxOption(a, b) }
+func maybeAddOption(a, b lib.Option[float32]) lib.Option[float32] { return MaybeAddOption(a, b) }
+func maybeSubOption(a, b lib.Option[float32]) lib.Option[float32] { return MaybeSubOption(a, b) }
+func maybeClampOption(v, mn, mx lib.Option[float32]) lib.Option[float32] {
+	return MaybeClampOption(v, mn, mx)
+}
+func maybeMinF32(a float32, b lib.Option[float32]) float32 { return MaybeMinF32(a, b) }
+func maybeMaxF32(a float32, b lib.Option[float32]) float32 { return MaybeMaxF32(a, b) }
+func maybeAddF32(a float32, b lib.Option[float32]) float32 { return MaybeAddF32(a, b) }
+func maybeSubF32(a float32, b lib.Option[float32]) float32 { return MaybeSubF32(a, b) }
+func maybeClampF32(val float32, mn, mx lib.Option[float32]) float32 {
+	return MaybeClampF32(val, mn, mx)
+}
 func sizeMaybeMin(a, b Size[lib.Option[float32]]) Size[lib.Option[float32]] {
 	return SizeMaybeMin(a, b)
 }

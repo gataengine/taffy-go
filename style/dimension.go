@@ -5,7 +5,6 @@ package style
 import (
 	"github.com/gataengine/taffy-go/lib"
 	"math"
-
 )
 
 // LengthPercentageTag identifies the variant of a LengthPercentage value.

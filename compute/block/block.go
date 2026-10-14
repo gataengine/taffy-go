@@ -142,10 +142,10 @@ type blockItem struct {
 	nodeID tree.NodeId
 	order  uint32
 
-	isTable      bool
-	isInSameBfc  bool
-	float_       style.Float
-	clear_       style.Clear
+	isTable     bool
+	isInSameBfc bool
+	float_      style.Float
+	clear_      style.Clear
 
 	size    geometry.Size[lib.Option[float32]]
 	minSize geometry.Size[lib.Option[float32]]
@@ -154,11 +154,11 @@ type blockItem struct {
 	overflow       geometry.Point[style.Overflow]
 	scrollbarWidth float32
 
-	position style.Position
-	inset    geometry.Rect[style.LengthPercentageAuto]
-	margin   geometry.Rect[style.LengthPercentageAuto]
-	padding  geometry.Rect[float32]
-	border   geometry.Rect[float32]
+	position         style.Position
+	inset            geometry.Rect[style.LengthPercentageAuto]
+	margin           geometry.Rect[style.LengthPercentageAuto]
+	padding          geometry.Rect[float32]
+	border           geometry.Rect[float32]
 	paddingBorderSum geometry.Size[float32]
 
 	computedSize          geometry.Size[float32]
@@ -921,9 +921,9 @@ func performFinalLayoutOnInFlowChildren(
 		}
 
 		layoutInputs := tree.LayoutInput{
-			RunMode:    tree.RunModePerformLayout,
-			SizingMode: tree.SizingModeInherentSize,
-			Axis:       tree.RequestedAxisBoth,
+			RunMode:         tree.RunModePerformLayout,
+			SizingMode:      tree.SizingModeInherentSize,
+			Axis:            tree.RequestedAxisBoth,
 			KnownDimensions: knownDimensions,
 			ParentSize:      parentSize,
 			AvailableSpace: geometry.Size[style.AvailableSpace]{
